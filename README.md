@@ -47,13 +47,11 @@ following table is selected to calculate the longitudinal length.
 For each OD pair, a typical gravity model is applied to calculate zone-to-zone
 demand volume.
 
-where is total trips from zone 𝑖 to zone 𝑗; are productions in zone 𝑖 and
-attractions in zone 𝑗, respectively; is the friction factor for travel from zone
-𝑖 to zone 𝑗 ; is the correction factor for travel from zone 𝑖 to zone 𝑗, equal
-to 1 by default; parameter is equal to -0.1 by default; parameter is equal to 0
-by default.
+![](media/06a0a3acdb85d89a051416edaef7c4c9.png)
 
 The framework of GRID2DEMAND is illustrated in the following figure.
+
+![](media/986f4980bc79cdd0bd2aaad4ad65350d.png)
 
 **2. How to use GRID2DEMAND?**
 
