@@ -40,6 +40,8 @@ coordinates. A degree at different latitudes represents different lengths on a
 flat surface. According to a given latitude, the closest latitude in the
 following table is selected to calculate the longitudinal length.
 
+![](media/8ec797911b19eb4f76c3ff14c01b7f55.png)
+
 **1.5. Gravity model**
 
 For each OD pair, a typical gravity model is applied to calculate zone-to-zone
@@ -64,15 +66,23 @@ OpenStreetMap**
 Adjust the map to the location of interest and click on the Export1 button on
 the top.
 
+![地图 描述已自动生成](media/4e7e66963f555d17e4932bd4904cf4f7.png)
+
 Then, obtain the latitude and longitude coordinates (users can manually select a
 different area2). Lastly, click on the Export3 button found in the middle of the
 navigator to download an OSM data file. For a very large area of interest, users
 need to click the link of “Overpass API” to obtain a map file.
 
+![](media/cbc2a2fc7bb6040d83b0295cdf80fd5d.png)
+
 **Step 2: Execute OSM2GMNS to get network files in GMNS format**
 
 Open the Python IDE such as Pycharm for a typical configuration. Then, OSM2GMNS
 converts *map.osm* file in OSM format into a network file in GMNS format.
+
+![](media/6ea2cbc0b48354d4940c8e4f4c6e9f58.png)
+
+![](media/bc783b917bac32c27b66e4649a472088.png)
 
 Please note that *poi.csv* may need to be edited manually in case of information
 loss。
@@ -83,11 +93,19 @@ Configurate working dictionary in the Python IDE (e.g., Pycharm). Then, execute
 GRID2DEMAND to get zone-to-zone demand, generating four files which are
 highlighted in blue.
 
+![](media/740308212aab2326669ca992b4d7c7d6.png)
+
 **Step 4: Visualization in QGIS**
 
 Open QGIS and add Delimited Text Layer of the output files.
 
+![](media/7845a6b0be22f6a8cd450fe3a3f8b830.png)
+
 Then Open the Properties window of the demand layer. Set the symbology as
 graduated symbols by size.
 
+![](media/2369dc93a0f61fc6aaa36adc56915f88.png)
+
 Zone-to-zone demand can be visualized with a base map.
+
+![](media/25f293cdb762a1365411eb89db352224.png)
