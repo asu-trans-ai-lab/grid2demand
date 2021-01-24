@@ -86,10 +86,9 @@ District) variables, but the same checks for correlation between variables
 should be utilized. Attractions tend to be more difficult to measure/estimate,
 and we tend to have less trust in these estimates. For more information, users
 can read [NCHRP Report 365: “Travel Estimation Techniques, CH 3 trip
-generation](http://www.google.com/url?q=http%3A%2F%2Fntl.bts.gov%2Flib%2F21000%2F21500%2F21563%2FPB99126724.pdf&sa=D&sntz=1&usg=AFQjCNG2L127sploJ1a6_-ZmhSt6PnNypA)
-and [NCHRP Report 716: Travel Demand Forecasting: Parameters and Techniques, CH
-4.4 Trip
-Generation](http://onlinepubs.trb.org/onlinepubs/nchrp/nchrp_rpt_716.pdf).
+generation](https://onlinepubs.trb.org/onlinepubs/nchrp/nchrp_rpt_365.pdf) and
+[NCHRP Report 716: Travel Demand Forecasting: Parameters and Techniques, CH 4.4
+Trip Generation](http://onlinepubs.trb.org/onlinepubs/nchrp/nchrp_rpt_716.pdf).
 
 **Accessibility**
 
@@ -126,18 +125,7 @@ visit <https://tfresource.org/topics/Trip_distribution.html>.
 For each OD pair, a typical gravity model is applied to calculate zone-to-zone
 demand volume.
 
-where is total trips from zone 𝑖 to zone 𝑗; are productions in zone 𝑖 and
-attractions in zone 𝑗, respectively; is the friction factor for travel from zone
-𝑖 to zone 𝑗 ; is the correction factor for travel from zone 𝑖 to zone 𝑗, equal
-to 1 by default; is the accessibility from zone 𝑖 to zone 𝑗; parameter are the
-friction factor coefficients, of which the default values under three typical
-trip purposes are listed in the following table.
-
-| Trip purpose | a      | b       | c       |
-|--------------|--------|---------|---------|
-| HBW          | 28507  | \-0.02  | \-0.123 |
-| HBO          | 139173 | \-1.285 | \-0.094 |
-| NHB          | 219113 | \-1.332 | \-0.1   |
+![](media/9449810b569cdb6589b5df4c4dfd18b8.png)
 
 **II. What is grid2demand?**
 
