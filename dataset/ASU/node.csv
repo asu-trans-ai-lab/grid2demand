@@ -122,7 +122,7 @@ name,node_id,osm_node_id,osm_highway,zone_id,ctrl_type,node_type,activity_type,i
 ,120,1698683743.0,,22,0,,residential,0,-111.9373124,33.4163246,,,,0.0,0.0
 ,121,1698683826.0,traffic_signals,16,1,,residential,0,-111.940028,33.419055199999995,,,,0.0,0.0
 ,122,1698683852.0,traffic_signals,16,1,,residential,0,-111.9400474,33.4204936,,,,0.0,0.0
-,123,1799680779.0,turning_circle,28,0,,residential,1,-111.918685,33.4188785,,,,1000.0,1000.0
+,123,1799680779.0,turning_circle,39,0,,residential,1,-111.918685,33.4188785,,,,1000.0,1000.0
 ,124,2065989266.0,traffic_signals,12,1,,residential,0,-111.9381462,33.4218977,11.0,,,0.0,0.0
 ,125,2300341821.0,,21,0,,rail,0,-111.9435562,33.41568710000001,,,,0.0,0.0
 ,126,2300341851.0,crossing,19,0,,primary,0,-111.9262885,33.4203522,,,,0.0,0.0
@@ -314,7 +314,7 @@ name,node_id,osm_node_id,osm_highway,zone_id,ctrl_type,node_type,activity_type,i
 ,312,5333539971.0,,22,0,,residential,0,-111.936655,33.4174833,,,,0.0,0.0
 ,313,5333539972.0,traffic_signals,22,1,,residential,0,-111.93662759999998,33.4162059,,,,0.0,0.0
 ,314,5333560369.0,,22,0,,residential,0,-111.9366549,33.4176535,,,,0.0,0.0
-,315,5338062390.0,,27,0,,unclassified,1,-111.9293144,33.4297279,,,,1000.0,1000.0
+,315,5338062390.0,,33,0,,unclassified,1,-111.9293144,33.4297279,,,,1000.0,1000.0
 ,316,5343247775.0,,13,0,,footway,0,-111.9317292,33.4215199,,,,0.0,0.0
 ,317,5343247776.0,,18,0,,footway,0,-111.9317246,33.421240600000004,,,,0.0,0.0
 ,318,5414658105.0,,19,0,,residential,0,-111.92787140000002,33.4202692,,,,0.0,0.0
@@ -377,68 +377,68 @@ name,node_id,osm_node_id,osm_highway,zone_id,ctrl_type,node_type,activity_type,i
 ,375,8269005064.0,traffic_signals,13,1,,secondary,0,-111.9307627,33.421952000000005,14.0,,,0.0,0.0
 ,376,8269005069.0,,13,0,,secondary,0,-111.9339932,33.421912199999994,,,,0.0,0.0
 ,377,8269005072.0,traffic_signals,12,1,,secondary,0,-111.9349485,33.421896999999994,15.0,,,0.0,0.0
-,378,,,27,0,,residential,1,-111.9442627,33.4302,,,boundary node created by osm2gmns,1000.0,1000.0
-,379,,,29,0,,residential,1,-111.9424473,33.415,,,boundary node created by osm2gmns,1000.0,1000.0
-,380,,,29,0,,primary,1,-111.9384473,33.415,,,boundary node created by osm2gmns,1000.0,1000.0
-,381,,,26,0,,residential,1,-111.945,33.4194026,,,boundary node created by osm2gmns,1000.0,1000.0
-,382,,,26,0,,residential,1,-111.945,33.4231773,,,boundary node created by osm2gmns,1000.0,1000.0
+,378,,,31,0,,residential,1,-111.9442627,33.4302,,,boundary node created by osm2gmns,1000.0,1000.0
+,379,,,45,0,,residential,1,-111.9424473,33.415,,,boundary node created by osm2gmns,1000.0,1000.0
+,380,,,44,0,,primary,1,-111.9384473,33.415,,,boundary node created by osm2gmns,1000.0,1000.0
+,381,,,27,0,,residential,1,-111.945,33.4194026,,,boundary node created by osm2gmns,1000.0,1000.0
+,382,,,28,0,,residential,1,-111.945,33.4231773,,,boundary node created by osm2gmns,1000.0,1000.0
 ,383,,,20,0,,tertiary,0,-111.9178,33.4194389,,,boundary node created by osm2gmns,0.0,0.0
 ,384,,,22,0,,residential,0,-111.9366102,33.415,,,boundary node created by osm2gmns,0.0,0.0
 ,385,,,26,0,,residential,1,-111.945,33.4168248,,,boundary node created by osm2gmns,1000.0,1000.0
-,386,,,26,0,,residential,1,-111.945,33.4243234,,,boundary node created by osm2gmns,1000.0,1000.0
+,386,,,28,0,,residential,1,-111.945,33.4243234,,,boundary node created by osm2gmns,1000.0,1000.0
 ,387,,,26,0,,residential,1,-111.945,33.4160696,,,boundary node created by osm2gmns,1000.0,1000.0
-,388,,,26,0,,residential,1,-111.945,33.420639,,,boundary node created by osm2gmns,1000.0,1000.0
+,388,,,27,0,,residential,1,-111.945,33.420639,,,boundary node created by osm2gmns,1000.0,1000.0
 ,389,,,26,0,,residential,1,-111.945,33.41778789999999,,,boundary node created by osm2gmns,1000.0,1000.0
-,390,,,27,0,,secondary,1,-111.9351443,33.4302,,,boundary node created by osm2gmns,1000.0,1000.0
-,391,,,29,0,,secondary,1,-111.9399674,33.415,,,boundary node created by osm2gmns,1000.0,1000.0
-,392,,,27,0,,primary,1,-111.9262887,33.4302,,,boundary node created by osm2gmns,1000.0,1000.0
-,393,,,29,0,,rail,1,-111.9435524,33.415,,,boundary node created by osm2gmns,1000.0,1000.0
-,394,,,27,0,,rail,1,-111.9435808,33.4302,,,boundary node created by osm2gmns,1000.0,1000.0
-,395,,,27,0,,light_rail,1,-111.9434997,33.4302,,,boundary node created by osm2gmns,1000.0,1000.0
-,396,,,29,0,,light_rail,1,-111.92051709999998,33.415,,,boundary node created by osm2gmns,1000.0,1000.0
+,390,,,32,0,,secondary,1,-111.9351443,33.4302,,,boundary node created by osm2gmns,1000.0,1000.0
+,391,,,45,0,,secondary,1,-111.9399674,33.415,,,boundary node created by osm2gmns,1000.0,1000.0
+,392,,,34,0,,primary,1,-111.9262887,33.4302,,,boundary node created by osm2gmns,1000.0,1000.0
+,393,,,45,0,,rail,1,-111.9435524,33.415,,,boundary node created by osm2gmns,1000.0,1000.0
+,394,,,31,0,,rail,1,-111.9435808,33.4302,,,boundary node created by osm2gmns,1000.0,1000.0
+,395,,,31,0,,light_rail,1,-111.9434997,33.4302,,,boundary node created by osm2gmns,1000.0,1000.0
+,396,,,41,0,,light_rail,1,-111.92051709999998,33.415,,,boundary node created by osm2gmns,1000.0,1000.0
 ,397,,,25,0,,tertiary,0,-111.9204042,33.415,,,boundary node created by osm2gmns,0.0,0.0
 ,398,,,25,0,,residential,0,-111.9178,33.4166722,,,boundary node created by osm2gmns,0.0,0.0
-,399,,,29,0,,light_rail,1,-111.9204628,33.415,,,boundary node created by osm2gmns,1000.0,1000.0
-,400,,,27,0,,light_rail,1,-111.94345590000002,33.4302,,,boundary node created by osm2gmns,1000.0,1000.0
-,401,,,27,0,,secondary,1,-111.9433042,33.4302,,,boundary node created by osm2gmns,1000.0,1000.0
+,399,,,41,0,,light_rail,1,-111.9204628,33.415,,,boundary node created by osm2gmns,1000.0,1000.0
+,400,,,31,0,,light_rail,1,-111.94345590000002,33.4302,,,boundary node created by osm2gmns,1000.0,1000.0
+,401,,,31,0,,secondary,1,-111.9433042,33.4302,,,boundary node created by osm2gmns,1000.0,1000.0
 ,402,,,22,0,,primary,0,-111.93815829999998,33.415,,,boundary node created by osm2gmns,0.0,0.0
-,403,,,27,0,,unclassified,1,-111.9206533,33.4302,,,boundary node created by osm2gmns,1000.0,1000.0
-,404,,,27,0,,unclassified,1,-111.9205264,33.4302,,,boundary node created by osm2gmns,1000.0,1000.0
-,405,,,27,0,,unclassified,1,-111.9190716,33.4302,,,boundary node created by osm2gmns,1000.0,1000.0
-,406,,,29,0,,residential,1,-111.9442379,33.415,,,boundary node created by osm2gmns,1000.0,1000.0
+,403,,,35,0,,unclassified,1,-111.9206533,33.4302,,,boundary node created by osm2gmns,1000.0,1000.0
+,404,,,35,0,,unclassified,1,-111.9205264,33.4302,,,boundary node created by osm2gmns,1000.0,1000.0
+,405,,,35,0,,unclassified,1,-111.9190716,33.4302,,,boundary node created by osm2gmns,1000.0,1000.0
+,406,,,45,0,,residential,1,-111.9442379,33.415,,,boundary node created by osm2gmns,1000.0,1000.0
 ,407,,,6,0,,residential,0,-111.945,33.4264311,,,boundary node created by osm2gmns,0.0,0.0
 ,408,,,23,0,,residential,0,-111.9327989,33.415,,,boundary node created by osm2gmns,0.0,0.0
-,409,,,29,0,,rail,1,-111.943598,33.415,,,boundary node created by osm2gmns,1000.0,1000.0
-,410,,,29,0,,secondary,1,-111.93985259999998,33.415,,,boundary node created by osm2gmns,1000.0,1000.0
-,411,,,26,0,,tertiary,1,-111.945,33.4291403,,,boundary node created by osm2gmns,1000.0,1000.0
+,409,,,45,0,,rail,1,-111.943598,33.415,,,boundary node created by osm2gmns,1000.0,1000.0
+,410,,,45,0,,secondary,1,-111.93985259999998,33.415,,,boundary node created by osm2gmns,1000.0,1000.0
+,411,,,30,0,,tertiary,1,-111.945,33.4291403,,,boundary node created by osm2gmns,1000.0,1000.0
 ,412,,,2,0,,secondary,0,-111.9381327,33.4302,,,boundary node created by osm2gmns,0.0,0.0
-,413,,,28,0,,secondary,1,-111.9178,33.4220186,,,boundary node created by osm2gmns,1000.0,1000.0
-,414,,,27,0,,primary,1,-111.9401279,33.4302,,,boundary node created by osm2gmns,1000.0,1000.0
-,415,,,26,0,,primary,1,-111.945,33.421896000000004,,,boundary node created by osm2gmns,1000.0,1000.0
-,416,,,28,0,,secondary,1,-111.9178,33.429195799999995,,,boundary node created by osm2gmns,1000.0,1000.0
-,417,,,28,0,,secondary,1,-111.9178,33.4293355,,,boundary node created by osm2gmns,1000.0,1000.0
+,413,,,38,0,,secondary,1,-111.9178,33.4220186,,,boundary node created by osm2gmns,1000.0,1000.0
+,414,,,31,0,,primary,1,-111.9401279,33.4302,,,boundary node created by osm2gmns,1000.0,1000.0
+,415,,,28,0,,primary,1,-111.945,33.421896000000004,,,boundary node created by osm2gmns,1000.0,1000.0
+,416,,,36,0,,secondary,1,-111.9178,33.429195799999995,,,boundary node created by osm2gmns,1000.0,1000.0
+,417,,,36,0,,secondary,1,-111.9178,33.4293355,,,boundary node created by osm2gmns,1000.0,1000.0
 ,418,,,24,0,,primary,0,-111.9262862,33.415,,,boundary node created by osm2gmns,0.0,0.0
-,419,,,27,0,,secondary,1,-111.9350646,33.4302,,,boundary node created by osm2gmns,1000.0,1000.0
-,420,,,27,0,,secondary,1,-111.93785990000002,33.4302,,,boundary node created by osm2gmns,1000.0,1000.0
+,419,,,32,0,,secondary,1,-111.9350646,33.4302,,,boundary node created by osm2gmns,1000.0,1000.0
+,420,,,32,0,,secondary,1,-111.93785990000002,33.4302,,,boundary node created by osm2gmns,1000.0,1000.0
 ,421,,,2,0,,secondary,0,-111.9348857,33.4302,,,boundary node created by osm2gmns,0.0,0.0
-,422,,,29,0,,tertiary,1,-111.93495190000002,33.415,,,boundary node created by osm2gmns,1000.0,1000.0
-,423,,,29,0,,tertiary,1,-111.92060929999998,33.415,,,boundary node created by osm2gmns,1000.0,1000.0
+,422,,,44,0,,tertiary,1,-111.93495190000002,33.415,,,boundary node created by osm2gmns,1000.0,1000.0
+,423,,,41,0,,tertiary,1,-111.92060929999998,33.415,,,boundary node created by osm2gmns,1000.0,1000.0
 ,424,,,23,0,,tertiary,0,-111.9306021,33.415,,,boundary node created by osm2gmns,0.0,0.0
-,425,,,26,0,,residential,1,-111.9445362,33.4302,,,boundary node created by osm2gmns,1000.0,1000.0
-,426,,,27,0,,secondary,1,-111.9431842,33.4302,,,boundary node created by osm2gmns,1000.0,1000.0
-,427,,,29,0,,tertiary,1,-111.9306869,33.415,,,boundary node created by osm2gmns,1000.0,1000.0
-,428,,,28,0,,residential,1,-111.9178,33.4184012,,,boundary node created by osm2gmns,1000.0,1000.0
+,425,,,30,0,,residential,1,-111.9445362,33.4302,,,boundary node created by osm2gmns,1000.0,1000.0
+,426,,,31,0,,secondary,1,-111.9431842,33.4302,,,boundary node created by osm2gmns,1000.0,1000.0
+,427,,,43,0,,tertiary,1,-111.9306869,33.415,,,boundary node created by osm2gmns,1000.0,1000.0
+,428,,,39,0,,residential,1,-111.9178,33.4184012,,,boundary node created by osm2gmns,1000.0,1000.0
 ,429,,,1,0,,primary,0,-111.9399749,33.4302,,,boundary node created by osm2gmns,0.0,0.0
-,430,,,28,0,,unclassified,1,-111.91809170000002,33.4302,,,boundary node created by osm2gmns,1000.0,1000.0
+,430,,,36,0,,unclassified,1,-111.91809170000002,33.4302,,,boundary node created by osm2gmns,1000.0,1000.0
 ,431,,,1,0,,residential,0,-111.9447336,33.4302,,,boundary node created by osm2gmns,0.0,0.0
-,432,,,26,0,,residential,1,-111.945,33.42942960000001,,,boundary node created by osm2gmns,1000.0,1000.0
-,433,,,29,0,,tram,1,-111.9382051,33.415,,,boundary node created by osm2gmns,1000.0,1000.0
-,434,,,29,0,,tram,1,-111.9383997,33.415,,,boundary node created by osm2gmns,1000.0,1000.0
-,435,,,29,0,,residential,1,-111.94119209999998,33.415,,,boundary node created by osm2gmns,1000.0,1000.0
-,436,,,26,0,,residential,1,-111.945,33.4254913,,,boundary node created by osm2gmns,1000.0,1000.0
-,437,,,26,0,,residential,1,-111.945,33.4254599,,,boundary node created by osm2gmns,1000.0,1000.0
-,438,,,27,0,,tram,1,-111.9381035,33.4302,,,boundary node created by osm2gmns,1000.0,1000.0
-,439,,,27,0,,tram,1,-111.934942,33.4302,,,boundary node created by osm2gmns,1000.0,1000.0
+,432,,,30,0,,residential,1,-111.945,33.42942960000001,,,boundary node created by osm2gmns,1000.0,1000.0
+,433,,,44,0,,tram,1,-111.9382051,33.415,,,boundary node created by osm2gmns,1000.0,1000.0
+,434,,,44,0,,tram,1,-111.9383997,33.415,,,boundary node created by osm2gmns,1000.0,1000.0
+,435,,,45,0,,residential,1,-111.94119209999998,33.415,,,boundary node created by osm2gmns,1000.0,1000.0
+,436,,,29,0,,residential,1,-111.945,33.4254913,,,boundary node created by osm2gmns,1000.0,1000.0
+,437,,,29,0,,residential,1,-111.945,33.4254599,,,boundary node created by osm2gmns,1000.0,1000.0
+,438,,,32,0,,tram,1,-111.9381035,33.4302,,,boundary node created by osm2gmns,1000.0,1000.0
+,439,,,32,0,,tram,1,-111.934942,33.4302,,,boundary node created by osm2gmns,1000.0,1000.0
 ,440,,,9,0,,poi,0,-111.92803584327473,33.42506280934404,,0.0,,4.762276878272001,113.81841739070082
 ,441,,,8,0,,poi,0,-111.92874655888843,33.42550819460066,,1.0,,10.084384736448003,241.01679520110724
 ,442,,,8,0,,poi,0,-111.93249383609115,33.42483615926083,,2.0,,5.018242667584,119.93599975525761
@@ -786,7 +786,7 @@ name,node_id,osm_node_id,osm_highway,zone_id,ctrl_type,node_type,activity_type,i
 ,784,,,13,0,,poi,0,-111.93319701010954,33.422746611440395,,344.0,,0.24347965324799997,5.8191637126272
 ,785,,,13,0,,poi,0,-111.93319289051895,33.42236934608757,,345.0,,0.08202099724800002,1.9603018342272003
 ,786,,,13,0,,poi,0,-111.93089096880043,33.42252686440553,,346.0,,0.5533726336640001,13.225605944569601
-,787,,,13,0,,poi,0,-111.93059562446871,33.42260054921793,,347.0,,0.5401330238720001,12.9091792705408
+,787,,,13,0,,poi,0,-111.93059562446872,33.42260054921793,,347.0,,0.5401330238720001,12.9091792705408
 ,788,,,17,0,,poi,0,-111.93605560000002,33.42057455,,348.0,,1.9644136480000003,46.9494861872
 ,789,,,22,0,,poi,0,-111.93799191542614,33.415616801598986,,349.0,,0.12356969139200001,0.12356969139200001
 ,790,,,21,0,,poi,0,-111.93958147421756,33.41778369504657,,350.0,,0.07158000416,0.07158000416

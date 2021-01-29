@@ -23,11 +23,36 @@ from pyproj import Geod
 from shapely import wkt
 from collections import defaultdict
 import logging
+import random
+from random import choice
+
+# create a logger
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+# create a handler to write the log file
+logfile = 'log.txt'
+fh = logging.FileHandler(logfile, mode='w')
+fh.setLevel(logging.DEBUG)
+
+# create a handler to print out in console
+ch = logging.StreamHandler()
+ch.setLevel(logging.WARNING)
+
+# define output format
+formatter = logging.Formatter('%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
+fh.setFormatter(formatter)
+ch.setFormatter(formatter)
+
+# add handler to logger
+logger.addHandler(fh)
+logger.addHandler(ch)
 
 
 class Node:
     def __init__(self):
         self.id = 0
+        self.osm_node_id=0
         self.zone_id = 0
         self.x_coord = 0
         self.y_coord = 0
@@ -64,6 +89,23 @@ class Zone:
         self.poi_id_list = []
         self.polygon = ''
 
+class Agent:
+    def __init__(self, agent_id, agent_type, o_zone_id,
+                 d_zone_id):
+        """ the attribute of agent """
+        self.agent_id = agent_id
+        self.agent_type = agent_type  # vehicle
+        self.o_zone_id = int(o_zone_id)
+        self.d_zone_id = int(d_zone_id)
+        self.o_node_id = 0
+        self.d_node_id = 0
+        self.path_node_seq_no_list = list()
+        self.path_link_seq_no_list = list()
+        self.current_link_seq_no_in_path = 0
+        self.path_cost = 0
+        self.b_generated = False
+        self.b_complete_trip = False
+
 
 """PART 1  READ INPUT NETWORK FILES"""
 g_node_list = []
@@ -74,16 +116,10 @@ g_poi_id_type_dict = {}
 g_poi_id_area_dict = {}
 g_exclude_boundary_node_id_index = {}
 g_output_folder = ''
+g_ndoe_id_to_node={}
 
-logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
-                    datefmt='%a, %d %b %Y %H:%M:%S',
-                    filename='log.log',
-                    filemode='w')
-
-
-def ReadNetworkFile(folder=None):
-    logging.debug('Starting Read Network File')
+def ReadNetworkFiles(folder=None):
+    logger.debug('Starting ReadNetworkFiles')
     global g_poi_id_type_dict
     global g_poi_id_area_dict
     global g_output_folder
@@ -104,33 +140,38 @@ def ReadNetworkFile(folder=None):
             try:
                 node.id = int(line['node_id'])
             except:
-                print('Error: node_id is not defined in node.csv, please check it!')
-                logging.debug("Error: node_id is not defined in node.csv, please check it!")
+                # print('Error: node_id is not defined in node.csv, please check it!')
+                logger.error("node_id is not defined in node.csv, please check it!")
                 sys.exit(0)
+            try:
+                node.osm_node_id = line['osm_node_id']
+            except:
+                node.osm_node_id =None
             try:
                 node.x_coord = float(line['x_coord'])
             except:
-                print('Error: x_coord is not defined in node.csv, please check it!')
-                logging.debug("Error: x_coord is not defined in node.csv, please check it!")
+                # print('Error: x_coord is not defined in node.csv, please check it!')
+                logger.error("x_coord is not defined in node.csv, please check it!")
                 sys.exit(0)
             try:
                 node.y_coord = float(line['y_coord'])
             except:
-                print('Error: y_coord is not defined in node.csv, please check it!')
-                logging.debug("Error: y_coord is not defined in node.csv, please check it!")
+                # print('Error: y_coord is not defined in node.csv, please check it!')
+                logger.error("y_coord is not defined in node.csv, please check it!")
                 sys.exit(0)
             try:
                 node.poi_id = str(line['poi_id'])
             except:
-                print('Error: poi_id is not defined in node.csv, please check it!')
-                logging.debug("Error: poi_id is not defined in node.csv, please check it!")
+                # print('Error: poi_id is not defined in node.csv, please check it!')
+                logger.error("poi_id is not defined in node.csv, please check it!")
                 sys.exit(0)
             try:
                 node.flag = int(line['is_boundary'])
             except:
-                print('Error: is_boundary is not defined in node.csv, default is_boundary is 0!')
-                logging.debug("Error: is_boundary is not defined in node.csv, default is_boundary is 0!")
+                # print('Error: is_boundary is not defined in node.csv, default is_boundary is 0!')
+                logger.error("is_boundary is not defined in node.csv, default is_boundary is 0!")
                 node.flag = 0
+            g_ndoe_id_to_node[node.id]=node
             g_node_list.append(node)
 
             if node.flag == 1:
@@ -147,28 +188,28 @@ def ReadNetworkFile(folder=None):
             try:
                 poi.id = int(line['poi_id'])
             except:
-                print('Error: poi_id is not defined in poi.csv, please check it!')
-                logging.debug("")
+                # print('Error: poi_id is not defined in poi.csv, please check it!')
+                logger.error("poi_id is not defined in poi.csv, please check it!")
                 sys.exit(0)
             try:
                 temp_centroid = str(line['centroid'])
             except:
-                print('Error: centroid is not defined in poi.csv, please check it!')
-                logging.debug("Error: centroid is not defined in poi.csv, please check it!")
+                # print('Error: centroid is not defined in poi.csv, please check it!')
+                logger.error("centroid is not defined in poi.csv, please check it!")
                 sys.exit(0)
             str_centroid = temp_centroid.replace('POINT (', '').replace(')', '').replace(' ', ';').strip().split(';')
 
             try:
                 poi.x_coord = float(str_centroid[0])
             except:
-                print('Error: x_coord is not defined in poi.csv, please check it!')
-                logging.debug("Error: x_coord is not defined in poi.csv, please check it!")
+                # print('Error: x_coord is not defined in poi.csv, please check it!')
+                logger.error("x_coord is not defined in poi.csv, please check it!")
                 sys.exit(0)
             try:
                 poi.y_coord = float(str_centroid[1])
             except:
-                print('Error: y_coord is not defined in poi.csv, please check it!')
-                logging.debug("Error: y_coord is not defined in poi.csv, please check it!")
+                # print('Error: y_coord is not defined in poi.csv, please check it!')
+                logger.error("y_coord is not defined in poi.csv, please check it!")
                 sys.exit(0)
 
             '''
@@ -178,10 +219,12 @@ def ReadNetworkFile(folder=None):
             poly = wkt.loads(poi_geometry)
             area_meter = abs(geod.geometry_area_perimeter(poly)[0])  # calculate poi polygon area in square meters
             '''
+
             try:
                 area_meter = float(line['area'])
             except:
-                print('Error: area is not defined in poi.csv, please check it!')
+                # print('Error: area is not defined in poi.csv, please check it!')
+                logger.error('area is not defined in poi.csv, please check it!')
                 sys.exit(0)
             area_feet = area_meter * 10.7639104  # convert the area in square meters to square feet
             poi.area = area_feet
@@ -189,15 +232,15 @@ def ReadNetworkFile(folder=None):
             try:
                 poi.type = str(line['building'])
             except:
-                print('Error: building is not defined in poi.csv, please check it!')
-                logging.debug("Error: building is not defined in poi.csv, please check it!")
+                # print('Error: building is not defined in poi.csv, please check it!')
+                logger.error('building is not defined in poi.csv, please check it!')
                 sys.exit(0)
 
             g_poi_id_area_dict[poi.id] = poi.area
             g_poi_id_type_dict[poi.id] = poi.type
             g_poi_list.append(poi)
 
-    logging.debug('Ending Read Network File')
+    logger.debug('Ending ReadNetworkFiles')
     # return g_node_list, g_poi_list
 
 
@@ -218,18 +261,19 @@ for letter in range(65, 91):
     alphabet_list.append(chr(letter))
 
 
-def NetworkPartition(number_of_x_blocks=None,
+def PartitionGrid(number_of_x_blocks=None,
                      number_of_y_blocks=None,
                      cell_width=None,
                      cell_height=None,
                      latitude=None):
+    logger.debug('Starting PartitionGrid')
+
     # Error: Given grid scales and number of blocks simultaneously
     if ((number_of_x_blocks is not None) and (number_of_y_blocks is not None) \
             and (cell_width is not None) and (cell_height is not None)):
-        print('Error: Grid scales and number of blocks can only choose ONE to customize!')
+        logger.error('Grid scales and number of blocks can only choose ONE to customize!')
         sys.exit(0)
 
-    logging.debug("Starting Network Partition")
     global g_number_of_zones
     global g_zone_id_list
     global g_zone_index_dict
@@ -243,7 +287,7 @@ def NetworkPartition(number_of_x_blocks=None,
     if latitude is None:
         latitude = 30  # default value if no given latitude
         flat_length_per_degree_km = g_degree_length_dict[latitude]
-        print('Warning: Latitude is not defined for network partition. Default latitude is 30 degree!')
+        logger.warning('Latitude is not defined for network partition. Default latitude is 30 degree!')
 
     else:
         # match the closest latitude key according to the given latitude
@@ -257,7 +301,8 @@ def NetworkPartition(number_of_x_blocks=None,
     # Case 0: Default
     if (number_of_x_blocks is None) and (number_of_y_blocks is None) \
             and (cell_width is None) and (cell_height is None):
-        print('Warning: Default degree of grid width and height is 0.006!')
+        logger.warning('Default cell width and height are the length on a flat surface under a specific latitude '
+                       'corresponding to the degree of 0.006!')
         scale_x = g_scale_list[0]
         scale_y = g_scale_list[0]
         x_max = math.ceil(x_max / scale_x) * scale_x
@@ -389,7 +434,7 @@ def NetworkPartition(number_of_x_blocks=None,
         for node in g_boundary_node_list:
             if abs(node.x_coord - x_min) == min(abs(node.x_coord - x_max), abs(node.x_coord - x_min),
                                                 abs(node.y_coord - y_max), abs(node.y_coord - y_min)) \
-                    and node.y_coord <= block.y_max and node.y_coord >= block.y_min:
+                    and block.y_max >= node.y_coord >= block.y_min:
                 node.zone_id = block.id
                 g_node_zone_dict[node.id] = block.id
                 block.node_id_list.append(node.id)
@@ -416,7 +461,7 @@ def NetworkPartition(number_of_x_blocks=None,
         for node in g_boundary_node_list:
             if abs(node.y_coord - y_max) == min(abs(node.x_coord - x_max), abs(node.x_coord - x_min),
                                                 abs(node.y_coord - y_max), abs(node.y_coord - y_min)) \
-                    and node.x_coord <= block.x_max and node.x_coord >= block.x_min:
+                    and block.x_max >= node.x_coord >= block.x_min:
                 node.zone_id = block.id
                 g_node_zone_dict[node.id] = block.id
                 block.node_id_list.append(node.id)
@@ -443,7 +488,7 @@ def NetworkPartition(number_of_x_blocks=None,
         for node in g_boundary_node_list:
             if abs(node.x_coord - x_max) == min(abs(node.x_coord - x_max), abs(node.x_coord - x_min),
                                                 abs(node.y_coord - y_max), abs(node.y_coord - y_min)) \
-                    and node.y_coord <= block.y_max and node.y_coord >= block.y_min:
+                    and block.y_max >= node.y_coord >= block.y_min:
                 node.zone_id = block.id
                 g_node_zone_dict[node.id] = block.id
                 block.node_id_list.append(node.id)
@@ -470,7 +515,7 @@ def NetworkPartition(number_of_x_blocks=None,
         for node in g_boundary_node_list:
             if abs(node.y_coord - y_min) == min(abs(node.x_coord - x_max), abs(node.x_coord - x_min),
                                                 abs(node.y_coord - y_max), abs(node.y_coord - y_min)) \
-                    and node.x_coord <= block.x_max and node.x_coord >= block.x_min:
+                    and block.x_max >= node.x_coord >= block.x_min:
                 node.zone_id = block.id
                 g_node_zone_dict[node.id] = block.id
                 block.node_id_list.append(node.id)
@@ -511,7 +556,43 @@ def NetworkPartition(number_of_x_blocks=None,
         # print(data)
         data.to_csv('poi.csv', index=False, line_terminator='\n')
 
-    logging.debug("Ending Network Partition")
+    # create zone.csv
+    data_list = [zone.id for zone in g_zone_list]
+    data_zone = pd.DataFrame(data_list)
+    data_zone.columns = ["zone_id"]
+
+    data_list = [zone.name for zone in g_zone_list]
+    data1 = pd.DataFrame(data_list)
+    data_zone['name'] = data1
+
+    data_list = [zone.centroid_x for zone in g_zone_list]
+    data1 = pd.DataFrame(data_list)
+    data_zone['centroid_x'] = data1
+
+    data_list = [zone.centroid_y for zone in g_zone_list]
+    data1 = pd.DataFrame(data_list)
+    data_zone['centroid_y'] = data1
+
+    data_list = [zone.polygon for zone in g_zone_list]
+    data1 = pd.DataFrame(data_list)
+    data_zone['geometry'] = data1
+
+    data_list = [zone.centroid for zone in g_zone_list]
+    data1 = pd.DataFrame(data_list)
+    data_zone['centroid'] = data1
+
+    data_list = [zone.poi_count for zone in g_zone_list]
+    data1 = pd.DataFrame(data_list)
+    data_zone['poi_count'] = data1
+
+    # print(data_zone)
+    if g_output_folder is not None:
+        zone_filepath = os.path.join(g_output_folder, 'zone.csv')
+        data_zone.to_csv(zone_filepath, index=False, line_terminator='\n')
+    else:
+        data_zone.to_csv('zone.csv', index=False, line_terminator='\n')
+
+    logger.debug("Ending Partition Grid")
 
 
 """PART 3  TRIP GENERATION"""
@@ -534,7 +615,7 @@ trip_purpose_list = [1, 2, 3]
 
 def GetPoiTripRate(trip_rate_folder=None,
                    trip_purpose=None):
-    logging.debug("Starting Getting POI Trip rate")
+    logger.debug("Starting GetPOITripRate")
     global g_poi_purpose_prod_dict
     global g_poi_purpose_attr_dict
     global g_poi_type_list
@@ -545,8 +626,8 @@ def GetPoiTripRate(trip_rate_folder=None,
 
     # define production/attraction rates of each land use type and trip purpose
     if trip_rate_folder is None:
-        print('Warning: No input poi_trip_rate.csv! Default values will be used...')
-        logging.debug("Warning: No input poi_trip_rate.csv! Default values will be used...")
+        # print('Warning: No input poi_trip_rate.csv! Default values will be used...')
+        logger.warning('No input poi_trip_rate.csv! Default values will be used...')
         # default trip generation rates refer to ITE Trip Generation Manual, 10t Edition
         # https://www.troutdaleoregon.gov/sites/default/files/fileattachments/public_works/page/966/ite_land_use_list_10th_edition.pdf
         # unit of measure for all poi nodes is 1,000 SF GFA in this version
@@ -587,8 +668,9 @@ def GetPoiTripRate(trip_rate_folder=None,
 
     # Get POI production/attraction rates of each poi type with a specific trip purpose
     if trip_purpose is None:
-        print('Warning: Trip purpose is not defined! Default trip purpose is Purpose 1.')
-        trip_purpose = trip_purpose_list[0]  # default trip purpose
+        # print('Warning: Trip purpose is not defined! Default trip purpose is Purpose 1.')
+        logger.warning('Trip purpose is not defined! Default trip purpose is Purpose 1.')
+        trip_purpose = trip_purpose_list[0]  # default trip purpose is Purpose 1
         g_trip_purpose.append(trip_purpose)
     else:
         g_trip_purpose.append(trip_purpose)
@@ -596,6 +678,8 @@ def GetPoiTripRate(trip_rate_folder=None,
     poi_id = [poi.id for poi in g_poi_list]
     poi_type = [poi.type for poi in g_poi_list]
 
+    number_of_unmatched_poi_production_rate = 0
+    number_of_unmatched_poi_attraction_rate = 0
     for i in range(len(poi_id)):
         # define production rate of each poi type
         try:
@@ -605,6 +689,8 @@ def GetPoiTripRate(trip_rate_folder=None,
         except:
             g_poi_type_prod_rate_dict[poi_type[i]] = 0.1  # define default value of production rate
             g_poi_prod_rate_flag[poi_type[i]] = 0  # the poi type production rate does not exist in the input table
+            number_of_unmatched_poi_production_rate += 1
+            logger.warning('The POI production rate is NOT defined! Default production rate is 0.1.')
         # define attraction rate of each poi type
         try:
             attraction_rate = g_poi_purpose_attr_dict[poi_type[i]][trip_purpose]
@@ -613,8 +699,14 @@ def GetPoiTripRate(trip_rate_folder=None,
         except:
             g_poi_type_attr_rate_dict[poi_type[i]] = 0.1  # define default value of attraction rate
             g_poi_attr_rate_flag[poi_type[i]] = 0  # the poi type attraction rate does not exist in the input table
+            number_of_unmatched_poi_attraction_rate += 1
+            logger.warning('The POI attraction rate is NOT defined! Default production rate is 0.1.')
 
-    # generate poi_trip_rate.csv
+    sys.stdout = open('log.txt', 'a')
+    print('\nTotal number of poi nodes with unmatched production rate are:', number_of_unmatched_poi_production_rate)
+    print('Total number of poi nodes with unmatched attraction rate are:', number_of_unmatched_poi_attraction_rate)
+
+    # create poi_trip_rate.csv
     poi_type = [poi.type for poi in g_poi_list]
     g_poi_type_list = list(set(poi_type))  # obtain unique poi types
 
@@ -649,11 +741,11 @@ def GetPoiTripRate(trip_rate_folder=None,
     else:
         data_rate.to_csv('poi_trip_rate.csv', index=False, line_terminator='\n')
 
-    logging.debug("Ending Getting POI Trip rate")
+    logger.debug('Ending GetPOITripRate')
 
 
 def GetNodeDemand():
-    logging.debug("Starting Getting Node Demand")
+    logger.debug('Starting GetNodeDemand')
     global g_node_prod_list
     global g_node_attr_list
     global g_node_list
@@ -716,7 +808,7 @@ def GetNodeDemand():
         data['attraction'] = pd.DataFrame(g_node_attr_list)
         # print(data)
         data.to_csv('node.csv', index=False, line_terminator='\n')
-    logging.debug("Ending Getting Node Demand")
+    logger.debug('Ending GetNodeDemand')
 
 
 """PART 4  CALCULATE ACCESSIBILITY"""
@@ -730,7 +822,7 @@ g_distance_matrix = []
 
 
 def ProduceAccessMatrix(latitude=None, accessibility_folder=None):
-    logging.debug("Starting Producing Access Matrix")
+    logger.debug('Starting ProduceAccessMatrix')
     global o_zone_id_list
     global d_zone_id_list
     global od_distance_list
@@ -741,7 +833,8 @@ def ProduceAccessMatrix(latitude=None, accessibility_folder=None):
     g_distance_matrix = np.ones((g_number_of_zones, g_number_of_zones)) * 9999  # initialize distance matrix
 
     if latitude is None:
-        print('Warning: Latitude is not defined for producing accessibility matrix. Default latitude is 30 degree!')
+        # print('Warning: Latitude is not defined for producing accessibility matrix. Default latitude is 30 degree!')
+        logger.warning('Latitude is not defined for producing accessibility matrix! Default latitude is 30 degree.')
         latitude = 30  # default value if no given latitude
         flat_length = g_degree_length_dict[latitude]
 
@@ -756,8 +849,10 @@ def ProduceAccessMatrix(latitude=None, accessibility_folder=None):
 
     # define accessibility by calculating straight distance between zone centroids
     if accessibility_folder is None:
-        print(
-            'Warning: Accessibility matrix is not defined. It will be calculated by straight distance between zone centroids ...')
+        # print('Warning: Accessibility matrix is not defined. It will be calculated by straight distance between
+        # zone centroids ...')
+        logger.warning('Accessibility matrix is not defined! It will be calculated by straight-line distance between '
+                       'zone centroids.')
         for o_zone in g_zone_list:
             for d_zone in g_zone_list:
                 o_zone_id_list.append(o_zone.id)
@@ -792,7 +887,7 @@ def ProduceAccessMatrix(latitude=None, accessibility_folder=None):
                 od_distance_list.append(accessibility)
                 od_geometry_list.append(line['geometry'])
 
-    # generate accessibility.csv
+    # create accessibility.csv
     data = pd.DataFrame(o_zone_id_list)
     data.columns = ["o_zone_id"]
     data["o_zone_name"] = pd.DataFrame(o_zone_name_list)
@@ -813,7 +908,7 @@ def ProduceAccessMatrix(latitude=None, accessibility_folder=None):
         data.to_csv(accessibility_filepath, index=False, line_terminator='\n')
     else:
         data.to_csv('accessibility.csv', index=False, line_terminator='\n')
-    logging.debug("Ending Producing Access Matrix")
+    logger.debug("Ending ProduceAccessMatrix")
 
 
 """PART 5  TRIP DISTRIBUTION"""
@@ -824,55 +919,70 @@ g_node_attraction_dict = {}
 g_trip_matrix = []
 g_total_production_list = []
 g_total_attraction_list = []
+g_zone_to_nodes_dict={}
 
 
 def RunGravityModel(trip_purpose=None, a=None, b=None, c=None):
-    logging.debug("Starting Running Gravity Model")
+    logger.debug("Starting RunGravityModel")
     global g_node_id_list
     global g_node_production_dict
     global g_node_attraction_dict
     global g_trip_matrix
     global g_output_folder
 
-    if trip_purpose == None and a == None and b == None and c == None:  # default values of friction factor coefficients for HBW (Purpose 1)
+    if trip_purpose == None and a == None and b == None and c == None:  # default values of friction factor coefficients for Purpose 1 (HBW)
         a = 28507
         b = -0.02
         c = -0.123
-        print('Warning: Trip purpose is not defined! Default trip purpose is Purpose 1.')
-        print('Default values of friction factor coefficients are:')
-        print('a=', a)
-        print('b=', b)
-        print('c=', c)
-    if trip_purpose == 1 and a == None and b == None and c == None:  # default values of friction factor coefficients for HBW (Purpose 1)
+        # print('Warning: Trip purpose is not defined! Default trip purpose is Purpose 1.')
+        # print('Default values of friction factor coefficients are:')
+        # print('a=', a)
+        # print('b=', b)
+        # print('c=', c)
+        logger.warning('Trip purpose is not defined! Default trip purpose is Purpose 1.')
+        print('Default values of friction factor coefficients under trip purpose 1 are:', '\na=', a, '\nb=', b,
+              '\nc=', c)
+    if trip_purpose == 1 and a == None and b == None and c == None:  # default values of friction factor coefficients for Purpose 1 (HBW)
         a = 28507
         b = -0.02
         c = -0.123
-        print('Default values of friction factor coefficients under trip purpose 1 are:')
-        print('a=', a)
-        print('b=', b)
-        print('c=', c)
-    if trip_purpose == 2 and a == None and b == None and c == None:  # default values of friction factor coefficients for HBO (Purpose 2)
+        # print('Default values of friction factor coefficients under trip purpose 1 are:')
+        # print('a=', a)
+        # print('b=', b)
+        # print('c=', c)
+        print('Default values of friction factor coefficients under trip purpose 1 are:', '\na=', a, '\nb=', b,
+              '\nc=', c)
+    if trip_purpose == 2 and a == None and b == None and c == None:  # default values of friction factor coefficients for Purpose 2 (HBO)
         a = 139173
         b = -1.285
         c = -0.094
-        print('Default values of friction factor coefficients trip purpose 2 are:')
-        print('a=', a)
-        print('b=', b)
-        print('c=', c)
-    if trip_purpose == 3 and a == None and b == None and c == None:  # default values of friction factor coefficients for NHB (Purpose 3)
+        # print('Default values of friction factor coefficients trip purpose 2 are:')
+        # print('a=', a)
+        # print('b=', b)
+        # print('c=', c)
+        print('Default values of friction factor coefficients under trip purpose 2 are:', '\na=', a, '\nb=', b,
+              '\nc=', c)
+    if trip_purpose == 3 and a == None and b == None and c == None:  # default values of friction factor coefficients for Purpose 3 (NHB)
         a = 219113
         b = -1.332
         c = -0.1
-        print('Default values of friction factor coefficients trip purpose 3 are:')
-        print('a=', a)
-        print('b=', b)
-        print('c=', c)
+        # print('Default values of friction factor coefficients trip purpose 3 are:')
+        # print('a=', a)
+        # print('b=', b)
+        # print('c=', c)
+        print('Default values of friction factor coefficients under trip purpose 3 are:', '\na=', a, '\nb=', b,
+              '\nc=', c)
 
     for node in g_node_list:
         g_node_production_dict[node.id] = float(node.production)
         g_node_attraction_dict[node.id] = float(node.attraction)
         g_node_id_list.append(node.id)
         g_node_zone_id_list.append(node.zone_id)
+        if node.zone_id not in g_zone_to_nodes_dict.keys():
+            g_zone_to_nodes_dict[node.zone_id]=list()
+            g_zone_to_nodes_dict[node.zone_id].append(node.id)
+        else:
+            g_zone_to_nodes_dict[node.zone_id].append(node.id)
 
     g_number_of_nodes = len(g_node_list)
 
@@ -929,7 +1039,7 @@ def RunGravityModel(trip_purpose=None, a=None, b=None, c=None):
     # print ('final average trip length (model): ', model_trip_len)
     # print('final OD matrix: \n', g_trip_matrix)
 
-    # generate demand.csv
+    # create demand.csv
     volume_list = []
     for i in range(len(o_zone_id_list)):
         od_volume = g_trip_matrix[g_zone_index_dict[o_zone_id_list[i]]][g_zone_index_dict[d_zone_id_list[i]]]
@@ -951,7 +1061,7 @@ def RunGravityModel(trip_purpose=None, a=None, b=None, c=None):
     else:
         data.to_csv('demand.csv', index=False, line_terminator='\n')
 
-    # generate zone.csv
+    # update zone.csv with total production and attraction in each zone
     data_list = [zone.id for zone in g_zone_list]
     data_zone = pd.DataFrame(data_list)
     data_zone.columns = ["zone_id"]
@@ -989,4 +1099,54 @@ def RunGravityModel(trip_purpose=None, a=None, b=None, c=None):
         data_zone.to_csv(zone_filepath, index=False, line_terminator='\n')
     else:
         data_zone.to_csv('zone.csv', index=False, line_terminator='\n')
-    logging.debug("Ending Running Gravity Model")
+    logger.debug("Ending RunGravityModel")
+
+
+"""PART 6  GENERATE AGENT"""
+agent_list = []
+
+
+def GenerateAgentBasedDemand():
+    logger.debug("Starting GenerateAgentBasedDemand")
+    global g_output_folder
+    agent_id = 1
+    agent_type = 'v'
+    if g_output_folder is not None:
+        demand_filepath = os.path.join(g_output_folder, 'demand.csv')
+        agent_filepath = os.path.join(g_output_folder, 'input_agent.csv')
+    else:
+        demand_filepath = 'demand.csv'
+        agent_filepath = 'input_agent.csv'
+
+    with open(demand_filepath, 'r', errors='ignore') as fp:
+        reader = csv.DictReader(fp)
+        for line in reader:
+            for i in range(math.ceil(float(line['volume']))):
+                agent = Agent(agent_id,
+                              agent_type,
+                              line['o_zone_id'],
+                              line['d_zone_id'])
+                agent_id = agent_id +1
+                # generate o_node_id and d_node_id randomly according to o_zone_id and d_zone_id 
+                agent.o_node_id = choice(g_zone_to_nodes_dict[agent.o_zone_id])
+                agent.d_node_id = choice(g_zone_to_nodes_dict[agent.d_zone_id])
+                agent_list.append(agent)
+               
+    with open(agent_filepath, 'w', newline='') as fp:
+        writer = csv.writer(fp)
+        line = ["agent_id", "agent_type", "o_customized_node_id",
+                "d_customized_node_id","o_osm_node_id",
+                "d_osm_node_id", "o_zone_id", "d_zone_id","geometry"]
+        writer.writerow(line)
+        for agent in agent_list:
+            from_node=g_ndoe_id_to_node[agent.o_node_id]
+            to_node=g_ndoe_id_to_node[agent.d_node_id]
+            o_osm_node_id=from_node.osm_node_id
+            d_osm_node_id=to_node.osm_node_id
+            geometry="LINESTRING({0} {1},{2} {3})".format(from_node.x_coord,from_node.y_coord,
+                    to_node.x_coord,to_node.y_coord)
+            line = [agent.agent_id, agent.agent_type,agent.o_node_id,
+                    agent.d_node_id, o_osm_node_id,
+                    d_osm_node_id,agent.o_zone_id, agent.d_zone_id,geometry]
+            writer.writerow(line)
+    logger.debug("Ending GenerateAgentBasedDemand")
