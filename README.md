@@ -189,12 +189,7 @@ degree is equivalent to 0.558 km on a flat surface. Thus, users can provide a
 latitude value of the area of interest. The closest latitude in the following
 table is selected to calculate the longitudinal length.
 
-| Latitude | City                       | Degree-equivalent distance (km) | (miles)     |
-|----------|----------------------------|---------------------------------|-------------|
-| 60° 51°  | Saint Petersburg Greenwich | 55.80  69.47                    | 34.67 43.17 |
-| 45°      | Bordeaux                   | 78.85                           | 49.00       |
-| 30°      | New Orleans                | 96.49                           | 59.96       |
-| 0°       | Quito                      | 111.3                           | 69.16       |
+![](media/01fa9f3d39a37c47a0d97b7f86e188f4.png)
 
 Moreover, some nodes in the network are marked as boundary nodes in *node.csv*
 to describe the entrance or exit points with respect to the area of interest.
