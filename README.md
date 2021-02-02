@@ -24,14 +24,14 @@ Trip generation and trip distribution are the first 2 steps in the larger
 context of the 4-step process in transportation planning. The standard four
 steps are briefly described below.
 
--   Trip Generation: Estimate how many trips entering or leaving a
+-   Trip Generation: Estimate how many trips enter or leave a
     zone/traffic-analysis-zone (TAZ)
 
 -   Trip Distribution: Estimate how many trips from each zone/TAZ end in all
     zones/TAZs
 
 -   Mode Choice: Estimate which travel-method is used (e.g., vehicle, transit,
-    walk)
+    walk) to complete those trips
 
 -   Traffic Assignment: Distribute vehicles/traffic flow to different paths
     during travel
@@ -40,8 +40,8 @@ Trip generation is a procedure that uses socioeconomic data (e.g., household
 size, income, etc.) to estimate the number of person trips for a modeled time
 period (e.g., daily, peak hour) at a Traffic Analysis Zone (TAZ) level. A person
 trip involves a single person leaving from an origin and arriving at a single
-destination, and each trip has a classification/purpose, based on typical
-classification such as home-based-work (HBW), home-based-other (HBO),and
+destination, and each trip has a classification/purpose based on typical
+classification such as home-based-work (HBW), home-based-other (HBO), and
 non-home-based (NHB).
 
 In the four-step process, there are two typical methods used to predict trips
@@ -62,20 +62,20 @@ on activity patterns for households.
 **Productions and Attractions**
 
 In trip-based transportation planning, for a home-based trip, a production is
-related to the home end/location, while an attraction is related to non-home
+related to the home end/location, while an attraction is related to the non-home
 end/location. For a non-home-based trip, a production is related to the origin
-location, and an attraction is related to the destination location. Entering and
-leaving trips should balance - if a person leaves a zone, they should also
-return; if a person enters a zone, they should also leave.
+location, and an attraction is related to the destination location. Trips
+entering and leaving a zone should balance - if a person leaves a zone, they
+should also return; if a person enters a zone, they should also leave.
 
 For example, if a person travels from home to work and then from work to home on
-a certain day, then there are 2 home-based work trip productions are generated
-at the home TAZ, and two attractions related at his or her work location TAZ.
+a certain day, then 2 home-based work trip productions are generated at the home
+TAZ, and two attractions related at his or her work location TAZ.
 
 **Estimate Trip Productions/Attractions Using Trip Rates**
 
 Productions are typically modeled as a function of population and/or number of
-households, as well as income levels or auto ownerships. Other explanatory
+households, as well as income levels or auto ownership. Other explanatory
 variables might be used, such as the number of workers, but we need to make sure
 explanatory variables are often not interrelated and correlated with each other.
 
@@ -95,20 +95,19 @@ Generation](http://onlinepubs.trb.org/onlinepubs/nchrp/nchrp_rpt_716.pdf).
 **Accessibility**
 
 In transportation planning, accessibility is first defined as the potential of
-opportunities for traveler interaction. Typically, accessibility captures the
-extent of the attractiveness of each potential destination and some researchers
-represent accessibility as the amount of activity potential reachable within a
-given travel time or distance from an origin location.
+opportunities for traveler interaction. the potential opportunity for traveler
+interaction is positively associated with accessibility. Typically,
+accessibility captures the extent of the attractiveness of each potential
+destination and some researchers represent accessibility as the amount of
+activity locations potentially reachable within a given travel time or distance
+from an origin location.
 
 One of the goals of transportation system construction and management is to
 improve individuals’ accessibility or the ease of reaching desired activities,
-destinations, and services. On the other hand, many transportation network
-design models instead focus on maximizing individuals’ mobility or the ease of
-movement within the network.
-
-In general, quantitative accessibility measures describe how many destinations
-can be reached how easily from a particular zone. For more information, users
-can check <https://tfresource.org/topics/Accessibility.html>.
+destinations, and services. In general, quantitative accessibility measures
+describe how many and how easily destinations can be reached from a particular
+zone. For more information, users can check
+<https://tfresource.org/topics/Accessibility.html>.
 
 **Trip distribution**
 
@@ -117,12 +116,16 @@ models, two formulations dominate: the gravity model and the destination choice
 model.
 
 For each OD pair, a typical gravity model is applied to calculate zone-to-zone
-demand volume. The gravity model allocates trips roughly in proportion to the
-number of productions at the production end, roughly in proportion to the number
-of attractions at the attraction end, and roughly in proportion to a measure of
-proximity (often called a “friction factor”) of the two zones. A gravity model
-maybe “singly-constrained” or “doubly-constrained”. For more information, please
-visit <https://tfresource.org/topics/Trip_distribution.html>.
+demand volume. In the gravity model, the trips produced at an origin and
+attracted to a destination are directly proportional to the total trip
+productions at the origin and the total attractions at the destination with
+"friction factor", which represents the reluctance or impedance of persons to
+make trips of various
+
+duration or distances. A gravity model may be “singly-constrained” or
+“doubly-constrained”. For more information, please visit
+https://tfresource.org/topics/Trip_distribution.html. and
+http://www.princeton.edu/\~alaink/Orf467F12/The%20Gravity%20Model.pdf
 
 For each OD pair, a typical gravity model to calculate zone-to-zone demand
 volume is formulated as follows.
@@ -133,33 +136,35 @@ volume is formulated as follows.
 
 Grid2demand is a quick demand generation tool based on the trip generation and
 trip distribution methods of the standard 4-step travel model for teaching
-transportation planning and applications. By taking advantage of OSM2GMNS tool
-to obtain routable transportation network from OpenStreetMap, Grid2demand aims
-to further utilize Point of Interest (POI) data to construct trip demand matrix
-aligned with standard travel models.
+transportation planning and applications. By taking advantage of the OSM2GMNS
+tool to obtain a routable transportation network from OpenStreetMap, Grid2demand
+aims to further utilize Point of Interest (POI) data to construct a trip demand
+matrix aligned with standard travel models.
 
-According to World Geodetic System-1984 Coordinate System, the area of interest
-is partitioned into an alphanumeric grid (also known as atlas grid), in which
-each cell is identified by a combination of a letter and a number. The trip
-generation step is performed at the POI node level, referred to ITE trip
-generation tables
+The area of interest is partitioned into an alphanumeric grid (also known as
+atlas grid), in which each cell is identified by a combination of a letter and a
+number. The trip generation step is performed at the POI node level using ITE
+trip generation tables
 (https://www.ite.org/technical-resources/topics/trip-and-parking-generation/trip-generation-10th-edition-formats/)
-or other trip rate references. The trip distribution is carried out using a
-typical gravity model. Data flow chart are illustrated in the following table
-and figure.
+or other trip rate references.
+
+When partitioning grid cells and calculating accessibility, World Geodetic
+System-1984 Coordinate System is applied to convert coordinates to length. The
+trip distribution is carried out using a typical gravity model. The data flow
+chart is illustrated in the following table and figure.
 
 **Description of Data Files**
 
-| Step | Process                            | Input File or Parameter                                                                   | Output File                                                                                                    | Method                                                                  |
-|------|------------------------------------|-------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------|
-| 0    | Network files preparation          | map file from OpenStreetMap                                                               | *node.csv, link.csv, poi.csv*                                                                                  | Osm2gmns tool                                                           |
-| 1    | Input files reading                | *node.csv, poi.csv*                                                                       |                                                                                                                |                                                                         |
-| 2    | Zone generation and grid partition | Number of blocks or grid scales in meter with latitude of the area of interest (optional) | *zone,csv, poi.csv* (update with zone id)                                                                      | Alphanumeric grid                                                       |
-| 3    | Trip generation                    | *poi_trip_rate.csv* (optional), trip purpose                                              | *poi_trip_rate.csv* (output/update with utilization notes), *node.csv* (update with zone id and demand values) | Trip rate method                                                        |
-| 4    | Accessibility calculation          | *accessibility.csv* (optional), latitude of the area of interest                          | *accessibility.csv*                                                                                            | Simple straight-line distance between zone centroids                    |
-| 5    | Trip distribution                  | Trip purpose, friction factor coefficients                                                | *demand.csv, zone,csv* (update with total production and attraction in each zone)                              | Gravity model                                                           |
-| 6    | Agent generation                   | *demand.csv*                                                                              | *input_agent.csv*                                                                                              | Random sampling of node-to-node agents according to zone-to-zone demand |
-| 7    | Visualization                      |                                                                                           | QGIS or NEXTA                                                                                                  |                                                                         |
+| Step | Process                            | Input File or Parameter                                                                    | Output File                                                                                                    | Method                                                                  |
+|------|------------------------------------|--------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------|
+| 0    | Network files preparation          | map file from OpenStreetMap                                                                | *node.csv, link.csv, poi.csv*                                                                                  | Osm2gmns tool                                                           |
+| 1    | Input files reading                | *node.csv, poi.csv*                                                                        |                                                                                                                |                                                                         |
+| 2    | Zone generation and grid partition | Number of blocks or grid scales in meters with latitude of the area of interest (optional) | *zone,csv, poi.csv* (update with zone id)                                                                      | Alphanumeric grid                                                       |
+| 3    | Trip generation                    | *poi_trip_rate.csv* (optional), trip purpose                                               | *poi_trip_rate.csv* (output/update with utilization notes), *node.csv* (update with zone id and demand values) | Trip rate method                                                        |
+| 4    | Accessibility calculation          | *accessibility.csv* (optional), latitude of the area of interest                           | *accessibility.csv*                                                                                            | Simple straight-line distance between zone centroids                    |
+| 5    | Trip distribution                  | Trip purpose, friction factor coefficients                                                 | *demand.csv, zone,csv* (update with total production and attraction in each zone)                              | Gravity model                                                           |
+| 6    | Agent generation                   | *demand.csv*                                                                               | *input_agent.csv*                                                                                              | Random sampling of node-to-node agents according to zone-to-zone demand |
+| 7    | Visualization                      |                                                                                            | QGIS or NEXTA                                                                                                  |                                                                         |
 
 **Framework flowchart of grid2demand**
 
@@ -183,13 +188,14 @@ are used to aggregate trips to traffic analysis zones, while standard TAZs are
 typically defined based on census tracts. Users can specify the number of cells
 per row and per column or the width and height of each grid cell (in meters) for
 the area of interest. To maintain a consistent mapping, we use a fractional
-value in terms the degree at different latitudes to represent different lengths
-on a flat surface. That is, a value of 0.01 longitudinal degree at latitude 60
-degree is equivalent to 0.558 km on a flat surface. Thus, users can provide a
-latitude value of the area of interest. The closest latitude in the following
-table is selected to calculate the longitudinal length.
+value in terms of the degree at different latitudes to represent different
+lengths on a flat surface. That is, a value of 0.01 longitudinal degrees at 60
+degrees latitude is equivalent to 0.558 km on a flat surface. Thus, users can
+provide a latitude value of the area of interest, and the software will identify
+the closest latitude in the following table and use the equivalent distance to
+measure for that area.
 
-![](media/01fa9f3d39a37c47a0d97b7f86e188f4.png)
+![](media/ee61ebb6ce64fbffc4b145c97468d98b.png)
 
 Moreover, some nodes in the network are marked as boundary nodes in *node.csv*
 to describe the entrance or exit points with respect to the area of interest.
@@ -199,14 +205,14 @@ stations.
 
 **Trip generation**
 
-To enable detailed modeling of trip generation from park lots and buildings,
+To enable detailed modeling of trip generation from parking lots and buildings,
 different types of POI nodes are specifically covered in file *poi.csv*,
-extracted from the original *OSM file*. The user can supply for more information
-in *poi.csv* in case of missing values. The trip generation process used in
+extracted from the original *OSM file*. The user can supply more information in
+*poi.csv* in case of missing values. The trip generation process used in
 grid2demand has the following 3 sub-steps.
 
 1.  For each node, the amount of produced or attracted traffic is computed based
-    on underlying trip purpose and POI type, defined in *poi_trip_rate.csv.*
+    on the underlying trip purpose and POI type, defined in *poi_trip_rate.csv.*
 
 2.  Update the field of production and attraction for each POI or boundary node
     in *node*.*csv*.
@@ -219,8 +225,9 @@ A sample *poi_trip_rate* table is listed below.
 
 ![](media/2e05796ce081da842b82437291652629.emf)
 
-For each boundary (freeway) node which stands for a gate to enter or leave the
-area, the default values of production and attraction are set to be 1000.
+For each boundary node (such as freeway or arterial’s endpoint at the boundary
+of the area) which stands for a gate to enter or leave the area, the default
+values of production and attraction are set to be 1000.
 
 **Accessibility and distance computing**
 
@@ -236,17 +243,15 @@ demand volume. The trip purpose and friction factor coefficients can be defined
 by users or by default. The default values under three typical trip purposes are
 listed in the following table.
 
-| Trip purpose | a      | b       | c       |
-|--------------|--------|---------|---------|
-| HBW          | 28507  | \-0.02  | \-0.123 |
-| HBO          | 139173 | \-1.285 | \-0.094 |
-| NHB          | 219113 | \-1.332 | \-0.1   |
+![](media/b1e18b1a6a4b0b7e20a09a760ff68130.png)
 
 **OD demand estimation using link counts and different data sources**
 
-In the future, the output *demand.csv* can act as one of multiple data sources
-for a hierarchical travel demand estimation and *input_agent.csv* can be
-directly used for assignment by DTALite and for other travel models.
+In the future, output *demand.csv* can act as one of multiple data sources for a
+hierarchical travel demand estimation and *input_agent.csv* can be directly used
+for assignment by DTALite and for other travel models. For more information,
+please visit
+https://www.researchgate.net/publication/325131295_Hierarchical_travel_demand_estimation_using_multiple_data_sources_A_forward_and_backward_propagation_algorithmic_framework_on_a_layered_computational_graph.
 
 ![](media/997b0c0fa5f351a6b0f830138107f127.png)
 
@@ -268,12 +273,12 @@ pip install grid2demand
 
 \~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~
 
-After running the command above, the grid2demand package along with three
-required dependency packages (Shapely, pandas) will be installed on your
-computer (if they have not been installed yet).
+After running the command above, the grid2demand package along with two required
+dependency packages (numpy, pandas) will be installed on your computer (if they
+have not been installed yet).
 
 **Step 2: Determine the boundary of interest and download .osm file from
-OpenStreetMap**
+OpenStreetMap (https://www.openstreetmap.org/)**
 
 1.  Adjust the map to the location of interest and click on the “Export” button
     on the top.
@@ -293,8 +298,8 @@ OpenStreetMap**
 
 **Step 2: Execute OSM2GMNS to get network files in GMNS format**
 
-Open the Python IDE such as Pycharm for a typical configuration. Then, use
-OSM2GMNS to convert *map. osm* file in OSM format into a network file in GMNS
+Open the Python IDE, such as Pycharm, for a typical configuration. Then, use
+OSM2GMNS to convert the *map.osm* file in OSM format into a network file in GMNS
 format.
 
 Notes: User guide for osm2gmns can be found at
@@ -305,7 +310,7 @@ https://osm2gmns.readthedocs.io/en/latest/.
 ![](media/bc783b917bac32c27b66e4649a472088.png)
 
 Please note that *poi.csv* might have different degrees of missing information.
-Please supply additional accurate POI type information if needed.
+Please supply additional accurate POI-type information if needed.
 
 **Step 3: Execute grid2demand Python code**
 
@@ -322,8 +327,8 @@ gd.ReadNetworkFile("./data_folder")
 1.  **Partition network into grid cells**
 
 Users can customize the number of grid cells by setting “number_of_x_blocks” and
-“number_of_y_blocks”. On the other hand, users can customize cell’s width and
-height in meter under the latitude of the area by setting “cell_width”,
+“number_of_y_blocks”. On the other hand, users can customize the cell’s width
+and height in meters under the latitude of the area by setting “cell_width”,
 “cell_height” and “latitude”).
 
 By default, “cell_width” and “cell_height” are set as the length on a flat
@@ -361,8 +366,8 @@ gd.GetNodeDemand()
 1.  **Calculate zone-to-zone accessibility matrix by centroid-to-centroid
     straight-line distance**
 
-Users need to input the latitude value of the area of interest. The degree of 30
-is selected as the default. On the other hand, users can customize the
+Users need to input the latitude value of the area of interest. A latitude of 30
+degrees is selected as the default. On the other hand, users can customize the
 accessibility matrix by setting the external folder of file *accessibility.csv*.
 
 \~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~
@@ -393,10 +398,11 @@ gd.GenerateAgentBasedDemand()
 
 \~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~
 
-One can configure the working dictionary in the Python IDE (e.g., Pycharm),
-before executing grid2demand to obtain zone-to-zone demand, with generated four
-output files highlighted in blue below. The output files will be saved under the
-same folder of the input files.
+One can configure the working dictionary in the Python IDE (e.g., Pycharm)
+before executing grid2demand. The files in the working folder will be used to
+obtain zone-to-zone demand with generated five output files highlighted in blue
+below. The output files will be saved in the current folder as the working
+dictionary.
 
 ![](media/4c2865c527a29c303ef29e237a91139a.png)
 

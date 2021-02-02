@@ -1,4 +1,5 @@
-import grid2demand as gd
+import grid2demand_0202b as gd
+#grid2demand_0202b import 
 
 "Step 1: Read Input Network Data"
 net = gd.ReadNetworkFiles('')
@@ -24,3 +25,7 @@ demand = gd.RunGravityModel(trip_purpose=1, a=None, b=None, c=None)
 # user can customize friction factor coefficients under a specific trip purpose
 "Step 7: Generate Agent"
 demand = gd.GenerateAgentBasedDemand()
+
+
+
+
