@@ -16,7 +16,10 @@ OpenStreetMap and OSM2GMNS.
 
 For the python source code and sample network files, readers can visit the
 project homepage at ASU Trans+AI Lab Github
-(https://github.com/asu-trans-ai-lab/grid2demand).
+(<https://github.com/asu-trans-ai-lab/grid2demand>). The Jupyter notebook
+example can be found at
+<https://github.com/asu-trans-ai-lab/grid2demand/blob/main/grid2demand.ipynb>,
+which is also accessible through Google Colab.
 
 **I．Introduction and Background Knowledge**
 
