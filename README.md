@@ -21,6 +21,8 @@ example can be found at
 <https://github.com/asu-trans-ai-lab/grid2demand/blob/main/grid2demand.ipynb>,
 which is also accessible through Google Colab.
 
+Mini teaching lesson: <https://www.youtube.com/watch?v=EfjCERQQGTs>
+
 **I．Introduction and Background Knowledge**
 
 Trip generation and trip distribution are the first 2 steps in the larger
