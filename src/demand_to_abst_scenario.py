@@ -38,7 +38,8 @@ def main():
                     'destination': {
                         'Position': destination
                     },
-                    'mode': 'Drive'
+                    'mode': 'Drive',
+                    'purpose': 'Work'
                 }]
             })
 
