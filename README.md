@@ -11,6 +11,18 @@ flexible **grid zones, based on POI data from Openstreetmap** data and using
 
 ![](media/9ed9631f17469d631f9dfe97e4320c10.png)
 
+**Starting with Grid2demand**
+If you have not used Grid2demand before, here are some advices to get started.
+1. Read the user guide or watch the video at https://www.youtube.com/watch?v=EfjCERQQGTs.
+
+2. Obtain a map.osm or map.osm.pbf file for your area of interest at https://extract.bbbike.org/ or openstreetmap.org
+
+3. Look at the examples at Google colab environment https://github.com/asu-trans-ai-lab/grid2demand/blob/main/grid2demand.ipynb
+
+4. Install Python, Grid2demand and QGIS on your computer or using google colab environment  
+Modify one of the examples to implement your own model.
+
+5. Post your questions on the users group: groups.google.com/d/forum/grid2demand
   
 Open-source tool of grid2demand aims to provide an open-source quick demand
 generation python package, which can work anywhere in the world, thanks to open
