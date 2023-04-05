@@ -1,0 +1,1445 @@
+[
+    {
+        "label": "os",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "os",
+        "description": "os",
+        "detail": "os",
+        "documentation": {}
+    },
+    {
+        "label": "pandas",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "pandas",
+        "description": "pandas",
+        "detail": "pandas",
+        "documentation": {}
+    },
+    {
+        "label": "numpy",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "numpy",
+        "description": "numpy",
+        "detail": "numpy",
+        "documentation": {}
+    },
+    {
+        "label": "math",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "math",
+        "description": "math",
+        "detail": "math",
+        "documentation": {}
+    },
+    {
+        "label": "csv",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "csv",
+        "description": "csv",
+        "detail": "csv",
+        "documentation": {}
+    },
+    {
+        "label": "re",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "re",
+        "description": "re",
+        "detail": "re",
+        "documentation": {}
+    },
+    {
+        "label": "locale",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "locale",
+        "description": "locale",
+        "detail": "locale",
+        "documentation": {}
+    },
+    {
+        "label": "sys",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "sys",
+        "description": "sys",
+        "detail": "sys",
+        "documentation": {}
+    },
+    {
+        "label": "pprint",
+        "importPath": "pprint",
+        "description": "pprint",
+        "isExtraImport": true,
+        "detail": "pprint",
+        "documentation": {}
+    },
+    {
+        "label": "pprint",
+        "importPath": "pprint",
+        "description": "pprint",
+        "isExtraImport": true,
+        "detail": "pprint",
+        "documentation": {}
+    },
+    {
+        "label": "defaultdict",
+        "importPath": "collections",
+        "description": "collections",
+        "isExtraImport": true,
+        "detail": "collections",
+        "documentation": {}
+    },
+    {
+        "label": "defaultdict",
+        "importPath": "collections",
+        "description": "collections",
+        "isExtraImport": true,
+        "detail": "collections",
+        "documentation": {}
+    },
+    {
+        "label": "logging",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "logging",
+        "description": "logging",
+        "detail": "logging",
+        "documentation": {}
+    },
+    {
+        "label": "random",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "random",
+        "description": "random",
+        "detail": "random",
+        "documentation": {}
+    },
+    {
+        "label": "choice",
+        "importPath": "random",
+        "description": "random",
+        "isExtraImport": true,
+        "detail": "random",
+        "documentation": {}
+    },
+    {
+        "label": "choice",
+        "importPath": "random",
+        "description": "random",
+        "isExtraImport": true,
+        "detail": "random",
+        "documentation": {}
+    },
+    {
+        "label": "grid2demand_0205a",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "grid2demand_0205a",
+        "description": "grid2demand_0205a",
+        "detail": "grid2demand_0205a",
+        "documentation": {}
+    },
+    {
+        "label": "argparse",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "argparse",
+        "description": "argparse",
+        "detail": "argparse",
+        "documentation": {}
+    },
+    {
+        "label": "json",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "json",
+        "description": "json",
+        "detail": "json",
+        "documentation": {}
+    },
+    {
+        "label": "Node",
+        "kind": 6,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "class Node:\n    def __init__(self):\n        self.id = 0\n        self.zone_id = '' \n        # commments: default is 0, or no value; only three conditions for a node to become an activity node\n        # and zone_id != 0: 1) POI node, 2) is_boundary node(freeway) 3) residential in activity_type \n        self.x_coord = 0\n        self.y_coord = 0\n        self.production = 0 # commments: = 0 (current node is not poi node)\n        self.attraction = 0 # commments: = 0 (current node is not poi node)",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "POI",
+        "kind": 6,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "class POI:\n    def __init__(self):\n        self.id = 0\n        self.zone_id = 0 # comments: mapping from zone\n        self.x_coord = 0\n        self.y_coord = 0\n        self.count = 1 # commments: total poi value for this poi node or poi zone\n        self.area = 0 # comments: total area of polygon for this poi zone\n        self.type = ''\nclass Zone: # comments: area of grid zone",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "Zone",
+        "kind": 6,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "class Zone: # comments: area of grid zone\n    def __init__(self):\n        self.id = 0\n        self.name = '' # comments: internal No., such as A1, A2,...\n        self.centroid_x = 0\n        self.centroid_y = 0\n        self.centroid = '' # comments: centroid coordinate (x, y) based on wkt format\n        self.x_max = 0  # comments: boundary coordinate for this zone\n        self.x_min = 0\n        self.y_max = 0",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "Agent",
+        "kind": 6,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "class Agent:\n    def __init__(self, agent_id, agent_type, o_zone_id,\n                 d_zone_id):\n        \"\"\" the attribute of agent \"\"\"\n        self.agent_id = agent_id\n        self.agent_type = agent_type  # comments: vehicle default\n        self.o_zone_id = int(o_zone_id)\n        self.d_zone_id = int(d_zone_id)\n        self.o_node_id = 0 # comments: randomly selected from activity nodes of a zone\n        self.d_node_id = 0",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "ReadNetworkFiles",
+        "kind": 2,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "def ReadNetworkFiles(input_folder=None):\n    global g_poi_id_type_dict\n    global g_poi_id_area_dict\n    global g_output_folder\n    if input_folder:\n        node_filepath = os.path.join(input_folder, 'node.csv')\n        poi_filepath = os.path.join(input_folder, 'poi.csv')\n        g_output_folder = input_folder\n        logfile = os.path.join(g_output_folder, 'log.txt')\n    else:",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "PartitionGrid",
+        "kind": 2,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "def PartitionGrid(number_of_x_blocks=None,\n                  number_of_y_blocks=None,\n                  cell_width=None,\n                  cell_height=None,\n                  latitude=None):\n    logger.debug('Starting PartitionGrid')\n    # Error: Given grid scales and number of blocks simultaneously\n    if ((number_of_x_blocks is not None) and (number_of_y_blocks is not None) \\\n            and (cell_width is not None) and (cell_height is not None)):\n        logger.error('Grid scales and number of blocks can only choose ONE to customize!')",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "GetPoiTripRate",
+        "kind": 2,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "def GetPoiTripRate(trip_rate_folder=None,\n                   trip_purpose=None):\n    logger.debug(\"Starting GetPOITripRate\")\n    global g_poi_purpose_prod_dict\n    global g_poi_purpose_attr_dict\n    global g_poi_type_list\n    global g_undefined_prod_rate_poi_name_list\n    global g_undefined_attr_rate_poi_name_list\n    global g_poi_type_prod_rate_dict\n    global g_poi_type_attr_rate_dict",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "GetNodeDemand",
+        "kind": 2,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "def GetNodeDemand(residential_production = None, residential_attraction = None,\n                  boundary_production = None, boundary_attraction = None):\n    logger.debug('Starting GetNodeDemand')\n    global g_node_prod_list\n    global g_node_attr_list\n    global g_node_list\n    global g_output_folder\n    if residential_production is None:\n        logger.warning('Production value of residential nodes is not defined! Default value is 10.')\n        residential_production = 10  # comments: default value if no given latitude",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "ProduceAccessMatrix",
+        "kind": 2,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "def ProduceAccessMatrix(latitude=None, accessibility_folder=None):\n    logger.debug('Starting ProduceAccessMatrix')\n    global o_zone_id_list\n    global o_zone_name_list\n    global d_zone_id_list\n    global d_zone_name_list\n    global od_distance_list\n    global od_geometry_list\n    global g_distance_matrix\n    global g_output_folder",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "RunGravityModel",
+        "kind": 2,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "def RunGravityModel(trip_purpose=None, a=None, b=None, c=None):\n    logger.debug(\"Starting RunGravityModel\")\n    global g_node_id_list\n    global g_node_production_dict\n    global g_node_attraction_dict\n    global g_trip_matrix\n    global g_output_folder\n    if trip_purpose == None and a == None and b == None and c == None:  # default values of friction factor coefficients for Purpose 1 (HBW)\n        a = 28507\n        b = -0.02",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "GenerateAgentBasedDemand",
+        "kind": 2,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "def GenerateAgentBasedDemand():\n    logger.debug(\"Starting GenerateAgentBasedDemand\")\n    global g_output_folder\n    agent_id = 1\n    agent_type = 'v'\n    if g_output_folder is not None:\n        demand_filepath = os.path.join(g_output_folder, 'demand.csv')\n        agent_filepath = os.path.join(g_output_folder, 'input_agent.csv')\n    else:\n        demand_filepath = 'demand.csv'",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "logger",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "logger = logging.getLogger()\nlogger.setLevel(logging.INFO)\n\"\"\"PART 1  READ INPUT NETWORK FILES\"\"\"\ng_node_list = []\ng_boundary_node_list = []\ng_outside_boundary_node_list = [] # comments: nodes outside the study area \ng_poi_list = []\ng_poi_id_type_dict = {}\ng_poi_id_area_dict = {}\ng_outside_boundary_node_id_index = {}",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_node_list",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_node_list = []\ng_boundary_node_list = []\ng_outside_boundary_node_list = [] # comments: nodes outside the study area \ng_poi_list = []\ng_poi_id_type_dict = {}\ng_poi_id_area_dict = {}\ng_outside_boundary_node_id_index = {}\ng_output_folder = ''\ng_node_id_to_node = {}\ndef ReadNetworkFiles(input_folder=None):",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_boundary_node_list",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_boundary_node_list = []\ng_outside_boundary_node_list = [] # comments: nodes outside the study area \ng_poi_list = []\ng_poi_id_type_dict = {}\ng_poi_id_area_dict = {}\ng_outside_boundary_node_id_index = {}\ng_output_folder = ''\ng_node_id_to_node = {}\ndef ReadNetworkFiles(input_folder=None):\n    global g_poi_id_type_dict",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_outside_boundary_node_list",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_outside_boundary_node_list = [] # comments: nodes outside the study area \ng_poi_list = []\ng_poi_id_type_dict = {}\ng_poi_id_area_dict = {}\ng_outside_boundary_node_id_index = {}\ng_output_folder = ''\ng_node_id_to_node = {}\ndef ReadNetworkFiles(input_folder=None):\n    global g_poi_id_type_dict\n    global g_poi_id_area_dict",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_poi_list",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_poi_list = []\ng_poi_id_type_dict = {}\ng_poi_id_area_dict = {}\ng_outside_boundary_node_id_index = {}\ng_output_folder = ''\ng_node_id_to_node = {}\ndef ReadNetworkFiles(input_folder=None):\n    global g_poi_id_type_dict\n    global g_poi_id_area_dict\n    global g_output_folder",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_poi_id_type_dict",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_poi_id_type_dict = {}\ng_poi_id_area_dict = {}\ng_outside_boundary_node_id_index = {}\ng_output_folder = ''\ng_node_id_to_node = {}\ndef ReadNetworkFiles(input_folder=None):\n    global g_poi_id_type_dict\n    global g_poi_id_area_dict\n    global g_output_folder\n    if input_folder:",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_poi_id_area_dict",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_poi_id_area_dict = {}\ng_outside_boundary_node_id_index = {}\ng_output_folder = ''\ng_node_id_to_node = {}\ndef ReadNetworkFiles(input_folder=None):\n    global g_poi_id_type_dict\n    global g_poi_id_area_dict\n    global g_output_folder\n    if input_folder:\n        node_filepath = os.path.join(input_folder, 'node.csv')",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_outside_boundary_node_id_index",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_outside_boundary_node_id_index = {}\ng_output_folder = ''\ng_node_id_to_node = {}\ndef ReadNetworkFiles(input_folder=None):\n    global g_poi_id_type_dict\n    global g_poi_id_area_dict\n    global g_output_folder\n    if input_folder:\n        node_filepath = os.path.join(input_folder, 'node.csv')\n        poi_filepath = os.path.join(input_folder, 'poi.csv')",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_output_folder",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_output_folder = ''\ng_node_id_to_node = {}\ndef ReadNetworkFiles(input_folder=None):\n    global g_poi_id_type_dict\n    global g_poi_id_area_dict\n    global g_output_folder\n    if input_folder:\n        node_filepath = os.path.join(input_folder, 'node.csv')\n        poi_filepath = os.path.join(input_folder, 'poi.csv')\n        g_output_folder = input_folder",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_node_id_to_node",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_node_id_to_node = {}\ndef ReadNetworkFiles(input_folder=None):\n    global g_poi_id_type_dict\n    global g_poi_id_area_dict\n    global g_output_folder\n    if input_folder:\n        node_filepath = os.path.join(input_folder, 'node.csv')\n        poi_filepath = os.path.join(input_folder, 'poi.csv')\n        g_output_folder = input_folder\n        logfile = os.path.join(g_output_folder, 'log.txt')",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_zone_list",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_zone_list = []\ng_number_of_zones = 0\ng_zone_id_list = []\ng_zone_index_dict = {}\ng_node_zone_dict = {}\ng_poi_zone_dict = {}\ng_used_latitude = 0\ng_scale_list = [0.006, 0.005, 0.004, 0.003, 0.002, 0.001] # comments: default the scale for each grid zone\ng_degree_length_dict = {60: 55.8, 51: 69.47, 45: 78.85, 30: 96.49,\n                        0: 111.3}  ",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_number_of_zones",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_number_of_zones = 0\ng_zone_id_list = []\ng_zone_index_dict = {}\ng_node_zone_dict = {}\ng_poi_zone_dict = {}\ng_used_latitude = 0\ng_scale_list = [0.006, 0.005, 0.004, 0.003, 0.002, 0.001] # comments: default the scale for each grid zone\ng_degree_length_dict = {60: 55.8, 51: 69.47, 45: 78.85, 30: 96.49,\n                        0: 111.3}  \n# comments: default longitudinal length (km) equivalent at selected latitude",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_zone_id_list",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_zone_id_list = []\ng_zone_index_dict = {}\ng_node_zone_dict = {}\ng_poi_zone_dict = {}\ng_used_latitude = 0\ng_scale_list = [0.006, 0.005, 0.004, 0.003, 0.002, 0.001] # comments: default the scale for each grid zone\ng_degree_length_dict = {60: 55.8, 51: 69.47, 45: 78.85, 30: 96.49,\n                        0: 111.3}  \n# comments: default longitudinal length (km) equivalent at selected latitude\nalphabet_list = []",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_zone_index_dict",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_zone_index_dict = {}\ng_node_zone_dict = {}\ng_poi_zone_dict = {}\ng_used_latitude = 0\ng_scale_list = [0.006, 0.005, 0.004, 0.003, 0.002, 0.001] # comments: default the scale for each grid zone\ng_degree_length_dict = {60: 55.8, 51: 69.47, 45: 78.85, 30: 96.49,\n                        0: 111.3}  \n# comments: default longitudinal length (km) equivalent at selected latitude\nalphabet_list = []\nfor letter in range(65, 91):",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_node_zone_dict",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_node_zone_dict = {}\ng_poi_zone_dict = {}\ng_used_latitude = 0\ng_scale_list = [0.006, 0.005, 0.004, 0.003, 0.002, 0.001] # comments: default the scale for each grid zone\ng_degree_length_dict = {60: 55.8, 51: 69.47, 45: 78.85, 30: 96.49,\n                        0: 111.3}  \n# comments: default longitudinal length (km) equivalent at selected latitude\nalphabet_list = []\nfor letter in range(65, 91):\n    alphabet_list.append(chr(letter))",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_poi_zone_dict",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_poi_zone_dict = {}\ng_used_latitude = 0\ng_scale_list = [0.006, 0.005, 0.004, 0.003, 0.002, 0.001] # comments: default the scale for each grid zone\ng_degree_length_dict = {60: 55.8, 51: 69.47, 45: 78.85, 30: 96.49,\n                        0: 111.3}  \n# comments: default longitudinal length (km) equivalent at selected latitude\nalphabet_list = []\nfor letter in range(65, 91):\n    alphabet_list.append(chr(letter))\ndef PartitionGrid(number_of_x_blocks=None,",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_used_latitude",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_used_latitude = 0\ng_scale_list = [0.006, 0.005, 0.004, 0.003, 0.002, 0.001] # comments: default the scale for each grid zone\ng_degree_length_dict = {60: 55.8, 51: 69.47, 45: 78.85, 30: 96.49,\n                        0: 111.3}  \n# comments: default longitudinal length (km) equivalent at selected latitude\nalphabet_list = []\nfor letter in range(65, 91):\n    alphabet_list.append(chr(letter))\ndef PartitionGrid(number_of_x_blocks=None,\n                  number_of_y_blocks=None,",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_scale_list",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_scale_list = [0.006, 0.005, 0.004, 0.003, 0.002, 0.001] # comments: default the scale for each grid zone\ng_degree_length_dict = {60: 55.8, 51: 69.47, 45: 78.85, 30: 96.49,\n                        0: 111.3}  \n# comments: default longitudinal length (km) equivalent at selected latitude\nalphabet_list = []\nfor letter in range(65, 91):\n    alphabet_list.append(chr(letter))\ndef PartitionGrid(number_of_x_blocks=None,\n                  number_of_y_blocks=None,\n                  cell_width=None,",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_degree_length_dict",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_degree_length_dict = {60: 55.8, 51: 69.47, 45: 78.85, 30: 96.49,\n                        0: 111.3}  \n# comments: default longitudinal length (km) equivalent at selected latitude\nalphabet_list = []\nfor letter in range(65, 91):\n    alphabet_list.append(chr(letter))\ndef PartitionGrid(number_of_x_blocks=None,\n                  number_of_y_blocks=None,\n                  cell_width=None,\n                  cell_height=None,",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "alphabet_list",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "alphabet_list = []\nfor letter in range(65, 91):\n    alphabet_list.append(chr(letter))\ndef PartitionGrid(number_of_x_blocks=None,\n                  number_of_y_blocks=None,\n                  cell_width=None,\n                  cell_height=None,\n                  latitude=None):\n    logger.debug('Starting PartitionGrid')\n    # Error: Given grid scales and number of blocks simultaneously",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_trip_purpose",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_trip_purpose = 0 # comments: this set of global variables are used in the following part 3\ng_poi_type_list = []\ng_poi_prod_rate_list = []\ng_poi_attr_rate_list = []\ng_poi_prod_rate_notes_list = []\ng_poi_attr_rate_notes_list = []\ng_node_prod_list = []\ng_node_attr_list = []\ng_undefined_prod_rate_poi_name_list = []\ng_undefined_attr_rate_poi_name_list = []",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_poi_type_list",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_poi_type_list = []\ng_poi_prod_rate_list = []\ng_poi_attr_rate_list = []\ng_poi_prod_rate_notes_list = []\ng_poi_attr_rate_notes_list = []\ng_node_prod_list = []\ng_node_attr_list = []\ng_undefined_prod_rate_poi_name_list = []\ng_undefined_attr_rate_poi_name_list = []\ng_poi_type_prod_rate_dict = {}",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_poi_prod_rate_list",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_poi_prod_rate_list = []\ng_poi_attr_rate_list = []\ng_poi_prod_rate_notes_list = []\ng_poi_attr_rate_notes_list = []\ng_node_prod_list = []\ng_node_attr_list = []\ng_undefined_prod_rate_poi_name_list = []\ng_undefined_attr_rate_poi_name_list = []\ng_poi_type_prod_rate_dict = {}\ng_poi_type_attr_rate_dict = {}",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_poi_attr_rate_list",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_poi_attr_rate_list = []\ng_poi_prod_rate_notes_list = []\ng_poi_attr_rate_notes_list = []\ng_node_prod_list = []\ng_node_attr_list = []\ng_undefined_prod_rate_poi_name_list = []\ng_undefined_attr_rate_poi_name_list = []\ng_poi_type_prod_rate_dict = {}\ng_poi_type_attr_rate_dict = {}\ng_poi_prod_rate_flag = {}",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_poi_prod_rate_notes_list",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_poi_prod_rate_notes_list = []\ng_poi_attr_rate_notes_list = []\ng_node_prod_list = []\ng_node_attr_list = []\ng_undefined_prod_rate_poi_name_list = []\ng_undefined_attr_rate_poi_name_list = []\ng_poi_type_prod_rate_dict = {}\ng_poi_type_attr_rate_dict = {}\ng_poi_prod_rate_flag = {}\ng_poi_attr_rate_flag = {}",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_poi_attr_rate_notes_list",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_poi_attr_rate_notes_list = []\ng_node_prod_list = []\ng_node_attr_list = []\ng_undefined_prod_rate_poi_name_list = []\ng_undefined_attr_rate_poi_name_list = []\ng_poi_type_prod_rate_dict = {}\ng_poi_type_attr_rate_dict = {}\ng_poi_prod_rate_flag = {}\ng_poi_attr_rate_flag = {}\ng_poi_purpose_prod_dict = defaultdict(defaultdict)",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_node_prod_list",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_node_prod_list = []\ng_node_attr_list = []\ng_undefined_prod_rate_poi_name_list = []\ng_undefined_attr_rate_poi_name_list = []\ng_poi_type_prod_rate_dict = {}\ng_poi_type_attr_rate_dict = {}\ng_poi_prod_rate_flag = {}\ng_poi_attr_rate_flag = {}\ng_poi_purpose_prod_dict = defaultdict(defaultdict)\ng_poi_purpose_attr_dict = defaultdict(defaultdict)",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_node_attr_list",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_node_attr_list = []\ng_undefined_prod_rate_poi_name_list = []\ng_undefined_attr_rate_poi_name_list = []\ng_poi_type_prod_rate_dict = {}\ng_poi_type_attr_rate_dict = {}\ng_poi_prod_rate_flag = {}\ng_poi_attr_rate_flag = {}\ng_poi_purpose_prod_dict = defaultdict(defaultdict)\ng_poi_purpose_attr_dict = defaultdict(defaultdict)\ntrip_purpose_list = [1, 2, 3]",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_undefined_prod_rate_poi_name_list",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_undefined_prod_rate_poi_name_list = []\ng_undefined_attr_rate_poi_name_list = []\ng_poi_type_prod_rate_dict = {}\ng_poi_type_attr_rate_dict = {}\ng_poi_prod_rate_flag = {}\ng_poi_attr_rate_flag = {}\ng_poi_purpose_prod_dict = defaultdict(defaultdict)\ng_poi_purpose_attr_dict = defaultdict(defaultdict)\ntrip_purpose_list = [1, 2, 3]\ng_number_of_unmatched_poi_production_rate = 0",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_undefined_attr_rate_poi_name_list",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_undefined_attr_rate_poi_name_list = []\ng_poi_type_prod_rate_dict = {}\ng_poi_type_attr_rate_dict = {}\ng_poi_prod_rate_flag = {}\ng_poi_attr_rate_flag = {}\ng_poi_purpose_prod_dict = defaultdict(defaultdict)\ng_poi_purpose_attr_dict = defaultdict(defaultdict)\ntrip_purpose_list = [1, 2, 3]\ng_number_of_unmatched_poi_production_rate = 0\ng_number_of_unmatched_poi_attraction_rate = 0",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_poi_type_prod_rate_dict",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_poi_type_prod_rate_dict = {}\ng_poi_type_attr_rate_dict = {}\ng_poi_prod_rate_flag = {}\ng_poi_attr_rate_flag = {}\ng_poi_purpose_prod_dict = defaultdict(defaultdict)\ng_poi_purpose_attr_dict = defaultdict(defaultdict)\ntrip_purpose_list = [1, 2, 3]\ng_number_of_unmatched_poi_production_rate = 0\ng_number_of_unmatched_poi_attraction_rate = 0\ndef GetPoiTripRate(trip_rate_folder=None,",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_poi_type_attr_rate_dict",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_poi_type_attr_rate_dict = {}\ng_poi_prod_rate_flag = {}\ng_poi_attr_rate_flag = {}\ng_poi_purpose_prod_dict = defaultdict(defaultdict)\ng_poi_purpose_attr_dict = defaultdict(defaultdict)\ntrip_purpose_list = [1, 2, 3]\ng_number_of_unmatched_poi_production_rate = 0\ng_number_of_unmatched_poi_attraction_rate = 0\ndef GetPoiTripRate(trip_rate_folder=None,\n                   trip_purpose=None):",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_poi_prod_rate_flag",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_poi_prod_rate_flag = {}\ng_poi_attr_rate_flag = {}\ng_poi_purpose_prod_dict = defaultdict(defaultdict)\ng_poi_purpose_attr_dict = defaultdict(defaultdict)\ntrip_purpose_list = [1, 2, 3]\ng_number_of_unmatched_poi_production_rate = 0\ng_number_of_unmatched_poi_attraction_rate = 0\ndef GetPoiTripRate(trip_rate_folder=None,\n                   trip_purpose=None):\n    logger.debug(\"Starting GetPOITripRate\")",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_poi_attr_rate_flag",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_poi_attr_rate_flag = {}\ng_poi_purpose_prod_dict = defaultdict(defaultdict)\ng_poi_purpose_attr_dict = defaultdict(defaultdict)\ntrip_purpose_list = [1, 2, 3]\ng_number_of_unmatched_poi_production_rate = 0\ng_number_of_unmatched_poi_attraction_rate = 0\ndef GetPoiTripRate(trip_rate_folder=None,\n                   trip_purpose=None):\n    logger.debug(\"Starting GetPOITripRate\")\n    global g_poi_purpose_prod_dict",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_poi_purpose_prod_dict",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_poi_purpose_prod_dict = defaultdict(defaultdict)\ng_poi_purpose_attr_dict = defaultdict(defaultdict)\ntrip_purpose_list = [1, 2, 3]\ng_number_of_unmatched_poi_production_rate = 0\ng_number_of_unmatched_poi_attraction_rate = 0\ndef GetPoiTripRate(trip_rate_folder=None,\n                   trip_purpose=None):\n    logger.debug(\"Starting GetPOITripRate\")\n    global g_poi_purpose_prod_dict\n    global g_poi_purpose_attr_dict",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_poi_purpose_attr_dict",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_poi_purpose_attr_dict = defaultdict(defaultdict)\ntrip_purpose_list = [1, 2, 3]\ng_number_of_unmatched_poi_production_rate = 0\ng_number_of_unmatched_poi_attraction_rate = 0\ndef GetPoiTripRate(trip_rate_folder=None,\n                   trip_purpose=None):\n    logger.debug(\"Starting GetPOITripRate\")\n    global g_poi_purpose_prod_dict\n    global g_poi_purpose_attr_dict\n    global g_poi_type_list",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "trip_purpose_list",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "trip_purpose_list = [1, 2, 3]\ng_number_of_unmatched_poi_production_rate = 0\ng_number_of_unmatched_poi_attraction_rate = 0\ndef GetPoiTripRate(trip_rate_folder=None,\n                   trip_purpose=None):\n    logger.debug(\"Starting GetPOITripRate\")\n    global g_poi_purpose_prod_dict\n    global g_poi_purpose_attr_dict\n    global g_poi_type_list\n    global g_undefined_prod_rate_poi_name_list",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_number_of_unmatched_poi_production_rate",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_number_of_unmatched_poi_production_rate = 0\ng_number_of_unmatched_poi_attraction_rate = 0\ndef GetPoiTripRate(trip_rate_folder=None,\n                   trip_purpose=None):\n    logger.debug(\"Starting GetPOITripRate\")\n    global g_poi_purpose_prod_dict\n    global g_poi_purpose_attr_dict\n    global g_poi_type_list\n    global g_undefined_prod_rate_poi_name_list\n    global g_undefined_attr_rate_poi_name_list",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_number_of_unmatched_poi_attraction_rate",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_number_of_unmatched_poi_attraction_rate = 0\ndef GetPoiTripRate(trip_rate_folder=None,\n                   trip_purpose=None):\n    logger.debug(\"Starting GetPOITripRate\")\n    global g_poi_purpose_prod_dict\n    global g_poi_purpose_attr_dict\n    global g_poi_type_list\n    global g_undefined_prod_rate_poi_name_list\n    global g_undefined_attr_rate_poi_name_list\n    global g_poi_type_prod_rate_dict",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "o_zone_id_list",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "o_zone_id_list = []\no_zone_name_list = []\nd_zone_id_list = []\nd_zone_name_list = []\nod_distance_list = []\nod_geometry_list = []\ng_distance_matrix = []\ndef ProduceAccessMatrix(latitude=None, accessibility_folder=None):\n    logger.debug('Starting ProduceAccessMatrix')\n    global o_zone_id_list",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "o_zone_name_list",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "o_zone_name_list = []\nd_zone_id_list = []\nd_zone_name_list = []\nod_distance_list = []\nod_geometry_list = []\ng_distance_matrix = []\ndef ProduceAccessMatrix(latitude=None, accessibility_folder=None):\n    logger.debug('Starting ProduceAccessMatrix')\n    global o_zone_id_list\n    global o_zone_name_list",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "d_zone_id_list",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "d_zone_id_list = []\nd_zone_name_list = []\nod_distance_list = []\nod_geometry_list = []\ng_distance_matrix = []\ndef ProduceAccessMatrix(latitude=None, accessibility_folder=None):\n    logger.debug('Starting ProduceAccessMatrix')\n    global o_zone_id_list\n    global o_zone_name_list\n    global d_zone_id_list",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "d_zone_name_list",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "d_zone_name_list = []\nod_distance_list = []\nod_geometry_list = []\ng_distance_matrix = []\ndef ProduceAccessMatrix(latitude=None, accessibility_folder=None):\n    logger.debug('Starting ProduceAccessMatrix')\n    global o_zone_id_list\n    global o_zone_name_list\n    global d_zone_id_list\n    global d_zone_name_list",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "od_distance_list",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "od_distance_list = []\nod_geometry_list = []\ng_distance_matrix = []\ndef ProduceAccessMatrix(latitude=None, accessibility_folder=None):\n    logger.debug('Starting ProduceAccessMatrix')\n    global o_zone_id_list\n    global o_zone_name_list\n    global d_zone_id_list\n    global d_zone_name_list\n    global od_distance_list",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "od_geometry_list",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "od_geometry_list = []\ng_distance_matrix = []\ndef ProduceAccessMatrix(latitude=None, accessibility_folder=None):\n    logger.debug('Starting ProduceAccessMatrix')\n    global o_zone_id_list\n    global o_zone_name_list\n    global d_zone_id_list\n    global d_zone_name_list\n    global od_distance_list\n    global od_geometry_list",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_distance_matrix",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_distance_matrix = []\ndef ProduceAccessMatrix(latitude=None, accessibility_folder=None):\n    logger.debug('Starting ProduceAccessMatrix')\n    global o_zone_id_list\n    global o_zone_name_list\n    global d_zone_id_list\n    global d_zone_name_list\n    global od_distance_list\n    global od_geometry_list\n    global g_distance_matrix",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_node_id_list",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_node_id_list = []\ng_node_zone_id_list = []\ng_node_production_dict = {}\ng_node_attraction_dict = {}\ng_trip_matrix = []\ng_total_production_list = []\ng_total_attraction_list = []\ng_zone_to_nodes_dict = {}\ndef RunGravityModel(trip_purpose=None, a=None, b=None, c=None):\n    logger.debug(\"Starting RunGravityModel\")",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_node_zone_id_list",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_node_zone_id_list = []\ng_node_production_dict = {}\ng_node_attraction_dict = {}\ng_trip_matrix = []\ng_total_production_list = []\ng_total_attraction_list = []\ng_zone_to_nodes_dict = {}\ndef RunGravityModel(trip_purpose=None, a=None, b=None, c=None):\n    logger.debug(\"Starting RunGravityModel\")\n    global g_node_id_list",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_node_production_dict",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_node_production_dict = {}\ng_node_attraction_dict = {}\ng_trip_matrix = []\ng_total_production_list = []\ng_total_attraction_list = []\ng_zone_to_nodes_dict = {}\ndef RunGravityModel(trip_purpose=None, a=None, b=None, c=None):\n    logger.debug(\"Starting RunGravityModel\")\n    global g_node_id_list\n    global g_node_production_dict",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_node_attraction_dict",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_node_attraction_dict = {}\ng_trip_matrix = []\ng_total_production_list = []\ng_total_attraction_list = []\ng_zone_to_nodes_dict = {}\ndef RunGravityModel(trip_purpose=None, a=None, b=None, c=None):\n    logger.debug(\"Starting RunGravityModel\")\n    global g_node_id_list\n    global g_node_production_dict\n    global g_node_attraction_dict",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_trip_matrix",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_trip_matrix = []\ng_total_production_list = []\ng_total_attraction_list = []\ng_zone_to_nodes_dict = {}\ndef RunGravityModel(trip_purpose=None, a=None, b=None, c=None):\n    logger.debug(\"Starting RunGravityModel\")\n    global g_node_id_list\n    global g_node_production_dict\n    global g_node_attraction_dict\n    global g_trip_matrix",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_total_production_list",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_total_production_list = []\ng_total_attraction_list = []\ng_zone_to_nodes_dict = {}\ndef RunGravityModel(trip_purpose=None, a=None, b=None, c=None):\n    logger.debug(\"Starting RunGravityModel\")\n    global g_node_id_list\n    global g_node_production_dict\n    global g_node_attraction_dict\n    global g_trip_matrix\n    global g_output_folder",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_total_attraction_list",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_total_attraction_list = []\ng_zone_to_nodes_dict = {}\ndef RunGravityModel(trip_purpose=None, a=None, b=None, c=None):\n    logger.debug(\"Starting RunGravityModel\")\n    global g_node_id_list\n    global g_node_production_dict\n    global g_node_attraction_dict\n    global g_trip_matrix\n    global g_output_folder\n    if trip_purpose == None and a == None and b == None and c == None:  # default values of friction factor coefficients for Purpose 1 (HBW)",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "g_zone_to_nodes_dict",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "g_zone_to_nodes_dict = {}\ndef RunGravityModel(trip_purpose=None, a=None, b=None, c=None):\n    logger.debug(\"Starting RunGravityModel\")\n    global g_node_id_list\n    global g_node_production_dict\n    global g_node_attraction_dict\n    global g_trip_matrix\n    global g_output_folder\n    if trip_purpose == None and a == None and b == None and c == None:  # default values of friction factor coefficients for Purpose 1 (HBW)\n        a = 28507",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "agent_list",
+        "kind": 5,
+        "importPath": "examples.grid2demand_0206d",
+        "description": "examples.grid2demand_0206d",
+        "peekOfCode": "agent_list = []\ndef GenerateAgentBasedDemand():\n    logger.debug(\"Starting GenerateAgentBasedDemand\")\n    global g_output_folder\n    agent_id = 1\n    agent_type = 'v'\n    if g_output_folder is not None:\n        demand_filepath = os.path.join(g_output_folder, 'demand.csv')\n        agent_filepath = os.path.join(g_output_folder, 'input_agent.csv')\n    else:",
+        "detail": "examples.grid2demand_0206d",
+        "documentation": {}
+    },
+    {
+        "label": "net",
+        "kind": 5,
+        "importPath": "examples.test_gd",
+        "description": "examples.test_gd",
+        "peekOfCode": "net = gd.ReadNetworkFiles('')\n\"Step 2: Partition Grid into cells\"\nzone = gd.PartitionGrid(number_of_x_blocks=5, number_of_y_blocks=5, cell_width=None, cell_height=None,\n                           latitude=30)\n# user can customize number of grid cells or cell's width and height\n\"Step 3: Get Production/Attraction Rates of Each Land Use Type with a Specific Trip Purpose\"\ntriprate = gd.GetPoiTripRate(trip_rate_folder='',trip_purpose=1)\n# user can customize poi_trip_rate.csv and trip purpose\n\"Step 4: Define Production/Attraction Value of Each Node According to POI Type\"\nnodedemand = gd.GetNodeDemand()",
+        "detail": "examples.test_gd",
+        "documentation": {}
+    },
+    {
+        "label": "zone",
+        "kind": 5,
+        "importPath": "examples.test_gd",
+        "description": "examples.test_gd",
+        "peekOfCode": "zone = gd.PartitionGrid(number_of_x_blocks=5, number_of_y_blocks=5, cell_width=None, cell_height=None,\n                           latitude=30)\n# user can customize number of grid cells or cell's width and height\n\"Step 3: Get Production/Attraction Rates of Each Land Use Type with a Specific Trip Purpose\"\ntriprate = gd.GetPoiTripRate(trip_rate_folder='',trip_purpose=1)\n# user can customize poi_trip_rate.csv and trip purpose\n\"Step 4: Define Production/Attraction Value of Each Node According to POI Type\"\nnodedemand = gd.GetNodeDemand()\n\"Step 5: Calculate Zone-to-zone Accessibility Matrix by Centroid-to-centroid Straight Distance\"\naccessibility = gd.ProduceAccessMatrix(latitude=30, accessibility_folder='')",
+        "detail": "examples.test_gd",
+        "documentation": {}
+    },
+    {
+        "label": "triprate",
+        "kind": 5,
+        "importPath": "examples.test_gd",
+        "description": "examples.test_gd",
+        "peekOfCode": "triprate = gd.GetPoiTripRate(trip_rate_folder='',trip_purpose=1)\n# user can customize poi_trip_rate.csv and trip purpose\n\"Step 4: Define Production/Attraction Value of Each Node According to POI Type\"\nnodedemand = gd.GetNodeDemand()\n\"Step 5: Calculate Zone-to-zone Accessibility Matrix by Centroid-to-centroid Straight Distance\"\naccessibility = gd.ProduceAccessMatrix(latitude=30, accessibility_folder='')\n# user can customize the latitude of the research area and accessibility.csv\n\"Step 6: Apply Gravity Model to Conduct Trip Distribution\"\ndemand = gd.RunGravityModel(trip_purpose=1, a=None, b=None, c=None)\n# user can customize friction factor coefficients under a specific trip purpose",
+        "detail": "examples.test_gd",
+        "documentation": {}
+    },
+    {
+        "label": "nodedemand",
+        "kind": 5,
+        "importPath": "examples.test_gd",
+        "description": "examples.test_gd",
+        "peekOfCode": "nodedemand = gd.GetNodeDemand()\n\"Step 5: Calculate Zone-to-zone Accessibility Matrix by Centroid-to-centroid Straight Distance\"\naccessibility = gd.ProduceAccessMatrix(latitude=30, accessibility_folder='')\n# user can customize the latitude of the research area and accessibility.csv\n\"Step 6: Apply Gravity Model to Conduct Trip Distribution\"\ndemand = gd.RunGravityModel(trip_purpose=1, a=None, b=None, c=None)\n# user can customize friction factor coefficients under a specific trip purpose\n\"Step 7: Generate Agent\"\ndemand = gd.GenerateAgentBasedDemand()",
+        "detail": "examples.test_gd",
+        "documentation": {}
+    },
+    {
+        "label": "accessibility",
+        "kind": 5,
+        "importPath": "examples.test_gd",
+        "description": "examples.test_gd",
+        "peekOfCode": "accessibility = gd.ProduceAccessMatrix(latitude=30, accessibility_folder='')\n# user can customize the latitude of the research area and accessibility.csv\n\"Step 6: Apply Gravity Model to Conduct Trip Distribution\"\ndemand = gd.RunGravityModel(trip_purpose=1, a=None, b=None, c=None)\n# user can customize friction factor coefficients under a specific trip purpose\n\"Step 7: Generate Agent\"\ndemand = gd.GenerateAgentBasedDemand()",
+        "detail": "examples.test_gd",
+        "documentation": {}
+    },
+    {
+        "label": "demand",
+        "kind": 5,
+        "importPath": "examples.test_gd",
+        "description": "examples.test_gd",
+        "peekOfCode": "demand = gd.RunGravityModel(trip_purpose=1, a=None, b=None, c=None)\n# user can customize friction factor coefficients under a specific trip purpose\n\"Step 7: Generate Agent\"\ndemand = gd.GenerateAgentBasedDemand()",
+        "detail": "examples.test_gd",
+        "documentation": {}
+    },
+    {
+        "label": "demand",
+        "kind": 5,
+        "importPath": "examples.test_gd",
+        "description": "examples.test_gd",
+        "peekOfCode": "demand = gd.GenerateAgentBasedDemand()",
+        "detail": "examples.test_gd",
+        "documentation": {}
+    },
+    {
+        "label": "main",
+        "kind": 2,
+        "importPath": "src.demand_to_abst_scenario",
+        "description": "src.demand_to_abst_scenario",
+        "peekOfCode": "def main():\n    parser = argparse.ArgumentParser()\n    parser.add_argument('--input', type=str, required=True)\n    parser.add_argument('--output', type=str, required=True)\n    args = parser.parse_args()\n    scenario = {\n        'scenario_name': 'grid2demand',\n        'people': []\n    }\n    with open(args.input) as f:",
+        "detail": "src.demand_to_abst_scenario",
+        "documentation": {}
+    },
+    {
+        "label": "parse_linestring",
+        "kind": 2,
+        "importPath": "src.demand_to_abst_scenario",
+        "description": "src.demand_to_abst_scenario",
+        "peekOfCode": "def parse_linestring(string):\n    '''Transform a linestring with two points into two JSON latitude/longitude objects.'''\n    nums = [float(x) for x in re.findall(r'-?\\d+(?:\\.\\d*)?', string)]\n    return ({'longitude': nums[0], 'latitude': nums[1]}, {'longitude': nums[2], 'latitude': nums[3]})\ndef parse_time(string):\n    '''Transform an HHMM time into the number of seconds after midnight.'''\n    hours = int(string[0:2])\n    mins = int(string[2:])\n    return (3600.0 * hours) + (60.0 * mins)\nif __name__ == '__main__':",
+        "detail": "src.demand_to_abst_scenario",
+        "documentation": {}
+    },
+    {
+        "label": "parse_time",
+        "kind": 2,
+        "importPath": "src.demand_to_abst_scenario",
+        "description": "src.demand_to_abst_scenario",
+        "peekOfCode": "def parse_time(string):\n    '''Transform an HHMM time into the number of seconds after midnight.'''\n    hours = int(string[0:2])\n    mins = int(string[2:])\n    return (3600.0 * hours) + (60.0 * mins)\nif __name__ == '__main__':\n    main()",
+        "detail": "src.demand_to_abst_scenario",
+        "documentation": {}
+    },
+    {
+        "label": "Node",
+        "kind": 6,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "class Node:\n    def __init__(self):\n        self.id = 0\n        self.zone_id = '' \n        # commments: default is 0, or no value; only three conditions for a node to become an activity node\n        # and zone_id != 0: 1) POI node, 2) is_boundary node(freeway) 3) residential in activity_type \n        self.x_coord = 0\n        self.y_coord = 0\n        self.production = 0 # commments: = 0 (current node is not poi node)\n        self.attraction = 0 # commments: = 0 (current node is not poi node)",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "POI",
+        "kind": 6,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "class POI:\n    def __init__(self):\n        self.id = 0\n        self.zone_id = 0 # comments: mapping from zone\n        self.x_coord = 0\n        self.y_coord = 0\n        self.count = 1 # commments: total poi value for this poi node or poi zone\n        self.area = 0 # comments: total area of polygon for this poi zone\n        self.type = ''\nclass Zone: # comments: area of grid zone",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "Zone",
+        "kind": 6,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "class Zone: # comments: area of grid zone\n    def __init__(self):\n        self.id = 0\n        self.name = '' # comments: internal No., such as A1, A2,...\n        self.centroid_x = 0\n        self.centroid_y = 0\n        self.centroid = '' # comments: centroid coordinate (x, y) based on wkt format\n        self.x_max = 0  # comments: boundary coordinate for this zone\n        self.x_min = 0\n        self.y_max = 0",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "Agent",
+        "kind": 6,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "class Agent:\n    def __init__(self, agent_id, agent_type, o_zone_id,\n                 d_zone_id):\n        \"\"\" the attribute of agent \"\"\"\n        self.agent_id = agent_id\n        self.agent_type = agent_type  # comments: vehicle default\n        self.o_zone_id = int(o_zone_id)\n        self.d_zone_id = int(d_zone_id)\n        self.o_node_id = 0 # comments: randomly selected from activity nodes of a zone\n        self.d_node_id = 0",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "ReadNetworkFiles",
+        "kind": 2,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "def ReadNetworkFiles(input_folder=None):\n    global g_poi_id_type_dict\n    global g_poi_id_area_dict\n    global g_output_folder\n    if input_folder:\n        node_filepath = os.path.join(input_folder, 'node.csv')\n        poi_filepath = os.path.join(input_folder, 'poi.csv')\n        g_output_folder = input_folder\n        logfile = os.path.join(g_output_folder, 'log.txt')\n    else:",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "PartitionGrid",
+        "kind": 2,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "def PartitionGrid(number_of_x_blocks=None,\n                  number_of_y_blocks=None,\n                  cell_width=None,\n                  cell_height=None,\n                  latitude=None):\n    logger.debug('Starting PartitionGrid')\n    # Error: Given grid scales and number of blocks simultaneously\n    if ((number_of_x_blocks is not None) and (number_of_y_blocks is not None) \\\n            and (cell_width is not None) and (cell_height is not None)):\n        logger.error('Grid scales and number of blocks can only choose ONE to customize!')",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "GetPoiTripRate",
+        "kind": 2,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "def GetPoiTripRate(trip_rate_folder=None,\n                   trip_purpose=None):\n    logger.debug(\"Starting GetPOITripRate\")\n    global g_poi_purpose_prod_dict\n    global g_poi_purpose_attr_dict\n    global g_poi_type_list\n    global g_undefined_prod_rate_poi_name_list\n    global g_undefined_attr_rate_poi_name_list\n    global g_poi_type_prod_rate_dict\n    global g_poi_type_attr_rate_dict",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "GetNodeDemand",
+        "kind": 2,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "def GetNodeDemand(residential_production = None, residential_attraction = None,\n                  boundary_production = None, boundary_attraction = None):\n    logger.debug('Starting GetNodeDemand')\n    global g_node_prod_list\n    global g_node_attr_list\n    global g_node_list\n    global g_output_folder\n    if residential_production is None:\n        logger.warning('Production value of residential nodes is not defined! Default value is 10.')\n        residential_production = 10  # comments: default value if no given latitude",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "ProduceAccessMatrix",
+        "kind": 2,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "def ProduceAccessMatrix(latitude=None, accessibility_folder=None):\n    logger.debug('Starting ProduceAccessMatrix')\n    global o_zone_id_list\n    global o_zone_name_list\n    global d_zone_id_list\n    global d_zone_name_list\n    global od_distance_list\n    global od_geometry_list\n    global g_distance_matrix\n    global g_output_folder",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "RunGravityModel",
+        "kind": 2,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "def RunGravityModel(trip_purpose=None, a=None, b=None, c=None):\n    logger.debug(\"Starting RunGravityModel\")\n    global g_node_id_list\n    global g_node_production_dict\n    global g_node_attraction_dict\n    global g_trip_matrix\n    global g_output_folder\n    if trip_purpose == None and a == None and b == None and c == None:  # default values of friction factor coefficients for Purpose 1 (HBW)\n        a = 28507\n        b = -0.02",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "GenerateAgentBasedDemand",
+        "kind": 2,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "def GenerateAgentBasedDemand():\n    logger.debug(\"Starting GenerateAgentBasedDemand\")\n    global g_output_folder\n    agent_id = 1\n    agent_type = 'v'\n    if g_output_folder is not None:\n        demand_filepath = os.path.join(g_output_folder, 'demand.csv')\n        agent_filepath = os.path.join(g_output_folder, 'input_agent.csv')\n    else:\n        demand_filepath = 'demand.csv'",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "logger",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "logger = logging.getLogger()\nlogger.setLevel(logging.INFO)\n\"\"\"PART 1  READ INPUT NETWORK FILES\"\"\"\ng_node_list = []\ng_boundary_node_list = []\ng_outside_boundary_node_list = [] # comments: nodes outside the study area \ng_poi_list = []\ng_poi_id_type_dict = {}\ng_poi_id_area_dict = {}\ng_outside_boundary_node_id_index = {}",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_node_list",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_node_list = []\ng_boundary_node_list = []\ng_outside_boundary_node_list = [] # comments: nodes outside the study area \ng_poi_list = []\ng_poi_id_type_dict = {}\ng_poi_id_area_dict = {}\ng_outside_boundary_node_id_index = {}\ng_output_folder = ''\ng_node_id_to_node = {}\ndef ReadNetworkFiles(input_folder=None):",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_boundary_node_list",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_boundary_node_list = []\ng_outside_boundary_node_list = [] # comments: nodes outside the study area \ng_poi_list = []\ng_poi_id_type_dict = {}\ng_poi_id_area_dict = {}\ng_outside_boundary_node_id_index = {}\ng_output_folder = ''\ng_node_id_to_node = {}\ndef ReadNetworkFiles(input_folder=None):\n    global g_poi_id_type_dict",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_outside_boundary_node_list",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_outside_boundary_node_list = [] # comments: nodes outside the study area \ng_poi_list = []\ng_poi_id_type_dict = {}\ng_poi_id_area_dict = {}\ng_outside_boundary_node_id_index = {}\ng_output_folder = ''\ng_node_id_to_node = {}\ndef ReadNetworkFiles(input_folder=None):\n    global g_poi_id_type_dict\n    global g_poi_id_area_dict",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_poi_list",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_poi_list = []\ng_poi_id_type_dict = {}\ng_poi_id_area_dict = {}\ng_outside_boundary_node_id_index = {}\ng_output_folder = ''\ng_node_id_to_node = {}\ndef ReadNetworkFiles(input_folder=None):\n    global g_poi_id_type_dict\n    global g_poi_id_area_dict\n    global g_output_folder",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_poi_id_type_dict",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_poi_id_type_dict = {}\ng_poi_id_area_dict = {}\ng_outside_boundary_node_id_index = {}\ng_output_folder = ''\ng_node_id_to_node = {}\ndef ReadNetworkFiles(input_folder=None):\n    global g_poi_id_type_dict\n    global g_poi_id_area_dict\n    global g_output_folder\n    if input_folder:",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_poi_id_area_dict",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_poi_id_area_dict = {}\ng_outside_boundary_node_id_index = {}\ng_output_folder = ''\ng_node_id_to_node = {}\ndef ReadNetworkFiles(input_folder=None):\n    global g_poi_id_type_dict\n    global g_poi_id_area_dict\n    global g_output_folder\n    if input_folder:\n        node_filepath = os.path.join(input_folder, 'node.csv')",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_outside_boundary_node_id_index",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_outside_boundary_node_id_index = {}\ng_output_folder = ''\ng_node_id_to_node = {}\ndef ReadNetworkFiles(input_folder=None):\n    global g_poi_id_type_dict\n    global g_poi_id_area_dict\n    global g_output_folder\n    if input_folder:\n        node_filepath = os.path.join(input_folder, 'node.csv')\n        poi_filepath = os.path.join(input_folder, 'poi.csv')",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_output_folder",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_output_folder = ''\ng_node_id_to_node = {}\ndef ReadNetworkFiles(input_folder=None):\n    global g_poi_id_type_dict\n    global g_poi_id_area_dict\n    global g_output_folder\n    if input_folder:\n        node_filepath = os.path.join(input_folder, 'node.csv')\n        poi_filepath = os.path.join(input_folder, 'poi.csv')\n        g_output_folder = input_folder",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_node_id_to_node",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_node_id_to_node = {}\ndef ReadNetworkFiles(input_folder=None):\n    global g_poi_id_type_dict\n    global g_poi_id_area_dict\n    global g_output_folder\n    if input_folder:\n        node_filepath = os.path.join(input_folder, 'node.csv')\n        poi_filepath = os.path.join(input_folder, 'poi.csv')\n        g_output_folder = input_folder\n        logfile = os.path.join(g_output_folder, 'log.txt')",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_zone_list",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_zone_list = []\ng_number_of_zones = 0\ng_zone_id_list = []\ng_zone_index_dict = {}\ng_node_zone_dict = {}\ng_poi_zone_dict = {}\ng_used_latitude = 0\ng_scale_list = [0.006, 0.005, 0.004, 0.003, 0.002, 0.001] # comments: default the scale for each grid zone\ng_degree_length_dict = {60: 55.8, 51: 69.47, 45: 78.85, 30: 96.49,\n                        0: 111.3}  ",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_number_of_zones",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_number_of_zones = 0\ng_zone_id_list = []\ng_zone_index_dict = {}\ng_node_zone_dict = {}\ng_poi_zone_dict = {}\ng_used_latitude = 0\ng_scale_list = [0.006, 0.005, 0.004, 0.003, 0.002, 0.001] # comments: default the scale for each grid zone\ng_degree_length_dict = {60: 55.8, 51: 69.47, 45: 78.85, 30: 96.49,\n                        0: 111.3}  \n# comments: default longitudinal length (km) equivalent at selected latitude",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_zone_id_list",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_zone_id_list = []\ng_zone_index_dict = {}\ng_node_zone_dict = {}\ng_poi_zone_dict = {}\ng_used_latitude = 0\ng_scale_list = [0.006, 0.005, 0.004, 0.003, 0.002, 0.001] # comments: default the scale for each grid zone\ng_degree_length_dict = {60: 55.8, 51: 69.47, 45: 78.85, 30: 96.49,\n                        0: 111.3}  \n# comments: default longitudinal length (km) equivalent at selected latitude\nalphabet_list = []",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_zone_index_dict",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_zone_index_dict = {}\ng_node_zone_dict = {}\ng_poi_zone_dict = {}\ng_used_latitude = 0\ng_scale_list = [0.006, 0.005, 0.004, 0.003, 0.002, 0.001] # comments: default the scale for each grid zone\ng_degree_length_dict = {60: 55.8, 51: 69.47, 45: 78.85, 30: 96.49,\n                        0: 111.3}  \n# comments: default longitudinal length (km) equivalent at selected latitude\nalphabet_list = []\nfor letter in range(65, 91):",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_node_zone_dict",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_node_zone_dict = {}\ng_poi_zone_dict = {}\ng_used_latitude = 0\ng_scale_list = [0.006, 0.005, 0.004, 0.003, 0.002, 0.001] # comments: default the scale for each grid zone\ng_degree_length_dict = {60: 55.8, 51: 69.47, 45: 78.85, 30: 96.49,\n                        0: 111.3}  \n# comments: default longitudinal length (km) equivalent at selected latitude\nalphabet_list = []\nfor letter in range(65, 91):\n    alphabet_list.append(chr(letter))",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_poi_zone_dict",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_poi_zone_dict = {}\ng_used_latitude = 0\ng_scale_list = [0.006, 0.005, 0.004, 0.003, 0.002, 0.001] # comments: default the scale for each grid zone\ng_degree_length_dict = {60: 55.8, 51: 69.47, 45: 78.85, 30: 96.49,\n                        0: 111.3}  \n# comments: default longitudinal length (km) equivalent at selected latitude\nalphabet_list = []\nfor letter in range(65, 91):\n    alphabet_list.append(chr(letter))\ndef PartitionGrid(number_of_x_blocks=None,",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_used_latitude",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_used_latitude = 0\ng_scale_list = [0.006, 0.005, 0.004, 0.003, 0.002, 0.001] # comments: default the scale for each grid zone\ng_degree_length_dict = {60: 55.8, 51: 69.47, 45: 78.85, 30: 96.49,\n                        0: 111.3}  \n# comments: default longitudinal length (km) equivalent at selected latitude\nalphabet_list = []\nfor letter in range(65, 91):\n    alphabet_list.append(chr(letter))\ndef PartitionGrid(number_of_x_blocks=None,\n                  number_of_y_blocks=None,",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_scale_list",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_scale_list = [0.006, 0.005, 0.004, 0.003, 0.002, 0.001] # comments: default the scale for each grid zone\ng_degree_length_dict = {60: 55.8, 51: 69.47, 45: 78.85, 30: 96.49,\n                        0: 111.3}  \n# comments: default longitudinal length (km) equivalent at selected latitude\nalphabet_list = []\nfor letter in range(65, 91):\n    alphabet_list.append(chr(letter))\ndef PartitionGrid(number_of_x_blocks=None,\n                  number_of_y_blocks=None,\n                  cell_width=None,",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_degree_length_dict",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_degree_length_dict = {60: 55.8, 51: 69.47, 45: 78.85, 30: 96.49,\n                        0: 111.3}  \n# comments: default longitudinal length (km) equivalent at selected latitude\nalphabet_list = []\nfor letter in range(65, 91):\n    alphabet_list.append(chr(letter))\ndef PartitionGrid(number_of_x_blocks=None,\n                  number_of_y_blocks=None,\n                  cell_width=None,\n                  cell_height=None,",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "alphabet_list",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "alphabet_list = []\nfor letter in range(65, 91):\n    alphabet_list.append(chr(letter))\ndef PartitionGrid(number_of_x_blocks=None,\n                  number_of_y_blocks=None,\n                  cell_width=None,\n                  cell_height=None,\n                  latitude=None):\n    logger.debug('Starting PartitionGrid')\n    # Error: Given grid scales and number of blocks simultaneously",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_trip_purpose",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_trip_purpose = 0 # comments: this set of global variables are used in the following part 3\ng_poi_type_list = []\ng_poi_prod_rate_list = []\ng_poi_attr_rate_list = []\ng_poi_prod_rate_notes_list = []\ng_poi_attr_rate_notes_list = []\ng_node_prod_list = []\ng_node_attr_list = []\ng_undefined_prod_rate_poi_name_list = []\ng_undefined_attr_rate_poi_name_list = []",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_poi_type_list",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_poi_type_list = []\ng_poi_prod_rate_list = []\ng_poi_attr_rate_list = []\ng_poi_prod_rate_notes_list = []\ng_poi_attr_rate_notes_list = []\ng_node_prod_list = []\ng_node_attr_list = []\ng_undefined_prod_rate_poi_name_list = []\ng_undefined_attr_rate_poi_name_list = []\ng_poi_type_prod_rate_dict = {}",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_poi_prod_rate_list",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_poi_prod_rate_list = []\ng_poi_attr_rate_list = []\ng_poi_prod_rate_notes_list = []\ng_poi_attr_rate_notes_list = []\ng_node_prod_list = []\ng_node_attr_list = []\ng_undefined_prod_rate_poi_name_list = []\ng_undefined_attr_rate_poi_name_list = []\ng_poi_type_prod_rate_dict = {}\ng_poi_type_attr_rate_dict = {}",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_poi_attr_rate_list",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_poi_attr_rate_list = []\ng_poi_prod_rate_notes_list = []\ng_poi_attr_rate_notes_list = []\ng_node_prod_list = []\ng_node_attr_list = []\ng_undefined_prod_rate_poi_name_list = []\ng_undefined_attr_rate_poi_name_list = []\ng_poi_type_prod_rate_dict = {}\ng_poi_type_attr_rate_dict = {}\ng_poi_prod_rate_flag = {}",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_poi_prod_rate_notes_list",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_poi_prod_rate_notes_list = []\ng_poi_attr_rate_notes_list = []\ng_node_prod_list = []\ng_node_attr_list = []\ng_undefined_prod_rate_poi_name_list = []\ng_undefined_attr_rate_poi_name_list = []\ng_poi_type_prod_rate_dict = {}\ng_poi_type_attr_rate_dict = {}\ng_poi_prod_rate_flag = {}\ng_poi_attr_rate_flag = {}",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_poi_attr_rate_notes_list",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_poi_attr_rate_notes_list = []\ng_node_prod_list = []\ng_node_attr_list = []\ng_undefined_prod_rate_poi_name_list = []\ng_undefined_attr_rate_poi_name_list = []\ng_poi_type_prod_rate_dict = {}\ng_poi_type_attr_rate_dict = {}\ng_poi_prod_rate_flag = {}\ng_poi_attr_rate_flag = {}\ng_poi_purpose_prod_dict = defaultdict(defaultdict)",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_node_prod_list",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_node_prod_list = []\ng_node_attr_list = []\ng_undefined_prod_rate_poi_name_list = []\ng_undefined_attr_rate_poi_name_list = []\ng_poi_type_prod_rate_dict = {}\ng_poi_type_attr_rate_dict = {}\ng_poi_prod_rate_flag = {}\ng_poi_attr_rate_flag = {}\ng_poi_purpose_prod_dict = defaultdict(defaultdict)\ng_poi_purpose_attr_dict = defaultdict(defaultdict)",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_node_attr_list",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_node_attr_list = []\ng_undefined_prod_rate_poi_name_list = []\ng_undefined_attr_rate_poi_name_list = []\ng_poi_type_prod_rate_dict = {}\ng_poi_type_attr_rate_dict = {}\ng_poi_prod_rate_flag = {}\ng_poi_attr_rate_flag = {}\ng_poi_purpose_prod_dict = defaultdict(defaultdict)\ng_poi_purpose_attr_dict = defaultdict(defaultdict)\ntrip_purpose_list = [1, 2, 3]",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_undefined_prod_rate_poi_name_list",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_undefined_prod_rate_poi_name_list = []\ng_undefined_attr_rate_poi_name_list = []\ng_poi_type_prod_rate_dict = {}\ng_poi_type_attr_rate_dict = {}\ng_poi_prod_rate_flag = {}\ng_poi_attr_rate_flag = {}\ng_poi_purpose_prod_dict = defaultdict(defaultdict)\ng_poi_purpose_attr_dict = defaultdict(defaultdict)\ntrip_purpose_list = [1, 2, 3]\ng_number_of_unmatched_poi_production_rate = 0",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_undefined_attr_rate_poi_name_list",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_undefined_attr_rate_poi_name_list = []\ng_poi_type_prod_rate_dict = {}\ng_poi_type_attr_rate_dict = {}\ng_poi_prod_rate_flag = {}\ng_poi_attr_rate_flag = {}\ng_poi_purpose_prod_dict = defaultdict(defaultdict)\ng_poi_purpose_attr_dict = defaultdict(defaultdict)\ntrip_purpose_list = [1, 2, 3]\ng_number_of_unmatched_poi_production_rate = 0\ng_number_of_unmatched_poi_attraction_rate = 0",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_poi_type_prod_rate_dict",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_poi_type_prod_rate_dict = {}\ng_poi_type_attr_rate_dict = {}\ng_poi_prod_rate_flag = {}\ng_poi_attr_rate_flag = {}\ng_poi_purpose_prod_dict = defaultdict(defaultdict)\ng_poi_purpose_attr_dict = defaultdict(defaultdict)\ntrip_purpose_list = [1, 2, 3]\ng_number_of_unmatched_poi_production_rate = 0\ng_number_of_unmatched_poi_attraction_rate = 0\ndef GetPoiTripRate(trip_rate_folder=None,",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_poi_type_attr_rate_dict",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_poi_type_attr_rate_dict = {}\ng_poi_prod_rate_flag = {}\ng_poi_attr_rate_flag = {}\ng_poi_purpose_prod_dict = defaultdict(defaultdict)\ng_poi_purpose_attr_dict = defaultdict(defaultdict)\ntrip_purpose_list = [1, 2, 3]\ng_number_of_unmatched_poi_production_rate = 0\ng_number_of_unmatched_poi_attraction_rate = 0\ndef GetPoiTripRate(trip_rate_folder=None,\n                   trip_purpose=None):",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_poi_prod_rate_flag",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_poi_prod_rate_flag = {}\ng_poi_attr_rate_flag = {}\ng_poi_purpose_prod_dict = defaultdict(defaultdict)\ng_poi_purpose_attr_dict = defaultdict(defaultdict)\ntrip_purpose_list = [1, 2, 3]\ng_number_of_unmatched_poi_production_rate = 0\ng_number_of_unmatched_poi_attraction_rate = 0\ndef GetPoiTripRate(trip_rate_folder=None,\n                   trip_purpose=None):\n    logger.debug(\"Starting GetPOITripRate\")",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_poi_attr_rate_flag",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_poi_attr_rate_flag = {}\ng_poi_purpose_prod_dict = defaultdict(defaultdict)\ng_poi_purpose_attr_dict = defaultdict(defaultdict)\ntrip_purpose_list = [1, 2, 3]\ng_number_of_unmatched_poi_production_rate = 0\ng_number_of_unmatched_poi_attraction_rate = 0\ndef GetPoiTripRate(trip_rate_folder=None,\n                   trip_purpose=None):\n    logger.debug(\"Starting GetPOITripRate\")\n    global g_poi_purpose_prod_dict",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_poi_purpose_prod_dict",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_poi_purpose_prod_dict = defaultdict(defaultdict)\ng_poi_purpose_attr_dict = defaultdict(defaultdict)\ntrip_purpose_list = [1, 2, 3]\ng_number_of_unmatched_poi_production_rate = 0\ng_number_of_unmatched_poi_attraction_rate = 0\ndef GetPoiTripRate(trip_rate_folder=None,\n                   trip_purpose=None):\n    logger.debug(\"Starting GetPOITripRate\")\n    global g_poi_purpose_prod_dict\n    global g_poi_purpose_attr_dict",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_poi_purpose_attr_dict",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_poi_purpose_attr_dict = defaultdict(defaultdict)\ntrip_purpose_list = [1, 2, 3]\ng_number_of_unmatched_poi_production_rate = 0\ng_number_of_unmatched_poi_attraction_rate = 0\ndef GetPoiTripRate(trip_rate_folder=None,\n                   trip_purpose=None):\n    logger.debug(\"Starting GetPOITripRate\")\n    global g_poi_purpose_prod_dict\n    global g_poi_purpose_attr_dict\n    global g_poi_type_list",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "trip_purpose_list",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "trip_purpose_list = [1, 2, 3]\ng_number_of_unmatched_poi_production_rate = 0\ng_number_of_unmatched_poi_attraction_rate = 0\ndef GetPoiTripRate(trip_rate_folder=None,\n                   trip_purpose=None):\n    logger.debug(\"Starting GetPOITripRate\")\n    global g_poi_purpose_prod_dict\n    global g_poi_purpose_attr_dict\n    global g_poi_type_list\n    global g_undefined_prod_rate_poi_name_list",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_number_of_unmatched_poi_production_rate",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_number_of_unmatched_poi_production_rate = 0\ng_number_of_unmatched_poi_attraction_rate = 0\ndef GetPoiTripRate(trip_rate_folder=None,\n                   trip_purpose=None):\n    logger.debug(\"Starting GetPOITripRate\")\n    global g_poi_purpose_prod_dict\n    global g_poi_purpose_attr_dict\n    global g_poi_type_list\n    global g_undefined_prod_rate_poi_name_list\n    global g_undefined_attr_rate_poi_name_list",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_number_of_unmatched_poi_attraction_rate",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_number_of_unmatched_poi_attraction_rate = 0\ndef GetPoiTripRate(trip_rate_folder=None,\n                   trip_purpose=None):\n    logger.debug(\"Starting GetPOITripRate\")\n    global g_poi_purpose_prod_dict\n    global g_poi_purpose_attr_dict\n    global g_poi_type_list\n    global g_undefined_prod_rate_poi_name_list\n    global g_undefined_attr_rate_poi_name_list\n    global g_poi_type_prod_rate_dict",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "o_zone_id_list",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "o_zone_id_list = []\no_zone_name_list = []\nd_zone_id_list = []\nd_zone_name_list = []\nod_distance_list = []\nod_geometry_list = []\ng_distance_matrix = []\ndef ProduceAccessMatrix(latitude=None, accessibility_folder=None):\n    logger.debug('Starting ProduceAccessMatrix')\n    global o_zone_id_list",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "o_zone_name_list",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "o_zone_name_list = []\nd_zone_id_list = []\nd_zone_name_list = []\nod_distance_list = []\nod_geometry_list = []\ng_distance_matrix = []\ndef ProduceAccessMatrix(latitude=None, accessibility_folder=None):\n    logger.debug('Starting ProduceAccessMatrix')\n    global o_zone_id_list\n    global o_zone_name_list",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "d_zone_id_list",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "d_zone_id_list = []\nd_zone_name_list = []\nod_distance_list = []\nod_geometry_list = []\ng_distance_matrix = []\ndef ProduceAccessMatrix(latitude=None, accessibility_folder=None):\n    logger.debug('Starting ProduceAccessMatrix')\n    global o_zone_id_list\n    global o_zone_name_list\n    global d_zone_id_list",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "d_zone_name_list",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "d_zone_name_list = []\nod_distance_list = []\nod_geometry_list = []\ng_distance_matrix = []\ndef ProduceAccessMatrix(latitude=None, accessibility_folder=None):\n    logger.debug('Starting ProduceAccessMatrix')\n    global o_zone_id_list\n    global o_zone_name_list\n    global d_zone_id_list\n    global d_zone_name_list",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "od_distance_list",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "od_distance_list = []\nod_geometry_list = []\ng_distance_matrix = []\ndef ProduceAccessMatrix(latitude=None, accessibility_folder=None):\n    logger.debug('Starting ProduceAccessMatrix')\n    global o_zone_id_list\n    global o_zone_name_list\n    global d_zone_id_list\n    global d_zone_name_list\n    global od_distance_list",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "od_geometry_list",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "od_geometry_list = []\ng_distance_matrix = []\ndef ProduceAccessMatrix(latitude=None, accessibility_folder=None):\n    logger.debug('Starting ProduceAccessMatrix')\n    global o_zone_id_list\n    global o_zone_name_list\n    global d_zone_id_list\n    global d_zone_name_list\n    global od_distance_list\n    global od_geometry_list",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_distance_matrix",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_distance_matrix = []\ndef ProduceAccessMatrix(latitude=None, accessibility_folder=None):\n    logger.debug('Starting ProduceAccessMatrix')\n    global o_zone_id_list\n    global o_zone_name_list\n    global d_zone_id_list\n    global d_zone_name_list\n    global od_distance_list\n    global od_geometry_list\n    global g_distance_matrix",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_node_id_list",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_node_id_list = []\ng_node_zone_id_list = []\ng_node_production_dict = {}\ng_node_attraction_dict = {}\ng_trip_matrix = []\ng_total_production_list = []\ng_total_attraction_list = []\ng_zone_to_nodes_dict = {}\ndef RunGravityModel(trip_purpose=None, a=None, b=None, c=None):\n    logger.debug(\"Starting RunGravityModel\")",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_node_zone_id_list",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_node_zone_id_list = []\ng_node_production_dict = {}\ng_node_attraction_dict = {}\ng_trip_matrix = []\ng_total_production_list = []\ng_total_attraction_list = []\ng_zone_to_nodes_dict = {}\ndef RunGravityModel(trip_purpose=None, a=None, b=None, c=None):\n    logger.debug(\"Starting RunGravityModel\")\n    global g_node_id_list",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_node_production_dict",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_node_production_dict = {}\ng_node_attraction_dict = {}\ng_trip_matrix = []\ng_total_production_list = []\ng_total_attraction_list = []\ng_zone_to_nodes_dict = {}\ndef RunGravityModel(trip_purpose=None, a=None, b=None, c=None):\n    logger.debug(\"Starting RunGravityModel\")\n    global g_node_id_list\n    global g_node_production_dict",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_node_attraction_dict",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_node_attraction_dict = {}\ng_trip_matrix = []\ng_total_production_list = []\ng_total_attraction_list = []\ng_zone_to_nodes_dict = {}\ndef RunGravityModel(trip_purpose=None, a=None, b=None, c=None):\n    logger.debug(\"Starting RunGravityModel\")\n    global g_node_id_list\n    global g_node_production_dict\n    global g_node_attraction_dict",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_trip_matrix",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_trip_matrix = []\ng_total_production_list = []\ng_total_attraction_list = []\ng_zone_to_nodes_dict = {}\ndef RunGravityModel(trip_purpose=None, a=None, b=None, c=None):\n    logger.debug(\"Starting RunGravityModel\")\n    global g_node_id_list\n    global g_node_production_dict\n    global g_node_attraction_dict\n    global g_trip_matrix",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_total_production_list",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_total_production_list = []\ng_total_attraction_list = []\ng_zone_to_nodes_dict = {}\ndef RunGravityModel(trip_purpose=None, a=None, b=None, c=None):\n    logger.debug(\"Starting RunGravityModel\")\n    global g_node_id_list\n    global g_node_production_dict\n    global g_node_attraction_dict\n    global g_trip_matrix\n    global g_output_folder",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_total_attraction_list",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_total_attraction_list = []\ng_zone_to_nodes_dict = {}\ndef RunGravityModel(trip_purpose=None, a=None, b=None, c=None):\n    logger.debug(\"Starting RunGravityModel\")\n    global g_node_id_list\n    global g_node_production_dict\n    global g_node_attraction_dict\n    global g_trip_matrix\n    global g_output_folder\n    if trip_purpose == None and a == None and b == None and c == None:  # default values of friction factor coefficients for Purpose 1 (HBW)",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "g_zone_to_nodes_dict",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "g_zone_to_nodes_dict = {}\ndef RunGravityModel(trip_purpose=None, a=None, b=None, c=None):\n    logger.debug(\"Starting RunGravityModel\")\n    global g_node_id_list\n    global g_node_production_dict\n    global g_node_attraction_dict\n    global g_trip_matrix\n    global g_output_folder\n    if trip_purpose == None and a == None and b == None and c == None:  # default values of friction factor coefficients for Purpose 1 (HBW)\n        a = 28507",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "agent_list",
+        "kind": 5,
+        "importPath": "src.grid2demand",
+        "description": "src.grid2demand",
+        "peekOfCode": "agent_list = []\ndef GenerateAgentBasedDemand():\n    logger.debug(\"Starting GenerateAgentBasedDemand\")\n    global g_output_folder\n    agent_id = 1\n    agent_type = 'v'\n    if g_output_folder is not None:\n        demand_filepath = os.path.join(g_output_folder, 'demand.csv')\n        agent_filepath = os.path.join(g_output_folder, 'input_agent.csv')\n    else:",
+        "detail": "src.grid2demand",
+        "documentation": {}
+    }
+]
