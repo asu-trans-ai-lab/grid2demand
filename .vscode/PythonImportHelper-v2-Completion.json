@@ -165,6 +165,24 @@
         "documentation": {}
     },
     {
+        "label": "osm2gmns",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "osm2gmns",
+        "description": "osm2gmns",
+        "detail": "osm2gmns",
+        "documentation": {}
+    },
+    {
+        "label": "grid2demand",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "grid2demand",
+        "description": "grid2demand",
+        "detail": "grid2demand",
+        "documentation": {}
+    },
+    {
         "label": "Node",
         "kind": 6,
         "importPath": "examples.grid2demand_0206d",
@@ -1440,6 +1458,87 @@
         "description": "src.grid2demand",
         "peekOfCode": "agent_list = []\ndef GenerateAgentBasedDemand():\n    logger.debug(\"Starting GenerateAgentBasedDemand\")\n    global g_output_folder\n    agent_id = 1\n    agent_type = 'v'\n    if g_output_folder is not None:\n        demand_filepath = os.path.join(g_output_folder, 'demand.csv')\n        agent_filepath = os.path.join(g_output_folder, 'input_agent.csv')\n    else:",
         "detail": "src.grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "path_osm",
+        "kind": 5,
+        "importPath": "grid2demand",
+        "description": "grid2demand",
+        "peekOfCode": "path_osm = \"./map.osm\"\nnet = og.getNetFromFile('map.osm', POI=True, network_types=('walk', 'railway', 'aeroway', 'bike', 'auto'))\nog.connectPOIWithNet(net)\nog.generateNodeActivityInfo(net)\nog.consolidateComplexIntersections(net)\nog.outputNetToCSV(net, output_folder='consolidated')\nog.outputNetToCSV(net)\nog.show(net)\nog.saveFig(net)\n# Step 3: Run grid2demand to generate demand based POI rates",
+        "detail": "grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "net",
+        "kind": 5,
+        "importPath": "grid2demand",
+        "description": "grid2demand",
+        "peekOfCode": "net = og.getNetFromFile('map.osm', POI=True, network_types=('walk', 'railway', 'aeroway', 'bike', 'auto'))\nog.connectPOIWithNet(net)\nog.generateNodeActivityInfo(net)\nog.consolidateComplexIntersections(net)\nog.outputNetToCSV(net, output_folder='consolidated')\nog.outputNetToCSV(net)\nog.show(net)\nog.saveFig(net)\n# Step 3: Run grid2demand to generate demand based POI rates\nimport grid2demand as gd",
+        "detail": "grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "net",
+        "kind": 5,
+        "importPath": "grid2demand",
+        "description": "grid2demand",
+        "peekOfCode": "net = gd.ReadNetworkFiles('')\n\"Step 2: Partition Grid into cells\"\nzone = gd.PartitionGrid(number_of_x_blocks=5, number_of_y_blocks=5)\n# user can customize number of grid cells or cell's width and height\n\"Step 3: Get Production/Attraction Rates of Each Land Use Type with a Specific Trip Purpose\"\ntriprate = gd.GetPoiTripRate(trip_rate_folder='', trip_purpose=1)\n# user can customize poi_trip_rate.csv and trip purpose\n\"Step 4: Define Production/Attraction Value of Each Node According to POI Type\"\nnodedemand = gd.GetNodeDemand()\n\"Step 5: Calculate Zone-to-zone Accessibility Matrix by Centroid-to-centroid Straight Distance\"",
+        "detail": "grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "zone",
+        "kind": 5,
+        "importPath": "grid2demand",
+        "description": "grid2demand",
+        "peekOfCode": "zone = gd.PartitionGrid(number_of_x_blocks=5, number_of_y_blocks=5)\n# user can customize number of grid cells or cell's width and height\n\"Step 3: Get Production/Attraction Rates of Each Land Use Type with a Specific Trip Purpose\"\ntriprate = gd.GetPoiTripRate(trip_rate_folder='', trip_purpose=1)\n# user can customize poi_trip_rate.csv and trip purpose\n\"Step 4: Define Production/Attraction Value of Each Node According to POI Type\"\nnodedemand = gd.GetNodeDemand()\n\"Step 5: Calculate Zone-to-zone Accessibility Matrix by Centroid-to-centroid Straight Distance\"\naccessibility = gd.ProduceAccessMatrix(latitude=30, accessibility_folder='')\n# user can customize the latitude of the research area and accessibility.csv",
+        "detail": "grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "triprate",
+        "kind": 5,
+        "importPath": "grid2demand",
+        "description": "grid2demand",
+        "peekOfCode": "triprate = gd.GetPoiTripRate(trip_rate_folder='', trip_purpose=1)\n# user can customize poi_trip_rate.csv and trip purpose\n\"Step 4: Define Production/Attraction Value of Each Node According to POI Type\"\nnodedemand = gd.GetNodeDemand()\n\"Step 5: Calculate Zone-to-zone Accessibility Matrix by Centroid-to-centroid Straight Distance\"\naccessibility = gd.ProduceAccessMatrix(latitude=30, accessibility_folder='')\n# user can customize the latitude of the research area and accessibility.csv\n\"Step 6: Apply Gravity Model to Conduct Trip Distribution\"\ndemand = gd.RunGravityModel(trip_purpose=1, a=None, b=None, c=None)\n# user can customize friction factor coefficients under a specific trip purpose",
+        "detail": "grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "nodedemand",
+        "kind": 5,
+        "importPath": "grid2demand",
+        "description": "grid2demand",
+        "peekOfCode": "nodedemand = gd.GetNodeDemand()\n\"Step 5: Calculate Zone-to-zone Accessibility Matrix by Centroid-to-centroid Straight Distance\"\naccessibility = gd.ProduceAccessMatrix(latitude=30, accessibility_folder='')\n# user can customize the latitude of the research area and accessibility.csv\n\"Step 6: Apply Gravity Model to Conduct Trip Distribution\"\ndemand = gd.RunGravityModel(trip_purpose=1, a=None, b=None, c=None)\n# user can customize friction factor coefficients under a specific trip purpose\n\"Step 7: Generate Agent\"\ndemand = gd.GenerateAgentBasedDemand()",
+        "detail": "grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "accessibility",
+        "kind": 5,
+        "importPath": "grid2demand",
+        "description": "grid2demand",
+        "peekOfCode": "accessibility = gd.ProduceAccessMatrix(latitude=30, accessibility_folder='')\n# user can customize the latitude of the research area and accessibility.csv\n\"Step 6: Apply Gravity Model to Conduct Trip Distribution\"\ndemand = gd.RunGravityModel(trip_purpose=1, a=None, b=None, c=None)\n# user can customize friction factor coefficients under a specific trip purpose\n\"Step 7: Generate Agent\"\ndemand = gd.GenerateAgentBasedDemand()",
+        "detail": "grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "demand",
+        "kind": 5,
+        "importPath": "grid2demand",
+        "description": "grid2demand",
+        "peekOfCode": "demand = gd.RunGravityModel(trip_purpose=1, a=None, b=None, c=None)\n# user can customize friction factor coefficients under a specific trip purpose\n\"Step 7: Generate Agent\"\ndemand = gd.GenerateAgentBasedDemand()",
+        "detail": "grid2demand",
+        "documentation": {}
+    },
+    {
+        "label": "demand",
+        "kind": 5,
+        "importPath": "grid2demand",
+        "description": "grid2demand",
+        "peekOfCode": "demand = gd.GenerateAgentBasedDemand()",
+        "detail": "grid2demand",
         "documentation": {}
     }
 ]
