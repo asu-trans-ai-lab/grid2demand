@@ -48,8 +48,9 @@ class POI:
         x_coord: The x coordinate of the POI.
         y_coord: The y coordinate of the POI.
         count: The count of the POI. Total POI values for this POI node or POI zone
-        area: The area of the POI. Total area of polygon for this POI zone
-        type: The type of the POI.
+        area: The area of the POI. Total area of polygon for this POI zone. unit is square meter
+        type: The type of the POI. Default is empty string
+        geometry: The polygon of the POI. based on wkt format. Default is empty string
     """
 
     id: int = 0
@@ -59,6 +60,7 @@ class POI:
     count: int = 1
     area: float = 0
     type: str = ''
+    geometry: str = ''
 
 
 @dataclass

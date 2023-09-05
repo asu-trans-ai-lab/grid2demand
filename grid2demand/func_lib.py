@@ -7,6 +7,7 @@
 
 import pandas as pd
 from utils_lib import Node, POI
+import shapely
 
 
 def read_node(node_file: str = "") -> dict:
@@ -18,38 +19,20 @@ def read_node(node_file: str = "") -> dict:
     Returns:
         A dict of nodes.
 
+    Examples:
+        >>> node_dict = read_node(node_file = r"../dataset/ASU/node.csv")
+        >>> node_dict[1]
+        Node(id=1, zone_id=0, x_coord=0.0, y_coord=0.0, production=0.0, attraction=0.0, boundary_flag=0,
+        poi_id=-1, activity_type='residential', activity_location_tab='residential')
     """
-    return None
 
-
-def read_poi(poi_file: str = "") -> dict:
-    """Read poi.csv file and return a dict of POIs.
-
-    Args:
-        poi_file: The poi.csv file path.
-
-    Returns:
-        A dict of POIs.
-
-    """
-    return None
-
-
-def read_network(input_folder: str = "") -> dict:
-    return None
-
-
-if __name__ == "__main__":
-    path_node = r"../dataset/ASU/node.csv"
-
-    df_node = pd.read_csv(path_node)
+    df_node = pd.read_csv(node_file)
 
     # check if poi_id is empty
     if len(df_node["poi_id"].unique().tolist()) == 1:
         print("poi_id is empty, It could lead to empty demand volume and zero agent. Please check your node.csv file.")
 
     node_dict = {}
-
     for i in range(len(df_node)):
 
         # check activity location tab
@@ -72,6 +55,57 @@ if __name__ == "__main__":
             boundary_flag=boundary_flag,
         )
 
+    return node_dict
 
+
+def read_poi(poi_file: str = "") -> dict:
+    """Read poi.csv file and return a dict of POIs.
+
+    Args:
+        poi_file: The poi.csv file path.
+
+    Returns:
+        A dict of POIs.
+
+    """
+
+    df_poi = pd.read_csv(poi_file)
+
+    poi_dict = {}
+    poi_area_dict = {}
+    poi_type_dict = {}
+    for i in range(len(df_poi)):
+        # get centroid
+        centroid = shapely.from_wkt(df_poi.loc[i, 'centroid'])
+
+        # check area
+        area = df_poi.loc[i, 'area']
+        if area > 90000:
+            area = 0
+
+        poi_dict[df_poi.loc[i, 'poi_id']] = POI(
+            id=df_poi.loc[i, 'poi_id'],
+            x_coord=centroid.x,
+            y_coord=centroid.y,
+            area=area,
+            type=df_poi.loc[i, 'building'] or "",
+            geometry=df_poi.loc[i, "geometry"]
+        )
+
+        # convert square meter to square feet
+        poi_area_dict[df_poi.loc[i, 'poi_id']] = area * 10.7639104
+        poi_type_dict[df_poi.loc[i, 'poi_id']
+                      ] = poi_dict[df_poi.loc[i, 'poi_id']].type
+
+    return {"poi_dict": poi_dict, "poi_area_dict": poi_area_dict, "poi_type_dict": poi_type_dict}
+
+
+def read_network(input_folder: str = "") -> dict:
+    return None
+
+
+if __name__ == "__main__":
+    path_node = r"../dataset/ASU/node.csv"
+    path_poi = r"../dataset/ASU/poi.csv"
 
 
