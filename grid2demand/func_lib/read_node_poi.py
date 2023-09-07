@@ -5,8 +5,9 @@
 # Author/Copyright: Mr. Xiangyong Luo
 ##############################################################
 
+from __future__ import absolute_import
 import pandas as pd
-from utils_lib import Node, POI
+from grid2demand.utils_lib import Node, POI
 import shapely
 
 
@@ -53,6 +54,7 @@ def read_node(node_file: str = "") -> dict:
             y_coord=df_node.loc[i, 'y_coord'],
             poi_id=df_node.loc[i, 'poi_id'],
             boundary_flag=boundary_flag,
+            geometry=shapely.Point(df_node.loc[i, 'x_coord'], df_node.loc[i, 'y_coord'])
         )
 
     return node_dict
@@ -72,8 +74,6 @@ def read_poi(poi_file: str = "") -> dict:
     df_poi = pd.read_csv(poi_file)
 
     poi_dict = {}
-    poi_area_dict = {}
-    poi_type_dict = {}
     for i in range(len(df_poi)):
         # get centroid
         centroid = shapely.from_wkt(df_poi.loc[i, 'centroid'])
@@ -87,17 +87,12 @@ def read_poi(poi_file: str = "") -> dict:
             id=df_poi.loc[i, 'poi_id'],
             x_coord=centroid.x,
             y_coord=centroid.y,
-            area=area,
-            type=df_poi.loc[i, 'building'] or "",
+            area=[area,  area * 10.7639104], # square meter and square feet
+            poi_type=df_poi.loc[i, 'building'] or "",
             geometry=df_poi.loc[i, "geometry"]
         )
 
-        # convert square meter to square feet
-        poi_area_dict[df_poi.loc[i, 'poi_id']] = area * 10.7639104
-        poi_type_dict[df_poi.loc[i, 'poi_id']
-                      ] = poi_dict[df_poi.loc[i, 'poi_id']].type
-
-    return {"poi_dict": poi_dict, "poi_area_dict": poi_area_dict, "poi_type_dict": poi_type_dict}
+    return poi_dict
 
 
 def read_network(input_folder: str = "") -> dict:

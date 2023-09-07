@@ -36,6 +36,7 @@ class Node:
     poi_id: int = -1
     activity_type: str = ''
     activity_location_tab: str = ''
+    geometry: str = ''
 
 
 @dataclass
@@ -58,8 +59,8 @@ class POI:
     x_coord: float = 0
     y_coord: float = 0
     count: int = 1
-    area: float = 0
-    type: str = ''
+    area: list = field(default_factory=list)
+    poi_type: str = ''
     geometry: str = ''
 
 
@@ -87,15 +88,14 @@ class Zone:
     name: str = ''
     centroid_x: float = 0
     centroid_y: float = 0
-    centroid: tuple = field(default_factory=tuple)
+    centroid: str = ""
     x_max: float = 0
     x_min: float = 0
     y_max: float = 0
     y_min: float = 0
-    poi_count: int = 0
     node_id_list: list = field(default_factory=list)
     poi_id_list: list = field(default_factory=list)
-    polygon: str = ''
+    geometry: str = ''
 
 
 class Agent:
