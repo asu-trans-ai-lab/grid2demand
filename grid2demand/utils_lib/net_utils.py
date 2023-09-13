@@ -6,7 +6,7 @@
 ##############################################################
 
 
-from dataclasses import dataclass, asdict, field
+from dataclasses import dataclass, field
 
 
 @dataclass
@@ -15,24 +15,24 @@ class Node:
 
     Attributes:
         id: The node ID.
-        zone_id: The zone ID. default is 0, only three conditions to become an activity node
-                1) POI node, 2) is_boundary node(freeway),  3) residential in activity_type
         x_coord: The x coordinate of the node.
         y_coord: The y coordinate of the node.
         production: The production of the node.
         attraction: The attraction of the node.
         boundary_flag: The boundary flag of the node. = 1 (current node is boundary node)
+        zone_id: The zone ID. default == -1, only three conditions to become an activity node
+                1) POI node, 2) is_boundary node(freeway),  3) residential in activity_type
         poi_id: The POI ID of the node. default = -1; to be assigned to a POI ID after reading poi.csv
         activity_type: The activity type of the node. provided from osm2gmns such as motoway, residential, ...
         activity_location_tab: The activity location tab of the node.
     """
     id: int = 0
-    zone_id: int = 0
     x_coord: float = 0
     y_coord: float = 0
     production: float = 0
     attraction: float = 0
     boundary_flag: int = 0
+    zone_id: int = -1
     poi_id: int = -1
     activity_type: str = ''
     activity_location_tab: str = ''
@@ -45,23 +45,24 @@ class POI:
 
     Attributes:
         id: The POI ID.
-        zone_id: The zone ID. mapping from zone
         x_coord: The x coordinate of the POI.
         y_coord: The y coordinate of the POI.
         count: The count of the POI. Total POI values for this POI node or POI zone
         area: The area of the POI. Total area of polygon for this POI zone. unit is square meter
         type: The type of the POI. Default is empty string
         geometry: The polygon of the POI. based on wkt format. Default is empty string
+        zone_id: The zone ID. mapping from zone
     """
 
     id: int = 0
-    zone_id: int = 0
     x_coord: float = 0
     y_coord: float = 0
     count: int = 1
     area: list = field(default_factory=list)
     poi_type: str = ''
+    trip_rate: dict = field(default_factory=dict)
     geometry: str = ''
+    zone_id: int = 0
 
 
 @dataclass
@@ -81,6 +82,8 @@ class Zone:
         poi_count: The POI count of the zone. Total POIs in this zone
         node_id_list: Node IDs which belong to this zone.
         poi_id_list: The POIs which belong to this zone.
+        production: The production of the zone.
+        attraction: The attraction of the zone.
         polygon: The polygon of the zone. based on wkt format
     """
 
@@ -95,6 +98,8 @@ class Zone:
     y_min: float = 0
     node_id_list: list = field(default_factory=list)
     poi_id_list: list = field(default_factory=list)
+    production: float = 0
+    attraction: float = 0
     geometry: str = ''
 
 
@@ -131,4 +136,3 @@ class Agent:
         self.path_cost = 0
         self.b_generated = False
         self.b_complete_trip = False
-
