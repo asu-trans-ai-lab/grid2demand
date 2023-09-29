@@ -31,29 +31,30 @@ def gen_agent_based_demand(node_dict: dict, zone_dict: dict,
         d_zone_id = df_demand.loc[i, 'd_zone_id']
         o_zone_name = df_demand.loc[i, 'o_zone_name']
         d_zone_name = df_demand.loc[i, 'd_zone_name']
-        o_node_id = choice(zone_dict[o_zone_name].node_id_lst)
-        d_node_id = choice(zone_dict[d_zone_name].node_id_lst)
+        o_node_id = choice(zone_dict[o_zone_name].node_id_list + [""])
+        d_node_id = choice(zone_dict[d_zone_name].node_id_list + [""])
 
-        rand_time = math.ceil(uniform(1, 60))
-        if rand_time == 60:
-            departure_time = "0800"
-        elif rand_time < 10:
-            departure_time = f"070{rand_time}"
-        else:
-            departure_time = f"07{rand_time}"
+        if o_node_id and d_node_id:
+            rand_time = math.ceil(uniform(1, 60))
+            if rand_time == 60:
+                departure_time = "0800"
+            elif rand_time < 10:
+                departure_time = f"070{rand_time}"
+            else:
+                departure_time = f"07{rand_time}"
 
-        agent_lst.append(
-            Agent(
-                id=i + 1,
-                agent_type=agent_type,
-                o_zone_id=o_zone_id,
-                d_zone_id=d_zone_id,
-                o_zone_name=o_zone_name,
-                d_zone_name=d_zone_name,
-                o_node_id=o_node_id,
-                d_node_id=d_node_id,
-                geometry=f"LINESTRING({node_dict[o_node_id].x_coord} {node_dict[o_node_id].y_coord}, {node_dict[d_node_id].x_coord} {node_dict[d_node_id].y_coord})",
-                departure_time=departure_time
+            agent_lst.append(
+                Agent(
+                    id=i + 1,
+                    agent_type=agent_type,
+                    o_zone_id=o_zone_id,
+                    d_zone_id=d_zone_id,
+                    o_zone_name=o_zone_name,
+                    d_zone_name=d_zone_name,
+                    o_node_id=o_node_id,
+                    d_node_id=d_node_id,
+                    geometry=f"LINESTRING({node_dict[o_node_id].x_coord} {node_dict[o_node_id].y_coord}, {node_dict[d_node_id].x_coord} {node_dict[d_node_id].y_coord})",
+                    departure_time=departure_time
+                )
             )
-        )
     return pd.DataFrame(agent_lst)

@@ -138,7 +138,3 @@ def gen_node_prod_attr(node_dict: dict,
             node.production = 0
             node.attraction = 0
     return node_dict
-
-
-def gen_zone_prod_attr(zone_dict: dict, node_dict: dict) -> dict:
-    pass
