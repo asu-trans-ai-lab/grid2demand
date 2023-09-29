@@ -11,7 +11,7 @@ import shapely
 import os
 
 from grid2demand.utils_lib.net_utils import Node, POI
-from grid2demand.utils_lib.pkg_settings import required_files
+from grid2demand.utils_lib.pkg_settings import pkg_settings
 from grid2demand.utils_lib.utils import (func_running_time, path2linux,
                                          get_filenames_from_folder_by_type,
                                          check_required_files_exist)
@@ -178,11 +178,11 @@ def read_network(input_folder: str = "") -> dict[str: dict]:
     dir_files = get_filenames_from_folder_by_type(input_folder, "csv")
 
     # check if required files exist
-    is_required_files_exist = check_required_files_exist(required_files, dir_files)
+    is_required_files_exist = check_required_files_exist(pkg_settings["required_files"], dir_files)
 
     # if not all required files exist, raise error
     if not is_required_files_exist:
-        raise FileNotFoundError(f"Required files: {required_files} are not satisfied, please check your input folder.")
+        raise FileNotFoundError(f"Required files: {pkg_settings['required_files']} are not satisfied, please check your input folder.")
 
     node_dict = read_node(input_folder + "/node.csv")
     poi_dict = read_poi(input_folder + "/poi.csv")
