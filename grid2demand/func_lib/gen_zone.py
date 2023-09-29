@@ -11,17 +11,17 @@ import pandas as pd
 import shapely
 import numpy as np
 
-from grid2demand.utils_lib.net_utils import Zone
+from grid2demand.utils_lib.net_utils import Zone, Node
 from grid2demand.utils_lib.utils import calc_distance_on_unit_sphere, int2alpha
 from grid2demand.utils_lib.utils import func_running_time
 
 
 @func_running_time
-def net2zone(node_dict: dict,
+def net2zone(node_dict: dict[int, Node],
              num_x_blocks: int = 0,
              num_y_blocks: int = 0,
              cell_width: float = 0,
-             cell_height: float = 0) -> dict:
+             cell_height: float = 0) -> dict[str, Zone]:
     """Partition the study area into zone cells
 
     The priority of partition parameters is num_x_blocks, num_y_blocks > cell_width, cell_height.
@@ -238,7 +238,7 @@ def sync_zone_and_poi_geometry(zone_dict: dict, poi_dict: dict) -> dict:
 
 
 @func_running_time
-def calc_zone_od_matrix(zone_dict: dict) -> dict:
+def calc_zone_od_matrix(zone_dict: dict) -> dict[tuple[str, str], dict]:
     """Calculate the zone-to-zone distance matrix
 
     Args:
@@ -268,6 +268,7 @@ def calc_zone_od_matrix(zone_dict: dict) -> dict:
                 df_zone.loc[i, 'centroid'],
                 df_zone.loc[j, 'centroid'],
                 unit='km'),
+            "volume": 0,
             "geometry": shapely.LineString(
                 [df_zone.loc[i, 'centroid'], df_zone.loc[j, 'centroid']]),
         }

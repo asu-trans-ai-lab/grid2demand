@@ -18,7 +18,7 @@ from grid2demand.utils_lib.utils import (func_running_time, path2linux,
 
 
 @func_running_time
-def read_node(node_file: str = "") -> dict:
+def read_node(node_file: str = "") -> dict[int: Node]:
     """Read node.csv file and return a dict of nodes.
 
     Args:
@@ -81,7 +81,7 @@ def read_node(node_file: str = "") -> dict:
 
 
 @func_running_time
-def read_poi(poi_file: str = "") -> dict:
+def read_poi(poi_file: str = "") -> dict[int: POI]:
     """Read poi.csv file and return a dict of POIs.
 
     Args:
@@ -136,7 +136,7 @@ def read_poi(poi_file: str = "") -> dict:
 
 
 @func_running_time
-def read_network(input_folder: str = "") -> dict:
+def read_network(input_folder: str = "") -> dict[str: dict]:
     """Read node.csv and poi.csv files and return a dict of nodes and a dict of POIs.
 
     Args:

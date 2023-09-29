@@ -7,15 +7,36 @@
 
 import numpy as np
 from grid2demand.utils_lib.pkg_settings import trip_purpose_dict
+import pandas as pd
+
+
+def calc_zone_production_attraction(node_dict: dict, zone_dict: dict) -> dict:
+    # calculate zone production and attraction based on node production and attraction
+    for zone_name in zone_dict:
+        if zone_dict[zone_name].node_id_list:
+            for node_id in zone_dict[zone_name].node_id_list:
+                zone_dict[zone_name].production += node_dict[node_id].production
+                zone_dict[zone_name].attraction += node_dict[node_id].attraction
+    return zone_dict
+
+
+def calc_zone_od_friction_attraction(zone_od_friction_matrix_dict: dict, zone_dict: dict) -> dict:
+    zone_od_friction_attraction_dict = {}
+    for zone_name, friction_val in zone_od_friction_matrix_dict.items():
+        if zone_name[0] not in zone_od_friction_attraction_dict:
+            zone_od_friction_attraction_dict[zone_name[0]] = friction_val * zone_dict[zone_name[1]].attraction
+        else:
+            zone_od_friction_attraction_dict[zone_name[0]] += friction_val * zone_dict[zone_name[1]].attraction
+    return zone_od_friction_attraction_dict
 
 
 def run_gravity_model(node_dict: dict,
+                      zone_dict: dict,
                       zone_od_matrix_dict: dict,
                       trip_purpose: int = 1,
                       alpha: float = 28507,
                       beta: float = -0.02,
                       gamma: float = -0.123):
-    # sourcery skip: assign-if-exp, dict-comprehension, use-dict-items
     # if trip purpose is specified in trip_purpose_dict, use the default value
     # otherwise, use the user-specified value
     if trip_purpose in trip_purpose_dict:
@@ -24,16 +45,23 @@ def run_gravity_model(node_dict: dict,
         gamma = trip_purpose_dict[trip_purpose]["gamma"]
 
     # update zone attraction and production
+    zone_dict = calc_zone_production_attraction(node_dict, zone_dict)
 
     # perform zone od friction matrix
-    zone_od_friction_matrix_dict = {}
+    zone_od_friction_matrix_dict = {
+        zone_name_pair: alpha * (od_dist["dist_km"] ** beta) * (np.exp(od_dist["dist_km"] * gamma)) if od_dist["dist_km"] != 0 else 0
+        for zone_name_pair, od_dist in zone_od_matrix_dict.items()
+    }
 
-    for zone_name_pair in zone_od_matrix_dict:
+    # perform attraction calculation
+    zone_od_friction_attraction_dict = calc_zone_od_friction_attraction(zone_od_friction_matrix_dict, zone_dict)
 
-        od_dist = zone_od_matrix_dict[zone_name_pair]
-        if od_dist != 0:
-            zone_od_friction_matrix_dict[zone_name_pair] = alpha * (od_dist ** beta) * (np.exp(od_dist * gamma))
-        else:
-            zone_od_friction_matrix_dict[zone_name_pair] = 0
+    # perform od trip flow (volume) calculation
+    for zone_name_pair in zone_od_friction_matrix_dict:
+        zone_od_matrix_dict[zone_name_pair]["volume"] = float(zone_dict[zone_name_pair[0]].production *
+                                                              zone_dict[zone_name_pair[1]].attraction *
+                                                              zone_od_friction_matrix_dict[zone_name_pair] /
+                                                              zone_od_friction_attraction_dict[zone_name_pair[0]])
 
-    # update od matrix distance by adding one key-value pair: volume: value
+    # Generate demand.csv
+    return pd.DataFrame(list(zone_od_matrix_dict.values()))

@@ -100,9 +100,12 @@ class Zone:
     poi_id_list: list = field(default_factory=list)
     production: float = 0
     attraction: float = 0
+    production_fixed: float = 0
+    attraction_fixed: float = 0
     geometry: str = ''
 
 
+@dataclass
 class Agent:
     """An agent in the network.
 
@@ -121,18 +124,20 @@ class Agent:
         b_complete_trip: The flag of whether the agent completes the trip. default = False
     """
 
-    def __init__(self, agent_id: int, agent_type: str, o_zone_id: int, d_zone_id: int) -> None:
-        self.agent_id = agent_id
-        self.agent_type = agent_type
-        self.o_zone_id = o_zone_id
-        self.d_zone_id = d_zone_id
+    id: int = 0
+    agent_type: str = ''
+    o_zone_id: int = 0
+    d_zone_id: int = 0
+    o_zone_name: str = ''
+    d_zone_name: str = ''
 
-        # some attributes to be assigned later
-        self.o_node_id = 0
-        self.d_node_id = 0
-        self.path_node_seq_no_list = field(default_factory=list)
-        self.path_link_seq_no_list = field(default_factory=list)
-        self.current_link_se_no_in_path = 0
-        self.path_cost = 0
-        self.b_generated = False
-        self.b_complete_trip = False
+    # some attributes to be assigned later
+    o_node_id: int = 0
+    d_node_id: int = 0
+    path_node_seq: list = field(default_factory=list)
+    path_link_seq: list = field(default_factory=list)
+    path_cost = 0
+    b_generated: bool = False
+    b_complete_trip: bool = False
+    geometry: str = ''
+    departure_time: int = 0  # unit is second
