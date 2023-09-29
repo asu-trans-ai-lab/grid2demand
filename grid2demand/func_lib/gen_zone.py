@@ -21,20 +21,21 @@ def net2zone(node_dict: dict[int, Node],
              num_x_blocks: int = 0,
              num_y_blocks: int = 0,
              cell_width: float = 0,
-             cell_height: float = 0) -> dict[str, Zone]:
-    """Partition the study area into zone cells
+             cell_height: float = 0, unit: str = "km") -> dict[str, Zone]:
+    """convert node_dict to zone_dict by grid.
+    The grid can be defined by num_x_blocks and num_y_blocks, or cell_width and cell_height.
+    if num_x_blocks and num_y_blocks are specified, the grid will be divided into num_x_blocks * num_y_blocks.
+    if cell_width and cell_height are specified, the grid will be divided into cells with cell_width * cell_height.
+    Note: num_x_blocks and num_y_blocks have higher priority to cell_width and cell_height.
+            if num_x_blocks and num_y_blocks are specified, cell_width and cell_height will be ignored.
 
-    The priority of partition parameters is num_x_blocks, num_y_blocks > cell_width, cell_height.
-    If num_x_blocks and num_y_blocks are given, use them to partition the study area.
-    Else if cell_width and cell_height are given, use them to partition the study area.
-    Else raise error.
-
-    Parameters
-        path_node: str, Path to the node.csv file, node.csv is GMNS format file
-        num_x_blocks: int, Number of blocks in x direction, default 0
-        num_y_blocks: int, Number of blocks in y direction, default 0
-        cell_width: float, Width of each cell, unit in km, default 0
-        cell_height: float, Height of each cell, unit in km, default 0
+    Args:
+        node_dict (dict[int, Node]): node_dict {node_id: Node}
+        num_x_blocks (int, optional): total number of blocks/grids from x direction. Defaults to 10.
+        num_y_blocks (int, optional): total number of blocks/grids from y direction. Defaults to 10.
+        cell_width (float, optional): the width for each block/grid . Defaults to 0. unit: km.
+        cell_height (float, optional): the height for each block/grid. Defaults to 0. unit: km.
+        unit (str, optional): the unit of cell_width and cell_height. Defaults to "km".
 
     Raises
         ValueError: Please provide num_x_blocks and num_y_blocks or cell_width and cell_height
@@ -69,9 +70,9 @@ def net2zone(node_dict: dict[int, Node],
         y_block_height = (coord_y_max - coord_y_min) / num_y_blocks
     elif cell_width > 0 and cell_height > 0:
         x_dist_km = calc_distance_on_unit_sphere(
-            (coord_x_min, coord_y_min), (coord_x_max, coord_y_min), unit='km')
+            (coord_x_min, coord_y_min), (coord_x_max, coord_y_min), unit=unit)
         y_dist_km = calc_distance_on_unit_sphere(
-            (coord_x_min, coord_y_min), (coord_x_min, coord_y_max), unit='km')
+            (coord_x_min, coord_y_min), (coord_x_min, coord_y_max), unit=unit)
 
         num_x_blocks = int(np.ceil(x_dist_km / cell_width))
         num_y_blocks = int(np.ceil(y_dist_km / cell_height))

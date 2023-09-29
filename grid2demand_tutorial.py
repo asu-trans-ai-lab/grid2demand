@@ -5,8 +5,9 @@
 # Author/Copyright: Mr. Xiangyong Luo
 ##############################################################
 
-
+from __future__ import absolute_import
 import grid2demand as gd
+from grid2demand import GRID2DEMAND
 
 
 if __name__ == "__main__":
@@ -16,6 +17,7 @@ if __name__ == "__main__":
 
     # Step 1: Load node and poi files from input directory
     # There are two ways to load node and poi files: 1. Load from input directory; 2. Load from specified path
+    gd = GRID2DEMAND(path_dir)
 
     # Step 1.1: Load from input directory
     # will return a dict containing node and poi dictionaries: {'node_dict': node_dict, 'poi_dict': poi_dict}
@@ -52,14 +54,14 @@ if __name__ == "__main__":
     # Step 6: Generate node production attraction for each node based on poi_trip_rate
     node_prod_attr = gd.gen_node_prod_attr(node_dict_update, poi_trip_rate)
 
+    # Step 6.1: Calculate zone production and attraction based on node production and attraction
+    zone_prod_attr = gd.calc_zone_production_attraction(node_prod_attr, zone_dict_update)
+
     # Step 7: Run gravity model to generate agent-based demand
-    df_demand = gd.run_gravity_model(node_prod_attr, zone_dict_update, zone_od_matrix)
+    df_demand = gd.run_gravity_model(zone_prod_attr, zone_od_matrix)
 
     # Step 8: generate agent-based demand
     df_agent = gd.gen_agent_based_demand(node_prod_attr, zone_dict_update, df_demand=df_demand)
 
     # You can also view and edit the package setting by using gd.pkg_settings
-    print(gd.pkg_settings.required_files)
-    print(gd.pkg_settings.trip_purpose_dict)
-    print(gd.pkg_settings.poi_purpose_prod_dict)
-    print(gd.pkg_settings.poi_purpose_attr_dict)
+    print(gd.pkg_settings)

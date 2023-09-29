@@ -6,7 +6,7 @@
 ##############################################################
 
 import numpy as np
-from grid2demand.utils_lib.pkg_settings import trip_purpose_dict
+from grid2demand.utils_lib.pkg_settings import pkg_settings
 import pandas as pd
 
 
@@ -30,22 +30,23 @@ def calc_zone_od_friction_attraction(zone_od_friction_matrix_dict: dict, zone_di
     return zone_od_friction_attraction_dict
 
 
-def run_gravity_model(node_dict: dict,
-                      zone_dict: dict,
+def run_gravity_model(zone_dict: dict,
                       zone_od_matrix_dict: dict,
                       trip_purpose: int = 1,
                       alpha: float = 28507,
                       beta: float = -0.02,
-                      gamma: float = -0.123):
+                      gamma: float = -0.123) -> pd.DataFrame:
     # if trip purpose is specified in trip_purpose_dict, use the default value
     # otherwise, use the user-specified value
+    trip_purpose_dict = pkg_settings.get("trip_purpose_dict")
+
     if trip_purpose in trip_purpose_dict:
         alpha = trip_purpose_dict[trip_purpose]["alpha"]
         beta = trip_purpose_dict[trip_purpose]["beta"]
         gamma = trip_purpose_dict[trip_purpose]["gamma"]
 
     # update zone attraction and production
-    zone_dict = calc_zone_production_attraction(node_dict, zone_dict)
+    # zone_dict = calc_zone_production_attraction(node_dict, zone_dict)
 
     # perform zone od friction matrix
     zone_od_friction_matrix_dict = {

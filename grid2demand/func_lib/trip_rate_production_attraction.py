@@ -9,7 +9,7 @@ import pandas as pd
 import os
 
 from grid2demand.utils_lib.utils import path2linux
-from grid2demand.utils_lib.pkg_settings import poi_purpose_prod_dict, poi_purpose_attr_dict
+from grid2demand.utils_lib.pkg_settings import pkg_settings
 
 
 def gen_poi_trip_rate(poi_dict: dict,
@@ -31,6 +31,8 @@ def gen_poi_trip_rate(poi_dict: dict,
         >>> poi_trip_rate[0]
         POI(poi_id=0, poi_type='residential', x=0.0, y=0.0, area=(0.0, 0.0), trip_rate={'building': 'residential', 'unit_of_measure': '1,000 Sq. Ft. GFA', 'trip_purpose': 1, 'production_rate1': 10.0, 'attraction_rate1': 10.0, 'production_notes': 1, 'attraction_notes': 1})
     """
+    poi_purpose_prod_dict = pkg_settings.get("poi_purpose_prod_dict")
+    poi_purpose_attr_dict = pkg_settings.get("poi_purpose_attr_dict")
 
     default_flag = False
 
