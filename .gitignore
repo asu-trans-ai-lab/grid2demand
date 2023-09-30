@@ -17,3 +17,6 @@ x64/
 **.egg-info/*
 *setup.py
 *PKG-INFO*
+*Tutorial_PyPI.md
+*dist/*
+*build/*
