@@ -76,7 +76,7 @@ def read_node(node_file: str = "") -> dict[int: Node]:
             boundary_flag=boundary_flag,
             geometry=shapely.Point(df_node.loc[i, 'x_coord'], df_node.loc[i, 'y_coord'])
         )
-    print(f"  : Total number of nodes: {len(df_node)} loaded.")
+    print(f"  : Successfully loaded node.csv: {len(df_node)} Nodes loaded.")
     return node_dict
 
 
@@ -131,7 +131,7 @@ def read_poi(poi_file: str = "") -> dict[int: POI]:
             poi_type=df_poi.loc[i, 'building'] or "",
             geometry=df_poi.loc[i, "geometry"]
         )
-    print(f"  : Total number of POIs: {len(df_poi)} loaded.")
+    print(f"  : Successfully loaded poi.csv: {len(df_poi)} POIs loaded.")
     return poi_dict
 
 
@@ -187,4 +187,5 @@ def read_network(input_folder: str = "") -> dict[str: dict]:
     node_dict = read_node(input_folder + "/node.csv")
     poi_dict = read_poi(input_folder + "/poi.csv")
 
+    print(f"  : Successfully loaded node.csv and poi.csv: {len(node_dict)} Nodes and {len(poi_dict)} POIs.")
     return {"node_dict": node_dict, "poi_dict": poi_dict}

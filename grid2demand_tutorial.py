@@ -10,34 +10,32 @@ from grid2demand import GRID2DEMAND
 
 
 if __name__ == "__main__":
-    path_node = "./dataset/ASU/node.csv"
-    path_poi = "./dataset/ASU/poi.csv"
-    input_dir = "./dataset/ASU"
 
-    # Step 1: Load node and poi files from input directory
-    # There are two ways to load node and poi files: 1. Load from input directory; 2. Load from specified path
+    # Step 0: Specify input directory, if not, use current working directory as default input directory
+    input_dir = "./datasets/ASU"
+
+    # Initialize a GRID2DEMAND object
     gd = GRID2DEMAND(input_dir)
 
-    # Step 1.1: Load from specified path
-    node_dict = gd.read_node("./dataset/ASU/node.csv")
-    poi_dict = gd.read_poi("./dataset/ASU/poi.csv")
+    # Step 1: Load node and poi data from input directory
+    node_dict = gd.load_node
+    poi_dict = gd.load_poi
 
     # Step 2: Generate zone dictionary from node dictionary by specifying number of x blocks and y blocks
-    # To be noticed: num_x_blocks and num_y_blocks have higher priority than cell_width and cell_height
-    # if num_x_blocks and num_y_blocks are specified, cell_width and cell_height will be ignored
-    zone_dict = gd.net2zone(node_dict, num_x_blocks=10, num_y_blocks=10, cell_width=0, cell_height=0)
-    # zone_dict = gd.net2zone(node_dict, cell_width=10, cell_height=10)  # This will generate zone based on grid size 10km width and 10km height
+    zone_dict = gd.net2zone(node_dict, num_x_blocks=10, num_y_blocks=10)
 
-    # Step 3: synchronize zone with node and poi
-    # will add zone_id to node and poi dictionaries
-    # Will also add node_list and poi_list to zone dictionary
-    # Step 3.1: synchronize zone with node
-    update_dict = gd.sync_geometry_between_zone_and_node_poi(zone_dict, node_dict, poi_dict)
-    zone_dict_update = update_dict.get('zone_dict')
-    node_dict_update = update_dict.get('node_dict')
-    poi_dict_update = update_dict.get('poi_dict')
+    # # Generate zone based on grid size with 10 km width and 10km height for each zone
+    # zone_dict = gd.net2zone(node_dict, cell_width=10, cell_height=10)
 
-    # Step 4: Generate zone-to-zone od distance matrix
+    # Step 3: synchronize geometry info between zone, node and poi
+    #       add zone_id to node and poi dictionaries
+    #       also add node_list and poi_list to zone dictionary
+    updated_dict = gd.sync_geometry_between_zone_and_node_poi(zone_dict, node_dict, poi_dict)
+    zone_dict_update = updated_dict.get('zone_dict')
+    node_dict_update = updated_dict.get('node_dict')
+    poi_dict_update = updated_dict.get('poi_dict')
+
+    # Step 4: Calculate zone-to-zone od distance matrix
     zone_od_distance_matrix = gd.calc_zone_od_distance_matrix(zone_dict_update)
 
     # Step 5: Generate poi trip rate for each poi

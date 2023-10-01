@@ -17,6 +17,7 @@ def calc_zone_production_attraction(node_dict: dict, zone_dict: dict) -> dict:
             for node_id in zone_dict[zone_name].node_id_list:
                 zone_dict[zone_name].production += node_dict[node_id].production
                 zone_dict[zone_name].attraction += node_dict[node_id].attraction
+    print("  : Successfully calculated zone production and attraction based on node production and attraction.")
     return zone_dict
 
 
@@ -27,6 +28,7 @@ def calc_zone_od_friction_attraction(zone_od_friction_matrix_dict: dict, zone_di
             zone_od_friction_attraction_dict[zone_name[0]] = friction_val * zone_dict[zone_name[1]].attraction
         else:
             zone_od_friction_attraction_dict[zone_name[0]] += friction_val * zone_dict[zone_name[1]].attraction
+    print("  : Successfully calculated zone od friction attraction.")
     return zone_od_friction_attraction_dict
 
 
@@ -65,4 +67,5 @@ def run_gravity_model(zone_dict: dict,
                                                               zone_od_friction_attraction_dict[zone_name_pair[0]])
 
     # Generate demand.csv
+    print("  : Successfully run gravity model to generate demand.csv.")
     return pd.DataFrame(list(zone_od_matrix_dict.values()))

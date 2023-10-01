@@ -192,11 +192,12 @@ def get_filenames_from_folder_by_type(dir_name: str, file_type: str = "txt", isT
         if file_type in {"*", "all"}:
             return [path2linux(file) for file in files_list]
         return [path2linux(file) for file in files_list if file.split(".")[-1] == file_type]
-    print("input dir:", dir_name, "input file type", file_type)
+    print(f"  : input dir {dir_name}, traverse files by type: {file_type}")
     # files in the first layer of the folder
     if file_type in {"*", "all"}:
         return [path2linux(os.path.join(dir_name, file)) for file in os.listdir(dir_name)]
-    return [path2linux(os.path.join(dir_name, file)) for file in os.listdir(dir_name) if file.split(".")[-1] == file_type]
+    return [path2linux(
+        os.path.join(dir_name, file)) for file in os.listdir(dir_name) if file.split(".")[-1] == file_type]
 
 
 def check_required_files_exist(required_files: list, dir_files: list) -> bool:
@@ -213,7 +214,7 @@ def check_required_files_exist(required_files: list, dir_files: list) -> bool:
     if all(mask):
         return True
 
-    print(f"Error: Required files are not satisfied, \
+    print(f"  : Error: Required files are not satisfied, \
           missing files are: {[required_files_short[i] for i in range(len(required_files_short)) if not mask[i]]}")
 
     return False
