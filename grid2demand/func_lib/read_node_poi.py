@@ -76,7 +76,7 @@ def read_node(node_file: str = "") -> dict[int: Node]:
             boundary_flag=boundary_flag,
             geometry=shapely.Point(df_node.loc[i, 'x_coord'], df_node.loc[i, 'y_coord'])
         )
-
+    print(f"  : Total number of nodes: {len(df_node)} loaded.")
     return node_dict
 
 
@@ -131,7 +131,7 @@ def read_poi(poi_file: str = "") -> dict[int: POI]:
             poi_type=df_poi.loc[i, 'building'] or "",
             geometry=df_poi.loc[i, "geometry"]
         )
-
+    print(f"  : Total number of POIs: {len(df_poi)} loaded.")
     return poi_dict
 
 

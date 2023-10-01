@@ -1,10 +1,32 @@
-# -*- coding:utf-8 -*-
-##############################################################
-# Created Date: Monday, September 11th 2023
-# Contact Info: luoxiangyong01@gmail.com
-# Author/Copyright: Mr. Xiangyong Luo
-##############################################################
 
+## Project description
+
+GRID2DEMAND: A tool for generating zone-to-zone travel demand based on grid cells
+
+
+## Introduction
+
+Grid2demand is an open-source quick demand generation tool based on the trip generation and trip distribution methods of the standard 4-step travel model for teaching transportation planning and applications. By taking advantage of OSM2GMNS tool to obtain routable transportation network from OpenStreetMap, Grid2demand aims to further utilize Point of Interest (POI) data to construct trip demand matrix aligned with standard travel models.
+
+You can get access to the introduction video with the link: [https://www.youtube.com/watch?v=EfjCERQQGTs&amp;t=1021s](https://www.youtube.com/watch?v=EfjCERQQGTs&t=1021s)
+
+
+## Quick Start
+
+Users can refer to the [code template and test data set](https://github.com/asu-trans-ai-lab/grid2demand) to have a quick start.
+
+
+## Installation
+
+```
+pip install grid2demand
+```
+
+If you meet installation issues, please refer to the [user guide](https://github.com/asu-trans-ai-lab/grid2demand) for solutions.
+
+## Simple Example
+
+```python
 from __future__ import absolute_import
 from grid2demand import GRID2DEMAND
 
@@ -64,3 +86,16 @@ if __name__ == "__main__":
     gd.save_zone
     gd.save_zone_od_dist_table
     gd.save_zone_od_dist_matrix
+```
+
+## Visualization
+
+Option 1: Open [QGIS](https://www.qgis.org/) and add Delimited Text Layer of the files.
+
+Option 2: Upload files to the website of [ASU Trans+AI Lab](https://asu-trans-ai-lab.github.io/index.html#/) and view input and output files.
+
+Option 3: Import input_agent.csv to [A/B Street](https://a-b-street.github.io/docs/howto/asu.html) and view dynamic simulation of the demand.
+
+## User guide
+
+Users can check the [user guide](https://github.com/asu-trans-ai-lab/grid2demand/blob/main/README.md) for a detailed introduction of grid2demand.

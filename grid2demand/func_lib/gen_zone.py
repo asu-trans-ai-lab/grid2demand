@@ -183,6 +183,7 @@ def net2zone(node_dict: dict[int, Node],
             geometry=points_lst[i]
         )
         zone_id_flag += 1
+    print(f"  : Total number of zone cells: {len(zone_dict) - 4 * len(zone_upper_row)} generated, plus {4 * len(zone_upper_row)} boundary gates(points))")
     return zone_dict
 
 
