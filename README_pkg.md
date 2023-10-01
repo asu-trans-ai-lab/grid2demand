@@ -35,9 +35,9 @@ if __name__ == "__main__":
     # Initialize a GRID2DEMAND object
     gd = GRID2DEMAND(input_dir)
 
-    # Step 1: Load from specified path
-    node_dict = gd.read_node()
-    poi_dict = gd.read_poi()
+    # Step 1: Load node and poi data from input directory
+    node_dict = gd.load_node
+    poi_dict = gd.load_poi
 
     # Step 2: Generate zone dictionary from node dictionary by specifying number of x blocks and y blocks
     zone_dict = gd.net2zone(node_dict, num_x_blocks=10, num_y_blocks=10)
@@ -46,14 +46,14 @@ if __name__ == "__main__":
     # zone_dict = gd.net2zone(node_dict, cell_width=10, cell_height=10)
 
     # Step 3: synchronize geometry info between zone, node and poi
-    # add zone_id to node and poi dictionaries
-    # also add node_list and poi_list to zone dictionary
+    #       add zone_id to node and poi dictionaries
+    #       also add node_list and poi_list to zone dictionary
     updated_dict = gd.sync_geometry_between_zone_and_node_poi(zone_dict, node_dict, poi_dict)
     zone_dict_update = updated_dict.get('zone_dict')
     node_dict_update = updated_dict.get('node_dict')
     poi_dict_update = updated_dict.get('poi_dict')
 
-    # Step 4: Generate zone-to-zone od distance matrix
+    # Step 4: Calculate zone-to-zone od distance matrix
     zone_od_distance_matrix = gd.calc_zone_od_distance_matrix(zone_dict_update)
 
     # Step 5: Generate poi trip rate for each poi
