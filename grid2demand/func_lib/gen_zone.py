@@ -183,7 +183,7 @@ def net2zone(node_dict: dict[int, Node],
             geometry=points_lst[i]
         )
         zone_id_flag += 1
-    print(f"  : Successfully generated zone dictionary: {len(zone_dict) - 4 * len(zone_upper_row)} Zones generated, plus {4 * len(zone_upper_row)} boundary gates(points))")
+    print(f"  : Successfully generated zone dictionary: {len(zone_dict) - 4 * len(zone_upper_row)} Zones generated, plus {4 * len(zone_upper_row)} boundary gates (points))")
     return zone_dict
 
 

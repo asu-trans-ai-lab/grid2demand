@@ -18,8 +18,7 @@ if __name__ == "__main__":
     gd = GRID2DEMAND(input_dir)
 
     # Step 1: Load node and poi data from input directory
-    node_dict = gd.load_node
-    poi_dict = gd.load_poi
+    node_dict, poi_dict = gd.load_network.values()
 
     # Step 2: Generate zone dictionary from node dictionary by specifying number of x blocks and y blocks
     zone_dict = gd.net2zone(node_dict, num_x_blocks=10, num_y_blocks=10)
@@ -31,9 +30,7 @@ if __name__ == "__main__":
     #       add zone_id to node and poi dictionaries
     #       also add node_list and poi_list to zone dictionary
     updated_dict = gd.sync_geometry_between_zone_and_node_poi(zone_dict, node_dict, poi_dict)
-    zone_dict_update = updated_dict.get('zone_dict')
-    node_dict_update = updated_dict.get('node_dict')
-    poi_dict_update = updated_dict.get('poi_dict')
+    zone_dict_update, node_dict_update, poi_dict_update = updated_dict.values()
 
     # Step 4: Calculate zone-to-zone od distance matrix
     zone_od_distance_matrix = gd.calc_zone_od_distance_matrix(zone_dict_update)
@@ -45,7 +42,7 @@ if __name__ == "__main__":
     node_prod_attr = gd.gen_node_prod_attr(node_dict_update, poi_trip_rate)
 
     # Step 6.1: Calculate zone production and attraction based on node production and attraction
-    zone_prod_attr = gd.calc_zone_production_attraction(node_prod_attr, zone_dict_update)
+    zone_prod_attr = gd.calc_zone_prod_attr(node_prod_attr, zone_dict_update)
 
     # Step 7: Run gravity model to generate agent-based demand
     df_demand = gd.run_gravity_model(zone_prod_attr, zone_od_distance_matrix)

@@ -242,6 +242,12 @@ class GRID2DEMAND:
         if not poi_dict:
             poi_dict = self.poi_dict
 
+        # if usr provides trip_rate_file (csv file), save to self.pkg_settings["trip_rate_file"]
+        if trip_rate_file:
+            if ".csv" not in trip_rate_file:
+                raise Exception(f"  : Error: trip_rate_file {trip_rate_file} must be a csv file.")
+            self.pkg_settings["trip_rate_file"] = pd.read_csv(trip_rate_file)
+
         self.poi_dict = gen_poi_trip_rate(poi_dict, trip_rate_file, trip_purpose)
         return self.poi_dict
 
@@ -263,7 +269,7 @@ class GRID2DEMAND:
         self.node_dict = gen_node_prod_attr(node_dict, poi_dict)
         return self.node_dict
 
-    def calc_zone_production_attraction(self, node_dict: dict = "", zone_dict: dict = "") -> dict[str, Zone]:
+    def calc_zone_prod_attr(self, node_dict: dict = "", zone_dict: dict = "") -> dict[str, Zone]:
         """calculate zone production and attraction based on node production and attraction
 
         Args:
@@ -337,7 +343,8 @@ class GRID2DEMAND:
             return
 
         path_output = gen_unique_filename(path2linux(os.path.join(self.output_dir, "demand.csv")))
-        self.df_demand.to_csv(path_output, index=False)
+        df_demand_non_zero = self.df_demand[self.df_demand["volume"] > 0]
+        df_demand_non_zero.to_csv(path_output, index=False)
         print(f"  : Successfully saved demand.csv to {self.output_dir}")
 
     @property
