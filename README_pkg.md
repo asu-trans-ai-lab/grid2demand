@@ -71,7 +71,7 @@ if __name__ == "__main__":
     # You can also view and edit the package setting by using gd.pkg_settings
     print(gd.pkg_settings)
 
-    # Step 9: Output demand, agent, zone, zone_od_dist_table, zone_od_dist_matrix files to output directory
+    # Step 9: Output demand, agent, zone, zone_od_dist_table, zone_od_dist_matrix files
     gd.save_demand
     gd.save_agent
     gd.save_zone
