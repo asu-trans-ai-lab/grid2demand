@@ -40,10 +40,9 @@ def gen_poi_trip_rate(poi_dict: dict,
     if not trip_rate_file:
         print("No trip rate file is provided, use default trip rate.")
         default_flag = True
-
-    # validate trip rate file
-    if not os.path.exists(path2linux(trip_rate_file)):
-        print(f"File: {trip_rate_file} does not exist, use default trip rate.")
+    # if trip rate file provided is not valid, use default trip rate
+    elif not os.path.isfile(path2linux(trip_rate_file)):
+        print(f"  : {trip_rate_file} does not exist, use default trip rate.")
         default_flag = True
 
     if default_flag:
@@ -75,6 +74,7 @@ def gen_poi_trip_rate(poi_dict: dict,
                                           f"attraction_rate{trip_purpose}": attraction_rate,
                                           "production_notes": production_notes,
                                           "attraction_notes": attraction_notes}
+        print("  : Successfully generated poi trip rate with default setting.")
         return poi_dict
 
     # if valid input file is provided, use the trip rate in the file
@@ -88,7 +88,7 @@ def gen_poi_trip_rate(poi_dict: dict,
         poi_type = poi_dict[poi_id].poi_type
         if poi_type in df_trip_rate_dict:
             poi_dict[poi_id].trip_rate = df_trip_rate_dict[poi_type].to_dict()
-
+    print(f"  : Successfully generated poi trip rate from {trip_rate_file}.")
     return poi_dict
 
 
@@ -139,4 +139,5 @@ def gen_node_prod_attr(node_dict: dict,
         else:
             node.production = 0
             node.attraction = 0
+    print("  : Successfully generated production and attraction for each node based on poi trip rate.")
     return node_dict

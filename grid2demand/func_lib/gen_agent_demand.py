@@ -57,4 +57,5 @@ def gen_agent_based_demand(node_dict: dict, zone_dict: dict,
                     departure_time=departure_time
                 )
             )
+    print("  : Successfully generated agent-based demand data.")
     return pd.DataFrame(agent_lst)

@@ -26,8 +26,14 @@ from grid2demand.func_lib.gen_agent_demand import gen_agent_based_demand
 
 class GRID2DEMAND:
 
-    def __init__(self, input_dir: str, output_dir: str = "") -> None:
-        self.input_dir = path2linux(input_dir)
+    def __init__(self, input_dir: str = "", output_dir: str = "") -> None:
+
+        # check input directory
+        if not input_dir:
+            self.input_dir = path2linux(os.getcwd())
+            print(f"  : Input directory is not specified. Use current working directory {self.input_dir} as input directory. Please make sure node.csv and poi.csv are in {self.input_dir}.")
+        else:
+            self.input_dir = path2linux(input_dir)
         self.output_dir = path2linux(output_dir) if output_dir else self.input_dir
 
         # check input directory
@@ -44,27 +50,29 @@ class GRID2DEMAND:
         Returns:
             None: will generate self.path_node and self.path_poi for class instance.
         """
-        if not os.path.exists(self.input_dir):
+        print("  : Checking input directory...")
+        if not os.path.isdir(self.input_dir):
             raise NotADirectoryError(f"Error: Input directory {self.input_dir} does not exist.")
 
         # check required files in input directory
         dir_files = get_filenames_from_folder_by_type(self.input_dir, "csv")
-        required_files = pkg_settings.get("required_files")
+        required_files = pkg_settings.get("required_files", [])
         is_required_files_exist = check_required_files_exist(required_files, dir_files)
         if not is_required_files_exist:
             raise Exception(f"Error: Required files are not satisfied. Please check {required_files} in {self.input_dir}.")
 
         self.path_node = path2linux(os.path.join(self.input_dir, "node.csv"))
         self.path_poi = path2linux(os.path.join(self.input_dir, "poi.csv"))
+        print("  : Input directory is valid.\n")
 
     def __load_pkg_settings(self) -> None:
+        print("  : Loading package settings...")
         self.pkg_settings = pkg_settings
+        print("  : Package settings loaded successfully.\n")
 
-    def read_node(self, path_node: str = "") -> dict[int, Node]:
+    @property
+    def load_node(self) -> dict[int, Node]:
         """read node.csv file and return node_dict
-
-        Args:
-            path_node (str, optional): the path to node.csv. Defaults to "". if not specified, use self.path_node.
 
         Raises:
             FileNotFoundError: Error: File {path_node} does not exist.
@@ -75,27 +83,22 @@ class GRID2DEMAND:
         Examples:
             >>> from grid2demand import GRID2DEMAND
             >>> gd = GRID2DEMAND(input_dir)
-            >>> node_dict = gd.read_node()
+            >>> node_dict = gd.load_node
             >>> node_dict[1]
             Node(id=1, x_coord=121.469, y_coord=31.238, production=0, attraction=0,
             boundary_flag=0, zone_id=-1, poi_id=-1, activity_type= '',
             activity_location_tab='', geometry='POINT (121.469 31.238)'
         """
 
-        if not path_node:
-            path_node = self.path_node
+        if not os.path.exists(self.path_node):
+            raise FileNotFoundError(f"Error: File {self.path_node} does not exist.")
 
-        if not os.path.exists(path_node):
-            raise FileNotFoundError(f"Error: File {path_node} does not exist.")
-
-        self.node_dict = read_node(path_node)
+        self.node_dict = read_node(self.path_node)
         return self.node_dict
 
-    def read_poi(self, path_poi: str = "") -> dict[int, POI]:
+    @property
+    def load_poi(self) -> dict[int, POI]:
         """read poi.csv file and return poi_dict
-
-        Args:
-            path_poi (str, optional): the path to poi.csv. Defaults to "". if not specified, use self.path_poi.
 
         Raises:
             FileExistsError: Error: File {path_poi} does not exist.
@@ -104,21 +107,15 @@ class GRID2DEMAND:
             dict[int, POI]: poi_dict {poi_id: POI}
         """
 
-        if not path_poi:
-            path_poi = self.path_poi
+        if not os.path.exists(self.path_poi):
+            raise FileExistsError(f"Error: File {self.path_poi} does not exist.")
 
-        if not os.path.exists(path_poi):
-            raise FileExistsError(f"Error: File {path_poi} does not exist.")
-
-        self.poi_dict = read_poi(path_poi)
+        self.poi_dict = read_poi(self.path_poi)
         return self.poi_dict
 
-    def read_network(self, input_dir: str = "") -> dict[str, dict]:
+    @property
+    def load_network(self) -> dict[str, dict]:
         """read node.csv and poi.csv and return network_dict
-
-        Args:
-            input_dir (str, optional): the input directory that include required files. Defaults to "".
-                                       if not specified, use self.input_dir.
 
         Raises:
             FileExistsError: Error: Input directory {input_dir} does not exist.
@@ -127,12 +124,9 @@ class GRID2DEMAND:
             dict[str, dict]: network_dict {node_dict: dict[int, Node], poi_dict: dict[int, POI]}
         """
 
-        if not input_dir:
-            input_dir = self.input_dir
-
-        if not os.path.isdir(input_dir):
-            raise FileExistsError(f"Error: Input directory {input_dir} does not exist.")
-        network_dict = read_network(input_dir)
+        if not os.path.isdir(self.input_dir):
+            raise FileExistsError(f"Error: Input directory {self.input_dir} does not exist.")
+        network_dict = read_network(self.input_dir)
         self.node_dict = network_dict.get('node_dict')
         self.poi_dict = network_dict.get('poi_dict')
         return network_dict
@@ -157,7 +151,7 @@ class GRID2DEMAND:
         Returns:
             dict[str, Zone]: zone_dict {zone_name: Zone}
         """
-
+        print("  : Generating zone dictionary...")
         self.zone_dict = net2zone(node_dict, num_x_blocks, num_y_blocks, cell_width, cell_height, unit)
         return self.zone_dict
 
@@ -180,6 +174,7 @@ class GRID2DEMAND:
         Returns:
             dict[str, dict]: {"zone_dict": self.zone_dict, "node_dict": self.node_dict, "poi_dict": self.poi_dict}
         """
+        print("  : Synchronizing geometry between zone and node/poi...")
 
         # if not specified, use self.zone_dict, self.node_dict, self.poi_dict as input
         if not all([zone_dict, node_dict, poi_dict]):
@@ -208,6 +203,7 @@ class GRID2DEMAND:
                 f"Error in running {self.sync_geometry_between_zone_and_node_poi.__name__}: \
                   not valid zone_dict or poi_dict"
             ) from e
+
         return {"zone_dict": self.zone_dict, "node_dict": self.node_dict, "poi_dict": self.poi_dict}
 
     def calc_zone_od_distance_matrix(self, zone_dict: dict = "") -> dict[tuple, float]:
@@ -246,6 +242,12 @@ class GRID2DEMAND:
         if not poi_dict:
             poi_dict = self.poi_dict
 
+        # if usr provides trip_rate_file (csv file), save to self.pkg_settings["trip_rate_file"]
+        if trip_rate_file:
+            if ".csv" not in trip_rate_file:
+                raise Exception(f"  : Error: trip_rate_file {trip_rate_file} must be a csv file.")
+            self.pkg_settings["trip_rate_file"] = pd.read_csv(trip_rate_file)
+
         self.poi_dict = gen_poi_trip_rate(poi_dict, trip_rate_file, trip_purpose)
         return self.poi_dict
 
@@ -267,7 +269,7 @@ class GRID2DEMAND:
         self.node_dict = gen_node_prod_attr(node_dict, poi_dict)
         return self.node_dict
 
-    def calc_zone_production_attraction(self, node_dict: dict = "", zone_dict: dict = "") -> dict[str, Zone]:
+    def calc_zone_prod_attr(self, node_dict: dict = "", zone_dict: dict = "") -> dict[str, Zone]:
         """calculate zone production and attraction based on node production and attraction
 
         Args:
@@ -281,6 +283,7 @@ class GRID2DEMAND:
             node_dict = self.node_dict
             zone_dict = self.zone_dict
         self.zone = calc_zone_production_attraction(node_dict, zone_dict)
+
         return self.zone
 
     def run_gravity_model(self, zone_dict: dict = "",
@@ -340,7 +343,8 @@ class GRID2DEMAND:
             return
 
         path_output = gen_unique_filename(path2linux(os.path.join(self.output_dir, "demand.csv")))
-        self.df_demand.to_csv(path_output, index=False)
+        df_demand_non_zero = self.df_demand[self.df_demand["volume"] > 0]
+        df_demand_non_zero.to_csv(path_output, index=False)
         print(f"  : Successfully saved demand.csv to {self.output_dir}")
 
     @property

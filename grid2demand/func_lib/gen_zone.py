@@ -183,7 +183,7 @@ def net2zone(node_dict: dict[int, Node],
             geometry=points_lst[i]
         )
         zone_id_flag += 1
-    print(f"  : Total number of zone cells: {len(zone_dict) - 4 * len(zone_upper_row)} generated, plus {4 * len(zone_upper_row)} boundary gates(points))")
+    print(f"  : Successfully generated zone dictionary: {len(zone_dict) - 4 * len(zone_upper_row)} Zones generated, plus {4 * len(zone_upper_row)} boundary gates (points))")
     return zone_dict
 
 
@@ -210,7 +210,7 @@ def sync_zone_and_node_geometry(zone_dict: dict, node_dict: dict) -> dict:
                 node_dict[node_id].zone_id = zone_dict[zone_name].id
                 zone_dict[zone_name].node_id_list.append(node_id)
                 break
-
+    print("  : Successfully synchronized zone and node geometry")
     return {"node_dict": node_dict, "zone_dict": zone_dict}
 
 
@@ -236,6 +236,7 @@ def sync_zone_and_poi_geometry(zone_dict: dict, poi_dict: dict) -> dict:
                 poi_dict[poi_id].zone_id = zone_dict[zone_name].id
                 zone_dict[zone_name].poi_id_list.append(poi_id)
                 break
+    print("  : Successfully synchronized zone and poi geometry")
     return {"poi_dict": poi_dict, "zone_dict": zone_dict}
 
 
@@ -276,4 +277,5 @@ def calc_zone_od_matrix(zone_dict: dict) -> dict[tuple[str, str], dict]:
         }
         for i, j in itertools.product(range(len_df_zone), range(len_df_zone))
     }
+    print("  : Successfully calculated zone-to-zone distance matrix")
     return dist_dict

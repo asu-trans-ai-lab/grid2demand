@@ -1,8 +1,6 @@
-
 ## Project description
 
 GRID2DEMAND: A tool for generating zone-to-zone travel demand based on grid cells
-
 
 ## Introduction
 
@@ -10,11 +8,9 @@ Grid2demand is an open-source quick demand generation tool based on the trip gen
 
 You can get access to the introduction video with the link: [https://www.youtube.com/watch?v=EfjCERQQGTs&amp;t=1021s](https://www.youtube.com/watch?v=EfjCERQQGTs&t=1021s)
 
-
 ## Quick Start
 
 Users can refer to the [code template and test data set](https://github.com/asu-trans-ai-lab/grid2demand) to have a quick start.
-
 
 ## Installation
 
@@ -32,34 +28,29 @@ from grid2demand import GRID2DEMAND
 
 
 if __name__ == "__main__":
-    path_node = "./dataset/ASU/node.csv"
-    path_poi = "./dataset/ASU/poi.csv"
-    input_dir = "./dataset/ASU"
 
-    # Step 1: Load node and poi files from input directory
-    # There are two ways to load node and poi files: 1. Load from input directory; 2. Load from specified path
+    # Step 0: Specify input directory, if not, use current working directory as default input directory
+    input_dir = "./datasets/ASU"
+
+    # Initialize a GRID2DEMAND object
     gd = GRID2DEMAND(input_dir)
 
-    # Step 1.1: Load from specified path
-    node_dict = gd.read_node("./dataset/ASU/node.csv")
-    poi_dict = gd.read_poi("./dataset/ASU/poi.csv")
+    # Step 1: Load node and poi data from input directory
+    node_dict, poi_dict = gd.load_network.values()
 
     # Step 2: Generate zone dictionary from node dictionary by specifying number of x blocks and y blocks
-    # To be noticed: num_x_blocks and num_y_blocks have higher priority than cell_width and cell_height
-    # if num_x_blocks and num_y_blocks are specified, cell_width and cell_height will be ignored
-    zone_dict = gd.net2zone(node_dict, num_x_blocks=10, num_y_blocks=10, cell_width=0, cell_height=0)
-    # zone_dict = gd.net2zone(node_dict, cell_width=10, cell_height=10)  # This will generate zone based on grid size 10km width and 10km height
+    zone_dict = gd.net2zone(node_dict, num_x_blocks=10, num_y_blocks=10)
 
-    # Step 3: synchronize zone with node and poi
-    # will add zone_id to node and poi dictionaries
-    # Will also add node_list and poi_list to zone dictionary
-    # Step 3.1: synchronize zone with node
-    update_dict = gd.sync_geometry_between_zone_and_node_poi(zone_dict, node_dict, poi_dict)
-    zone_dict_update = update_dict.get('zone_dict')
-    node_dict_update = update_dict.get('node_dict')
-    poi_dict_update = update_dict.get('poi_dict')
+    # # Generate zone based on grid size with 10 km width and 10km height for each zone
+    # zone_dict = gd.net2zone(node_dict, cell_width=10, cell_height=10)
 
-    # Step 4: Generate zone-to-zone od distance matrix
+    # Step 3: synchronize geometry info between zone, node and poi
+    #       add zone_id to node and poi dictionaries
+    #       also add node_list and poi_list to zone dictionary
+    updated_dict = gd.sync_geometry_between_zone_and_node_poi(zone_dict, node_dict, poi_dict)
+    zone_dict_update, node_dict_update, poi_dict_update = updated_dict.values()
+
+    # Step 4: Calculate zone-to-zone od distance matrix
     zone_od_distance_matrix = gd.calc_zone_od_distance_matrix(zone_dict_update)
 
     # Step 5: Generate poi trip rate for each poi
@@ -69,7 +60,7 @@ if __name__ == "__main__":
     node_prod_attr = gd.gen_node_prod_attr(node_dict_update, poi_trip_rate)
 
     # Step 6.1: Calculate zone production and attraction based on node production and attraction
-    zone_prod_attr = gd.calc_zone_production_attraction(node_prod_attr, zone_dict_update)
+    zone_prod_attr = gd.calc_zone_prod_attr(node_prod_attr, zone_dict_update)
 
     # Step 7: Run gravity model to generate agent-based demand
     df_demand = gd.run_gravity_model(zone_prod_attr, zone_od_distance_matrix)
@@ -99,3 +90,33 @@ Option 3: Import input_agent.csv to [A/B Street](https://a-b-street.github.io/do
 ## User guide
 
 Users can check the [user guide](https://github.com/asu-trans-ai-lab/grid2demand/blob/main/README.md) for a detailed introduction of grid2demand.
+
+## Call for Contributions
+
+The grid2demand project welcomes your expertise and enthusiasm!
+
+Small improvements or fixes are always appreciated. If you are considering larger contributions to the source code, please contact us through email:
+
+    Xiangyong Luo :  luoxiangyong01@gmail.com
+
+    Dr. Xuesong Simon Zhou :  xzhou74@asu.edu
+
+Writing code isn't the only way to contribute to grid2demand. You can also:
+
+* review pull requests
+* help us stay on top of new and old issues
+* develop tutorials, presentations, and other educational materials
+* develop graphic design for our brand assets and promotional materials
+* translate website content
+* help with outreach and onboard new contributors
+* write grant proposals and help with other fundraising efforts
+
+For more information about the ways you can contribute to grid2demand, visit [our GitHub](https://github.com/asu-trans-ai-lab/grid2demand). If you' re unsure where to start or how your skills fit in, reach out! You can ask by opening a new issue or leaving a comment on a relevant issue that is already open on GitHub.
+
+## Citing grid2demand
+
+If you use grid2demand in your research please use the following BibTeX entry:
+
+```
+Xiangyong Luo, Dustin Carlino, and Xuesong Simon Zhou. (2023). xyluo25/grid2demand: new lease to v0.3.5-rc.2 (0.3.5-rc.2). Zenodo. https://doi.org/10.5281/zenodo.8397105
+```

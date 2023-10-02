@@ -20,3 +20,4 @@ x64/
 *Tutorial_PyPI.md
 *dist/*
 *build/*
+.ipynb_checkpoints/*
