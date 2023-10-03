@@ -230,6 +230,7 @@ def sync_zone_and_node_geometry(zone_dict: dict, node_dict: dict) -> dict:
 #                 break
 
     # Create a pool of worker processes
+    print(f"  : Parallel synchronizing Nodes and Zones using Pool with {cpu_count()} CPUs. Please wait...")
     pool = Pool(processes=cpu_count())
 
     # Prepare arguments for the pool
@@ -289,6 +290,7 @@ def sync_zone_and_poi_geometry(zone_dict: dict, poi_dict: dict) -> dict:
 #                 break
 
     # Create a pool of worker processes
+    print(f"  : Parallel synchronizing POIs and Zones using Pool with {cpu_count()} CPUs. Please wait...")
     pool = Pool(processes=cpu_count())
 
     # Prepare arguments for the pool
@@ -366,6 +368,7 @@ def calc_zone_od_matrix(zone_dict: dict) -> dict[tuple[str, str], dict]:
     # }
 
     # Prepare arguments for the pool
+    print(f"  : Parallel calculating zone-to-zone distance matrix using Pool with {cpu_count()} CPUs. Please wait...")
     args_list = [(i, j, df_zone) for i, j in itertools.product(range(len_df_zone), range(len_df_zone))]
 
     # Create a pool of worker processes
