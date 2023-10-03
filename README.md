@@ -384,7 +384,7 @@ zone_dict = gd.net2zone(node_dict, num_x_blocks=10,num_y_blocks=10)
 # Generate zone based on grid size with 10 km width and 10km height for each zone
 # zone_dict = gd.net2zone(node_dict, cell_width=10, cell_height=10)
 
-# Step 3: synchronize geometry info between zone, node and poi
+# Synchronize geometry info between zone, node and poi
 #       add zone_id to node and poi dictionaries
 #       also add node_list and poi_list to zone dictionary
 updated_dict = gd.sync_geometry_between_zone_and_node_poi(zone_dict, node_dict, poi_dict)
@@ -407,7 +407,7 @@ set as purpose 1.
 \~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~
 
 ```
-Step 5: Generate poi trip rate for each poi
+# Generate poi trip rate for each poi
 
 poi_trip_rate = gd.gen_poi_trip_rate(poi_dict_update, trip_rate_file="", trip_purpose=1)
 ```
@@ -419,11 +419,11 @@ poi_trip_rate = gd.gen_poi_trip_rate(poi_dict_update, trip_rate_file="", trip_pu
 \~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~
 
 ```python
-# Step 6: Generate node production attraction for each node based on poi_trip_rate
+# Generate node production attraction for each node based on poi_trip_rate
 
 node_prod_attr = gd.gen_node_prod_attr(node_dict_update, poi_trip_rate)
 
-# Step 6.1: Calculate zone production and attraction based on node production and attraction
+# Calculate zone production and attraction based on node production and attraction
 
 zone_prod_attr = gd.calc_zone_prod_attr(node_prod_attr, zone_dict_update)
 
@@ -441,7 +441,7 @@ accessibility matrix by setting the external folder of file *accessibility.csv*.
 \~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~
 
 ```python
-# Step 4: Calculate zone-to-zone od distance matrix
+# Calculate zone-to-zone od distance matrix
 
 zone_od_distance_matrix = gd.calc_zone_od_distance_matrix(zone_dict_update)
 ```
@@ -456,7 +456,7 @@ default values of HBW, HBO and NHB are described above.
 \~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~
 
 ```python
-# Step 7: Run gravity model to generate agent-based demand
+# Run gravity model to generate agent-based demand
 
 df_demand = gd.run_gravity_model(zone_prod_attr, zone_od_distance_matrix)
 ```
@@ -471,7 +471,7 @@ zone-to-zone demand obtained by the gravity model.
 \~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~
 
 ```
-# Step 8: generate agent-based demand
+# generate agent-based demand
 
 df_agent = gd.gen_agent_based_demand(node_prod_attr, zone_prod_attr, df_demand=df_demand)
 ```
@@ -488,7 +488,7 @@ dictionary.
 # You can also view and edit the package setting by using gd.pkg_settings
 print(gd.pkg_settings)
 
-# Step 9: Output demand, agent, zone, zone_od_dist_table, zone_od_dist_matrix files
+# Output demand, agent, zone, zone_od_dist_table, zone_od_dist_matrix files
 gd.save_demand
 gd.save_agent
 gd.save_zone
