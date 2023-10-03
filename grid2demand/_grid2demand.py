@@ -93,7 +93,7 @@ class GRID2DEMAND:
         if not os.path.exists(self.path_node):
             raise FileNotFoundError(f"Error: File {self.path_node} does not exist.")
 
-        self.node_dict = read_node(self.path_node)
+        self.node_dict = read_node(self.path_node, self.pkg_settings.get("set_cpu_cores"))
         return self.node_dict
 
     @property
@@ -110,7 +110,7 @@ class GRID2DEMAND:
         if not os.path.exists(self.path_poi):
             raise FileExistsError(f"Error: File {self.path_poi} does not exist.")
 
-        self.poi_dict = read_poi(self.path_poi)
+        self.poi_dict = read_poi(self.path_poi, self.pkg_settings.get("set_cpu_cores"))
         return self.poi_dict
 
     @property
@@ -126,7 +126,7 @@ class GRID2DEMAND:
 
         if not os.path.isdir(self.input_dir):
             raise FileExistsError(f"Error: Input directory {self.input_dir} does not exist.")
-        network_dict = read_network(self.input_dir)
+        network_dict = read_network(self.input_dir, self.pkg_settings.get("set_cpu_cores"))
         self.node_dict = network_dict.get('node_dict')
         self.poi_dict = network_dict.get('poi_dict')
         return network_dict
@@ -184,7 +184,7 @@ class GRID2DEMAND:
 
         # synchronize zone with node
         try:
-            zone_node_dict = sync_zone_and_node_geometry(zone_dict, node_dict)
+            zone_node_dict = sync_zone_and_node_geometry(zone_dict, node_dict, self.pkg_settings.get("set_cpu_cores"))
             zone_dict_add_node = zone_node_dict.get('zone_dict')
             self.node_dict = zone_node_dict.get('node_dict')
         except Exception as e:
@@ -195,7 +195,9 @@ class GRID2DEMAND:
 
         # synchronize zone with poi
         try:
-            zone_poi_dict = sync_zone_and_poi_geometry(zone_dict_add_node, poi_dict)
+            zone_poi_dict = sync_zone_and_poi_geometry(zone_dict_add_node,
+                                                       poi_dict,
+                                                       self.pkg_settings.get("set_cpu_cores"))
             self.zone_dict = zone_poi_dict.get('zone_dict')
             self.poi_dict = zone_poi_dict.get('poi_dict')
         except Exception as e:
@@ -221,7 +223,7 @@ class GRID2DEMAND:
         if not zone_dict:
             zone_dict = self.zone_dict
 
-        self.zone_od_dist_matrix = calc_zone_od_matrix(zone_dict)
+        self.zone_od_dist_matrix = calc_zone_od_matrix(zone_dict, self.pkg_settings.get("set_cpu_cores"))
         return self.zone_od_dist_matrix
 
     def gen_poi_trip_rate(self, poi_dict: dict = "", trip_rate_file: str = "", trip_purpose: int = 1) -> dict[int, POI]:

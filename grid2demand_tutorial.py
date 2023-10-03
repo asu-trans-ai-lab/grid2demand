@@ -8,7 +8,6 @@
 from __future__ import absolute_import
 from grid2demand import GRID2DEMAND
 
-
 if __name__ == "__main__":
 
     # Step 0: Specify input directory, if not, use current working directory as default input directory
