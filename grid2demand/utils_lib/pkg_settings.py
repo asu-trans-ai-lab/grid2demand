@@ -4,9 +4,14 @@
 # Contact Info: luoxiangyong01@gmail.com
 # Author/Copyright: Mr. Xiangyong Luo
 ##############################################################
+import os
 
 pkg_settings = {
     "required_files": ["node.csv", "poi.csv"],
+    "node_required_fields": ["node_id", "x_coord", "y_coord", "activity_type", "is_boundary", "poi_id"],
+    "poi_required_fields": ["poi_id", "building", "centroid", "area", "geometry"],
+    "data_chunk_size": 100000,
+    "set_cpu_cores": os.cpu_count(),
 
     # the initial value for trip purpose, usr can add more trip purposes
     "trip_purpose_dict": {1: {"name": 'home-based-work', "alpha": 28507, "beta": -0.02, "gamma": -0.123},

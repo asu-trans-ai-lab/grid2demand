@@ -11,6 +11,7 @@ import copy
 import numpy as np
 import os
 import datetime
+import itertools
 
 
 def calc_distance_on_unit_sphere(pt1: shapely.Point, pt2: shapely.Point, unit='km', precision=None):
@@ -231,3 +232,24 @@ def gen_unique_filename(path_filename: str, ) -> str:
         filename_update = f"{file_without_suffix}_1.{file_suffix}"
         return gen_unique_filename(filename_update)
     return filename_abspath
+
+
+def split_dict_by_chunk(dictionary: dict, chunk_size: int, pair_val: list = []) -> list:
+    """Split dictionary into chunks
+
+    Args:
+        dictionary (dict): the input dictionary with key-value pairs
+        chunk_size (int): the size of each chunk
+        pair_val (list, optional): the return value associate with each chunk dictionary. Defaults to [].
+
+    Returns:
+        list: a list including a chunk value and the pair value: [chunk_dict, pair_val]
+
+    Yields:
+        Iterator[list]: a generator of the list including a chunk value and the pair value: [chunk_dict, pair_val]
+    """
+    iterator = iter(dictionary.items())
+    for _ in range(0, len(dictionary), chunk_size):
+        chunk = dict(itertools.islice(iterator, chunk_size))
+        if chunk:  # check if chunk is not empty
+            yield [chunk] + pair_val

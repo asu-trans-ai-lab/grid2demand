@@ -9,7 +9,7 @@ from __future__ import absolute_import
 import pandas as pd
 import shapely
 import os
-from multiprocessing import Pool, cpu_count
+from multiprocessing import Pool
 
 from grid2demand.utils_lib.net_utils import Node, POI
 from grid2demand.utils_lib.pkg_settings import pkg_settings
@@ -18,32 +18,46 @@ from grid2demand.utils_lib.utils import (func_running_time, path2linux,
                                          check_required_files_exist)
 
 
-def create_node_from_row(row: pd.Series) -> tuple:
+def create_node_from_dataframe(df_node: pd.DataFrame) -> dict[int, Node]:
+    """Create Node from df_node.
 
-    # check activity location tab
-    activity_type = row['activity_type']
-    boundary_flag = row['is_boundary']
-    if activity_type in ["residential", "poi"]:
-        activity_location_tab = activity_type
-    elif boundary_flag == 1:
-        activity_location_tab = "boundary"
-    else:
-        activity_location_tab = ''
+    Args:
+        df_node (pd.DataFrame): the dataframe of node from node.csv
 
-    node = Node(
-        id=row['node_id'],
-        activity_type=activity_type,
-        activity_location_tab=activity_location_tab,
-        x_coord=row['x_coord'],
-        y_coord=row['y_coord'],
-        poi_id=row['poi_id'],
-        boundary_flag=boundary_flag,
-        geometry=shapely.Point(row['x_coord'], row['y_coord'])
-    )
-    return row['node_id'], node
+    Returns:
+        dict[int, Node]: a dict of nodes.{node_id: Node}
+    """
+    # Reset index to avoid index error
+    df_node = df_node.reset_index(drop=True)
+
+    node_dict = {}
+    for i in range(len(df_node)):
+        # check activity location tab
+        activity_type = df_node.loc[i, 'activity_type']
+        boundary_flag = df_node.loc[i, 'is_boundary']
+        if activity_type in ["residential", "poi"]:
+            activity_location_tab = activity_type
+        elif boundary_flag == 1:
+            activity_location_tab = "boundary"
+        else:
+            activity_location_tab = ''
+
+        node = Node(
+            id=df_node.loc[i, 'node_id'],
+            activity_type=activity_type,
+            activity_location_tab=activity_location_tab,
+            x_coord=df_node.loc[i, 'x_coord'],
+            y_coord=df_node.loc[i, 'y_coord'],
+            poi_id=df_node.loc[i, 'poi_id'],
+            boundary_flag=boundary_flag,
+            geometry=shapely.Point(df_node.loc[i, 'x_coord'], df_node.loc[i, 'y_coord'])
+        )
+        node_dict[df_node.loc[i, 'node_id']] = node
+    return node_dict
+
 
 @func_running_time
-def read_node(node_file: str = "") -> dict[int: Node]:
+def read_node(node_file: str = "", cpu_cores: int = 1) -> dict[int: Node]:
     """Read node.csv file and return a dict of nodes.
 
     Args:
@@ -72,65 +86,58 @@ def read_node(node_file: str = "") -> dict[int: Node]:
     if not os.path.exists(node_file):
         raise FileNotFoundError(f"File: {node_file} does not exist.")
 
-    df_node = pd.read_csv(node_file)
-
-    # check if poi_id is empty
-    if len(df_node["poi_id"].unique().tolist()) == 1:
-        print("poi_id is empty, It could lead to empty demand volume and zero agent. Please check your node.csv file.")
-
-#     node_dict = {}
-#     for i in range(len(df_node)):
-#
-#         # check activity location tab
-#         activity_type = df_node.loc[i, 'activity_type']
-#         boundary_flag = df_node.loc[i, 'is_boundary']
-#         if activity_type in ["residential", "poi"]:
-#             activity_location_tab = activity_type
-#         elif boundary_flag == 1:
-#             activity_location_tab = "boundary"
-#         else:
-#             activity_location_tab = ''
-#
-#         node_dict[df_node.loc[i, 'node_id']] = Node(
-#             id=df_node.loc[i, 'node_id'],
-#             activity_type=activity_type,
-#             activity_location_tab=activity_location_tab,
-#             x_coord=df_node.loc[i, 'x_coord'],
-#             y_coord=df_node.loc[i, 'y_coord'],
-#             poi_id=df_node.loc[i, 'poi_id'],
-#             boundary_flag=boundary_flag,
-#             geometry=shapely.Point(df_node.loc[i, 'x_coord'], df_node.loc[i, 'y_coord'])
-#         )
+    print(f"  : Parallel creating Nodes using Pool with {cpu_cores} CPUs. Please wait...")
+    # read node.csv with specified columns and chunksize for iterations
+    node_required_cols = pkg_settings["node_required_fields"]
+    chunk_size = pkg_settings["data_chunk_size"]
+    print(f"  : Reading node.csv with specified columns: {node_required_cols} \
+                \n    and chunksize {chunk_size} for iterations...")
+    df_node_chunk = pd.read_csv(node_file, usecols=node_required_cols, chunksize=chunk_size)
 
     # Parallel processing using Pool
-    print(f"  : Parallel creating Nodes using Pool with {cpu_count()} CPUs. Please wait...")
-    with Pool(cpu_count()) as pool:
-        results = pool.map(create_node_from_row, [row[1] for row in df_node.iterrows()])
-    node_dict = dict(results)
+    node_dict_final = {}
+    with Pool(cpu_cores) as pool:
+        results = pool.map(create_node_from_dataframe, df_node_chunk)
 
-    print(f"  : Successfully loaded node.csv: {len(df_node)} Nodes loaded.")
-    return node_dict
+    for node_dict in results:
+        node_dict_final.update(node_dict)
+    print(f"  : Successfully loaded node.csv: {len(node_dict_final)} Nodes loaded.")
+    return node_dict_final
 
 
-def create_poi_from_row(row: pd.Series) -> tuple:
-    centroid = shapely.from_wkt(row['centroid'])
-    area = row['area']
-    if area > 90000:
-        area = 0
+def create_poi_from_dataframe(df_poi: pd.DataFrame) -> dict[int, POI]:
+    """Create POI from df_poi.
 
-    poi = POI(
-        id=row['poi_id'],
-        x_coord=centroid.x,
-        y_coord=centroid.y,
-        area=[area, area * 10.7639104],  # square meter and square feet
-        poi_type=row['building'] or "",
-        geometry=row["geometry"]
-    )
-    return row['poi_id'], poi
+    Args:
+        df_poi (pd.DataFrame): the dataframe of poi from poi.csv
+
+    Returns:
+        dict[int, POI]: a dict of POIs.{poi_id: POI}
+    """
+
+    df_poi = df_poi.reset_index(drop=True)
+    poi_dict = {}
+
+    for i in range(len(df_poi)):
+
+        centroid = shapely.from_wkt(df_poi.loc[i, 'centroid'])
+        area = df_poi.loc[i, 'area']
+        if area > 90000:
+            area = 0
+        poi = POI(
+            id=df_poi.loc[i, 'poi_id'],
+            x_coord=centroid.x,
+            y_coord=centroid.y,
+            area=[area, area * 10.7639104],  # square meter and square feet
+            poi_type=df_poi.loc[i, 'building'] or "",
+            geometry=df_poi.loc[i, "geometry"]
+        )
+        poi_dict[df_poi.loc[i, 'poi_id']] = poi
+    return poi_dict
 
 
 @func_running_time
-def read_poi(poi_file: str = "") -> dict[int: POI]:
+def read_poi(poi_file: str = "", cpu_cores: int = 1) -> dict[int: POI]:
     """Read poi.csv file and return a dict of POIs.
 
     Args:
@@ -160,39 +167,29 @@ def read_poi(poi_file: str = "") -> dict[int: POI]:
     if not os.path.exists(poi_file):
         raise FileNotFoundError(f"File: {poi_file} does not exist.")
 
-    df_poi = pd.read_csv(poi_file)
+    # Read poi.csv with specified columns and chunksize for iterations
+    poi_required_cols = pkg_settings["poi_required_fields"]
+    chunk_size = pkg_settings["data_chunk_size"]
+    print(f"  : Reading poi.csv with specified columns: {poi_required_cols} \
+                \n    and chunksize {chunk_size} for iterations...")
+    df_poi_chunk = pd.read_csv(poi_file, usecols=poi_required_cols, chunksize=chunk_size)
 
-#     poi_dict = {}
-#     for i in range(len(df_poi)):
-#         # get centroid
-#         centroid = shapely.from_wkt(df_poi.loc[i, 'centroid'])
-#
-#         # check area
-#         area = df_poi.loc[i, 'area']
-#         if area > 90000:
-#             area = 0
-#
-#         poi_dict[df_poi.loc[i, 'poi_id']] = POI(
-#             id=df_poi.loc[i, 'poi_id'],
-#             x_coord=centroid.x,
-#             y_coord=centroid.y,
-#             area=[area, area * 10.7639104],  # square meter and square feet
-#             poi_type=df_poi.loc[i, 'building'] or "",
-#             geometry=df_poi.loc[i, "geometry"]
-#         )
     # Parallel processing using Pool
-    print(f"  : Parallel creating POIs using Pool with {cpu_count()} CPUs. Please wait...")
-    with Pool(cpu_count()) as pool:
-        results = pool.map(create_poi_from_row, [row[1] for row in df_poi.iterrows()])
+    print(f"  : Parallel creating POIs using Pool with {cpu_cores} CPUs. Please wait...")
+    poi_dict_final = {}
 
-    poi_dict = dict(results)
+    with Pool(cpu_cores) as pool:
+        results = pool.map(create_poi_from_dataframe, df_poi_chunk)
 
-    print(f"  : Successfully loaded poi.csv: {len(df_poi)} POIs loaded.")
-    return poi_dict
+    for poi_dict in results:
+        poi_dict_final.update(poi_dict)
+
+    print(f"  : Successfully loaded poi.csv: {len(poi_dict_final)} POIs loaded.")
+    return poi_dict_final
 
 
 @func_running_time
-def read_network(input_folder: str = "") -> dict[str: dict]:
+def read_network(input_folder: str = "", cpu_cores: int = 1) -> dict[str: dict]:
     """Read node.csv and poi.csv files and return a dict of nodes and a dict of POIs.
 
     Args:
@@ -240,8 +237,8 @@ def read_network(input_folder: str = "") -> dict[str: dict]:
     if not is_required_files_exist:
         raise FileNotFoundError(f"Required files: {pkg_settings['required_files']} are not satisfied, please check your input folder.")
 
-    node_dict = read_node(input_folder + "/node.csv")
-    poi_dict = read_poi(input_folder + "/poi.csv")
+    node_dict = read_node(input_folder + "/node.csv", cpu_cores)
+    poi_dict = read_poi(input_folder + "/poi.csv", cpu_cores)
 
     print(f"  : Successfully loaded node.csv and poi.csv: {len(node_dict)} Nodes and {len(poi_dict)} POIs.")
     return {"node_dict": node_dict, "poi_dict": poi_dict}

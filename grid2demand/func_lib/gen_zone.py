@@ -15,6 +15,33 @@ from multiprocessing import Pool, cpu_count
 from grid2demand.utils_lib.net_utils import Zone, Node
 from grid2demand.utils_lib.utils import calc_distance_on_unit_sphere, int2alpha
 from grid2demand.utils_lib.utils import func_running_time
+from grid2demand.utils_lib.pkg_settings import pkg_settings
+
+
+@func_running_time
+def get_lng_lat_min_max(node_dict: dict[int, Node]) -> list:
+    """Get the boundary of the study area
+
+    Args:
+        node_dict (dict[int, Node]): node_dict {node_id: Node}
+
+    Returns:
+        list: [min_lng, max_lng, min_lat, max_lat]
+    """
+    coord_x_min, coord_x_max = node_dict[0].x_coord, node_dict[0].x_coord
+    coord_y_min, coord_y_max = node_dict[0].y_coord, node_dict[0].y_coord
+
+    for node_id in node_dict:
+        if node_dict[node_id].x_coord < coord_x_min:
+            coord_x_min = node_dict[node_id].x_coord
+        if node_dict[node_id].x_coord > coord_x_max:
+            coord_x_max = node_dict[node_id].x_coord
+        if node_dict[node_id].y_coord < coord_y_min:
+            coord_y_min = node_dict[node_id].y_coord
+        if node_dict[node_id].y_coord > coord_y_max:
+            coord_y_max = node_dict[node_id].y_coord
+
+    return [coord_x_min - 0.000001, coord_x_max + 0.000001, coord_y_min - 0.000001, coord_y_max + 0.000001]
 
 
 @func_running_time
@@ -52,14 +79,15 @@ def net2zone(node_dict: dict[int, Node],
 
     """
 
-    # convert node_dict to dataframe
-    df_node = pd.DataFrame(node_dict.values())
+    # # convert node_dict to dataframe
+    # df_node = pd.DataFrame(node_dict.values())
+    # # get the boundary of the study area
+    # coord_x_min, coord_x_max = df_node['x_coord'].min(
+    # ) - 0.000001, df_node['x_coord'].max() + 0.000001
+    # coord_y_min, coord_y_max = df_node['y_coord'].min(
+    # ) - 0.000001, df_node['y_coord'].max() + 0.000001
 
-    # get the boundary of the study area
-    coord_x_min, coord_x_max = df_node['x_coord'].min(
-    ) - 0.000001, df_node['x_coord'].max() + 0.000001
-    coord_y_min, coord_y_max = df_node['y_coord'].min(
-    ) - 0.000001, df_node['y_coord'].max() + 0.000001
+    coord_x_min, coord_x_max, coord_y_min, coord_y_max = get_lng_lat_min_max(node_dict)
 
     # Priority: num_x_blocks, number_y_blocks > cell_width, cell_height
     # if num_x_blocks and num_y_blocks are given, use them to partition the study area
@@ -206,7 +234,7 @@ def sync_node_with_zones(args: tuple) -> tuple:
 
 
 @func_running_time
-def sync_zone_and_node_geometry(zone_dict: dict, node_dict: dict) -> dict:
+def sync_zone_and_node_geometry(zone_dict: dict, node_dict: dict, cpu_cores: int = 1) -> dict:
     """Map nodes to zone cells
 
     Parameters
@@ -217,27 +245,14 @@ def sync_zone_and_node_geometry(zone_dict: dict, node_dict: dict) -> dict:
         node_dict and zone_dict: dict, Update Nodes with zone id, update zone cells with node id list
 
     """
-#     for node_id in node_dict:
-#         for zone_name in zone_dict:
-#             if isinstance(node_dict[node_id].geometry, str):
-#                 node_dict[node_id].geometry = shapely.from_wkt(node_dict[node_id].geometry)
-#             if isinstance(zone_dict[zone_name].geometry, str):
-#                 zone_dict[zone_name].geometry = shapely.from_wkt(zone_dict[zone_name].geometry)
-#
-#             if shapely.within(node_dict[node_id].geometry, zone_dict[zone_name].geometry):
-#                 node_dict[node_id].zone_id = zone_dict[zone_name].id
-#                 zone_dict[zone_name].node_id_list.append(node_id)
-#                 break
-
     # Create a pool of worker processes
-    print(f"  : Parallel synchronizing Nodes and Zones using Pool with {cpu_count()} CPUs. Please wait...")
-    pool = Pool(processes=cpu_count())
-
+    print(f"  : Parallel synchronizing Nodes and Zones using Pool with {cpu_cores} CPUs. Please wait...")
     # Prepare arguments for the pool
-    args_list = [(node_id, node, zone_dict) for node_id, node in node_dict.items()]
+    args_list = [(node_id, node, zone_dict)
+                 for node_id, node in node_dict.items()]
 
-    # Distribute work to the pool
-    results = pool.map(sync_node_with_zones, args_list)
+    with Pool(processes=cpu_cores) as pool:
+        results = pool.map(sync_node_with_zones, args_list)
 
     # Gather results
     for node_id, node, zone_name in results:
@@ -267,7 +282,7 @@ def sync_poi_with_zones(args: tuple) -> tuple:
 
 
 @func_running_time
-def sync_zone_and_poi_geometry(zone_dict: dict, poi_dict: dict) -> dict:
+def sync_zone_and_poi_geometry(zone_dict: dict, poi_dict: dict, cpu_cores: int = 1) -> dict:
     """Synchronize zone cells and POIs to update zone_id attribute for POIs and poi_id_list attribute for zone cells
 
     Args:
@@ -277,27 +292,15 @@ def sync_zone_and_poi_geometry(zone_dict: dict, poi_dict: dict) -> dict:
     Returns:
         dict: the updated zone_dict and poi_dict
     """
-#     for poi_id in poi_dict:
-#         for zone_name in zone_dict:
-#             if isinstance(poi_dict[poi_id].geometry, str):
-#                 poi_dict[poi_id].geometry = shapely.from_wkt(poi_dict[poi_id].geometry)
-#             if isinstance(zone_dict[zone_name].geometry, str):
-#                 zone_dict[zone_name].geometry = shapely.from_wkt(zone_dict[zone_name].geometry)
-#
-#             if shapely.within(poi_dict[poi_id].geometry, zone_dict[zone_name].geometry):
-#                 poi_dict[poi_id].zone_id = zone_dict[zone_name].id
-#                 zone_dict[zone_name].poi_id_list.append(poi_id)
-#                 break
 
     # Create a pool of worker processes
-    print(f"  : Parallel synchronizing POIs and Zones using Pool with {cpu_count()} CPUs. Please wait...")
-    pool = Pool(processes=cpu_count())
-
+    print(f"  : Parallel synchronizing POIs and Zones using Pool with {cpu_cores} CPUs. Please wait...")
     # Prepare arguments for the pool
     args_list = [(poi_id, poi, zone_dict) for poi_id, poi in poi_dict.items()]
 
-    # Distribute work to the pool
-    results = pool.map(sync_poi_with_zones, args_list)
+    with Pool(processes=cpu_cores) as pool:
+        # Distribute work to the pool
+        results = pool.map(sync_poi_with_zones, args_list)
 
     # Gather results
     for poi_id, poi, zone_name in results:
@@ -330,7 +333,7 @@ def distance_calculation(args: tuple) -> tuple:
 
 
 @func_running_time
-def calc_zone_od_matrix(zone_dict: dict) -> dict[tuple[str, str], dict]:
+def calc_zone_od_matrix(zone_dict: dict, cpu_cores: int = 1) -> dict[tuple[str, str], dict]:
     """Calculate the zone-to-zone distance matrix
 
     Args:
@@ -349,33 +352,13 @@ def calc_zone_od_matrix(zone_dict: dict) -> dict[tuple[str, str], dict]:
 
     len_df_zone = len(df_zone)
 
-    # calculate zone-to-zone distance matrix and save to dict
-    # dist_dict = {
-    #     (df_zone.loc[i, 'name'], df_zone.loc[j, 'name']): {
-    #         "o_zone_id": df_zone.loc[i, 'id'],
-    #         "o_zone_name": df_zone.loc[i, 'name'],
-    #         "d_zone_id": df_zone.loc[j, 'id'],
-    #         "d_zone_name": df_zone.loc[j, 'name'],
-    #         "dist_km": calc_distance_on_unit_sphere(
-    #             df_zone.loc[i, 'centroid'],
-    #             df_zone.loc[j, 'centroid'],
-    #             unit='km'),
-    #         "volume": 0,
-    #         "geometry": shapely.LineString(
-    #             [df_zone.loc[i, 'centroid'], df_zone.loc[j, 'centroid']]),
-    #     }
-    #     for i, j in itertools.product(range(len_df_zone), range(len_df_zone))
-    # }
-
     # Prepare arguments for the pool
-    print(f"  : Parallel calculating zone-to-zone distance matrix using Pool with {cpu_count()} CPUs. Please wait...")
+    print(f"  : Parallel calculating zone-to-zone distance matrix using Pool with {cpu_cores} CPUs. Please wait...")
     args_list = [(i, j, df_zone) for i, j in itertools.product(range(len_df_zone), range(len_df_zone))]
 
-    # Create a pool of worker processes
-    pool = Pool(processes=cpu_count())
-
-    # Distribute work to the pool
-    results = pool.map(distance_calculation, args_list)
+    with Pool(processes=cpu_cores) as pool:
+        # Distribute work to the pool
+        results = pool.map(distance_calculation, args_list)
 
     # Gather results
     dist_dict = dict(results)
