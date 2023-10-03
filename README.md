@@ -15,7 +15,7 @@ If you have not used Grid2demand before, here are some advices to get started.
 
 1. Read the user guide or watch the video at https://www.youtube.com/watch?v=EfjCERQQGTs.
 2. Obtain a map.osm or map.osm.pbf file for your area of interest at https://extract.bbbike.org/ or openstreetmap.org
-3. Look at the examples at Google colab environment https://github.com/asu-trans-ai-lab/grid2demand/blob/main/grid2demand.ipynb
+3. Look at the examples at Google colab environment https://github.com/asu-trans-ai-lab/grid2demand/blob/main/grid2demand_tutorial.ipynb
 4. Install Python, Grid2demand and QGIS on your computer or using google colab environmentModify one of the examples to implement your own model.
 5. Post your questions on the users group: groups.google.com/d/forum/grid2demand
 
@@ -42,7 +42,7 @@ For the python source code and sample network files, readers can visit the
 project homepage at ASU Trans+AI Lab Github
 ([https://github.com/asu-trans-ai-lab/grid2demand](https://github.com/asu-trans-ai-lab/grid2demand)). The Jupyter notebook
 example can be found at
-[https://github.com/asu-trans-ai-lab/grid2demand/blob/main/grid2demand.ipynb](https://github.com/asu-trans-ai-lab/grid2demand/blob/main/grid2demand.ipynb),
+[https://github.com/asu-trans-ai-lab/grid2demand/blob/main/grid2demand.ipynb](https://github.com/asu-trans-ai-lab/grid2demand/blob/main/grid2demand_tutorial.ipynb),
 which is also accessible through Google Colab.
 
 Mini teaching lesson: [https://www.youtube.com/watch?v=EfjCERQQGTs](https://www.youtube.com/watch?v=EfjCERQQGTs)
@@ -200,7 +200,7 @@ chart is illustrated in the following table and figure.
 | 3    | Trip generation                    | *poi_trip_rate.csv* (optional), trip purpose                                             | *poi_trip_rate.csv* (output/update with utilization notes), *node.csv* (update with zone id and demand values) | Trip rate method                                                        |
 | 4    | Accessibility calculation          | *accessibility.csv* (optional), latitude of the area of interest                         | *accessibility.csv*                                                                                              | Simple straight-line distance between zone centroids                    |
 | 5    | Trip distribution                  | Trip purpose, friction factor coefficients                                                 | *demand.csv, zone,csv* (update with total production and attraction in each zone)                                | Gravity model                                                           |
-| 6    | Agent generation                   | *demand.csv*                                                                             | *input_agent.csv*                                                                                                | Random sampling of node-to-node agents according to zone-to-zone demand |
+| 6    | Agent generation                   | *demand.csv*                                                                             | *agent.csv*                                                                                                      | Random sampling of node-to-node agents according to zone-to-zone demand |
 | 7    | Visualization                      |                                                                                            | QGIS or NEXTA                                                                                                      |                                                                         |
 
 **Flowchart of grid2demand**
@@ -355,9 +355,13 @@ Please supply additional accurate POI-type information if needed.
 
 \~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~
 
-import grid2demand as gd
+```python
+from grid2demand import GRID2DEMAND
 
-gd.ReadNetworkFile("./data_folder")
+input_dir = "Path-folder-to-your-node.csv-and-poi.csv"
+
+gd = GRID2DEMAND(input_dir)
+```
 
 1. **Partition network into grid cells**
 
@@ -372,8 +376,22 @@ surface under a specific latitude corresponding to the degree of 0.006
 
 \~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~
 
-gd.NetworkPartition(number_of_x_blocks=None, number_of_y_blocks=None,
-cell_width=500, cell_height=500, latitude=30)
+```python
+node_dict, poi_dict = gd.load_network.values()
+
+zone_dict = gd.net2zone(node_dict, num_x_blocks=10,num_y_blocks=10)
+
+# Generate zone based on grid size with 10 km width and 10km height for each zone
+# zone_dict = gd.net2zone(node_dict, cell_width=10, cell_height=10)
+
+# Step 3: synchronize geometry info between zone, node and poi
+#       add zone_id to node and poi dictionaries
+#       also add node_list and poi_list to zone dictionary
+updated_dict = gd.sync_geometry_between_zone_and_node_poi(zone_dict, node_dict, poi_dict)
+
+zone_dict_update, node_dict_update, poi_dict_update = updated_dict.values()
+
+```
 
 ![](doc/media/d68e685394f3b21c3dfb97ec7b3c331a.png)
 
@@ -388,7 +406,11 @@ set as purpose 1.
 
 \~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~
 
-gd.GetPoiTripRate(trip_rate_folder = "./data_folder", trip_purpose=1)
+```
+Step 5: Generate poi trip rate for each poi
+
+poi_trip_rate = gd.gen_poi_trip_rate(poi_dict_update, trip_rate_file="", trip_purpose=1)
+```
 
 ![](doc/media/a9a4ce4b1b2ece11a57b796de71cc0f5.png)
 
@@ -396,7 +418,16 @@ gd.GetPoiTripRate(trip_rate_folder = "./data_folder", trip_purpose=1)
 
 \~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~
 
-gd.GetNodeDemand()
+```python
+# Step 6: Generate node production attraction for each node based on poi_trip_rate
+
+node_prod_attr = gd.gen_node_prod_attr(node_dict_update, poi_trip_rate)
+
+# Step 6.1: Calculate zone production and attraction based on node production and attraction
+
+zone_prod_attr = gd.calc_zone_prod_attr(node_prod_attr, zone_dict_update)
+
+```
 
 ![](doc/media/b7c81fd7f161d9d3008af476b2ac6314.png)
 
@@ -409,7 +440,11 @@ accessibility matrix by setting the external folder of file *accessibility.csv*.
 
 \~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~
 
-gd.ProduceAccessMatrix(latitude=30,accessibility_folder=None)
+```python
+# Step 4: Calculate zone-to-zone od distance matrix
+
+zone_od_distance_matrix = gd.calc_zone_od_distance_matrix(zone_dict_update)
+```
 
 ![](doc/media/803976b8470aca4060792d745ccb9182.png)
 
@@ -420,7 +455,11 @@ default values of HBW, HBO and NHB are described above.
 
 \~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~
 
-gd.RunGravityModel(trip_purpose=1,a=None,b=None,c=None)
+```python
+# Step 7: Run gravity model to generate agent-based demand
+
+df_demand = gd.run_gravity_model(zone_prod_attr, zone_od_distance_matrix)
+```
 
 ![](doc/media/54f05724a65916d625ef201196a9c0cb.png)
 
@@ -431,7 +470,11 @@ zone-to-zone demand obtained by the gravity model.
 
 \~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~
 
-gd.GenerateAgentBasedDemand()
+```
+# Step 8: generate agent-based demand
+
+df_agent = gd.gen_agent_based_demand(node_prod_attr, zone_prod_attr, df_demand=df_demand)
+```
 
 ![](doc/media/6758fa4a5b00e18bb6d094776a6004a8.png)
 
@@ -440,6 +483,18 @@ before executing grid2demand. The files in the working folder will be used to
 obtain zone-to-zone demand with generated five output files highlighted in blue
 below. The output files will be saved in the current folder as the working
 dictionary.
+
+```python
+# You can also view and edit the package setting by using gd.pkg_settings
+print(gd.pkg_settings)
+
+# Step 9: Output demand, agent, zone, zone_od_dist_table, zone_od_dist_matrix files
+gd.save_demand
+gd.save_agent
+gd.save_zone
+gd.save_zone_od_dist_table
+gd.save_zone_od_dist_matrix
+```
 
 ![](doc/media/4c2865c527a29c303ef29e237a91139a.png)
 
