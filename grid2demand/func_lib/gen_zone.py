@@ -10,6 +10,7 @@ import itertools
 import pandas as pd
 import shapely
 import numpy as np
+from multiprocessing import Pool, cpu_count
 
 from grid2demand.utils_lib.net_utils import Zone, Node
 from grid2demand.utils_lib.utils import calc_distance_on_unit_sphere, int2alpha
@@ -56,9 +57,9 @@ def net2zone(node_dict: dict[int, Node],
 
     # get the boundary of the study area
     coord_x_min, coord_x_max = df_node['x_coord'].min(
-    ) - 0.1, df_node['x_coord'].max() + 0.1
+    ) - 0.000001, df_node['x_coord'].max() + 0.000001
     coord_y_min, coord_y_max = df_node['y_coord'].min(
-    ) - 0.1, df_node['y_coord'].max() + 0.1
+    ) - 0.000001, df_node['y_coord'].max() + 0.000001
 
     # Priority: num_x_blocks, number_y_blocks > cell_width, cell_height
     # if num_x_blocks and num_y_blocks are given, use them to partition the study area
@@ -187,6 +188,23 @@ def net2zone(node_dict: dict[int, Node],
     return zone_dict
 
 
+def sync_node_with_zones(args: tuple) -> tuple:
+    node_id, node, zone_dict = args
+    for zone_name in zone_dict:
+        if isinstance(node.geometry, str):
+            node.geometry = shapely.from_wkt(node.geometry)
+        if isinstance(zone_dict[zone_name].geometry, str):
+            zone_dict[zone_name].geometry = shapely.from_wkt(
+                zone_dict[zone_name].geometry)
+
+        if shapely.within(node.geometry, zone_dict[zone_name].geometry):
+            node.zone_id = zone_dict[zone_name].id
+            zone_dict[zone_name].node_id_list.append(node_id)
+            return node_id, node, zone_name
+
+    return node_id, node, None
+
+
 @func_running_time
 def sync_zone_and_node_geometry(zone_dict: dict, node_dict: dict) -> dict:
     """Map nodes to zone cells
@@ -199,19 +217,53 @@ def sync_zone_and_node_geometry(zone_dict: dict, node_dict: dict) -> dict:
         node_dict and zone_dict: dict, Update Nodes with zone id, update zone cells with node id list
 
     """
-    for node_id in node_dict:
-        for zone_name in zone_dict:
-            if isinstance(node_dict[node_id].geometry, str):
-                node_dict[node_id].geometry = shapely.from_wkt(node_dict[node_id].geometry)
-            if isinstance(zone_dict[zone_name].geometry, str):
-                zone_dict[zone_name].geometry = shapely.from_wkt(zone_dict[zone_name].geometry)
+#     for node_id in node_dict:
+#         for zone_name in zone_dict:
+#             if isinstance(node_dict[node_id].geometry, str):
+#                 node_dict[node_id].geometry = shapely.from_wkt(node_dict[node_id].geometry)
+#             if isinstance(zone_dict[zone_name].geometry, str):
+#                 zone_dict[zone_name].geometry = shapely.from_wkt(zone_dict[zone_name].geometry)
+#
+#             if shapely.within(node_dict[node_id].geometry, zone_dict[zone_name].geometry):
+#                 node_dict[node_id].zone_id = zone_dict[zone_name].id
+#                 zone_dict[zone_name].node_id_list.append(node_id)
+#                 break
 
-            if shapely.within(node_dict[node_id].geometry, zone_dict[zone_name].geometry):
-                node_dict[node_id].zone_id = zone_dict[zone_name].id
-                zone_dict[zone_name].node_id_list.append(node_id)
-                break
+    # Create a pool of worker processes
+    print(f"  : Parallel synchronizing Nodes and Zones using Pool with {cpu_count()} CPUs. Please wait...")
+    pool = Pool(processes=cpu_count())
+
+    # Prepare arguments for the pool
+    args_list = [(node_id, node, zone_dict) for node_id, node in node_dict.items()]
+
+    # Distribute work to the pool
+    results = pool.map(sync_node_with_zones, args_list)
+
+    # Gather results
+    for node_id, node, zone_name in results:
+        if zone_name is not None:
+            zone_dict[zone_name].node_id_list.append(node_id)
+        node_dict[node_id] = node
+
     print("  : Successfully synchronized zone and node geometry")
     return {"node_dict": node_dict, "zone_dict": zone_dict}
+
+
+def sync_poi_with_zones(args: tuple) -> tuple:
+    poi_id, poi, zone_dict = args
+    for zone_name in zone_dict:
+        if isinstance(poi.geometry, str):
+            poi.geometry = shapely.from_wkt(poi.geometry)
+        if isinstance(zone_dict[zone_name].geometry, str):
+            zone_dict[zone_name].geometry = shapely.from_wkt(
+                zone_dict[zone_name].geometry)
+
+        if shapely.within(poi.geometry, zone_dict[zone_name].geometry):
+            poi.zone_id = zone_dict[zone_name].id
+            zone_dict[zone_name].poi_id_list.append(poi_id)
+            return poi_id, poi, zone_name
+
+    return poi_id, poi, None
 
 
 @func_running_time
@@ -225,19 +277,56 @@ def sync_zone_and_poi_geometry(zone_dict: dict, poi_dict: dict) -> dict:
     Returns:
         dict: the updated zone_dict and poi_dict
     """
-    for poi_id in poi_dict:
-        for zone_name in zone_dict:
-            if isinstance(poi_dict[poi_id].geometry, str):
-                poi_dict[poi_id].geometry = shapely.from_wkt(poi_dict[poi_id].geometry)
-            if isinstance(zone_dict[zone_name].geometry, str):
-                zone_dict[zone_name].geometry = shapely.from_wkt(zone_dict[zone_name].geometry)
+#     for poi_id in poi_dict:
+#         for zone_name in zone_dict:
+#             if isinstance(poi_dict[poi_id].geometry, str):
+#                 poi_dict[poi_id].geometry = shapely.from_wkt(poi_dict[poi_id].geometry)
+#             if isinstance(zone_dict[zone_name].geometry, str):
+#                 zone_dict[zone_name].geometry = shapely.from_wkt(zone_dict[zone_name].geometry)
+#
+#             if shapely.within(poi_dict[poi_id].geometry, zone_dict[zone_name].geometry):
+#                 poi_dict[poi_id].zone_id = zone_dict[zone_name].id
+#                 zone_dict[zone_name].poi_id_list.append(poi_id)
+#                 break
 
-            if shapely.within(poi_dict[poi_id].geometry, zone_dict[zone_name].geometry):
-                poi_dict[poi_id].zone_id = zone_dict[zone_name].id
-                zone_dict[zone_name].poi_id_list.append(poi_id)
-                break
+    # Create a pool of worker processes
+    print(f"  : Parallel synchronizing POIs and Zones using Pool with {cpu_count()} CPUs. Please wait...")
+    pool = Pool(processes=cpu_count())
+
+    # Prepare arguments for the pool
+    args_list = [(poi_id, poi, zone_dict) for poi_id, poi in poi_dict.items()]
+
+    # Distribute work to the pool
+    results = pool.map(sync_poi_with_zones, args_list)
+
+    # Gather results
+    for poi_id, poi, zone_name in results:
+        if zone_name is not None:
+            zone_dict[zone_name].poi_id_list.append(poi_id)
+        poi_dict[poi_id] = poi
+
     print("  : Successfully synchronized zone and poi geometry")
     return {"poi_dict": poi_dict, "zone_dict": zone_dict}
+
+
+def distance_calculation(args: tuple) -> tuple:
+    i, j, df_zone = args
+    return (
+        (df_zone.loc[i, 'name'], df_zone.loc[j, 'name']),
+        {
+            "o_zone_id": df_zone.loc[i, 'id'],
+            "o_zone_name": df_zone.loc[i, 'name'],
+            "d_zone_id": df_zone.loc[j, 'id'],
+            "d_zone_name": df_zone.loc[j, 'name'],
+            "dist_km": calc_distance_on_unit_sphere(
+                df_zone.loc[i, 'centroid'],
+                df_zone.loc[j, 'centroid'],
+                unit='km'),
+            "volume": 0,
+            "geometry": shapely.LineString(
+                [df_zone.loc[i, 'centroid'], df_zone.loc[j, 'centroid']]),
+        }
+    )
 
 
 @func_running_time
@@ -261,21 +350,35 @@ def calc_zone_od_matrix(zone_dict: dict) -> dict[tuple[str, str], dict]:
     len_df_zone = len(df_zone)
 
     # calculate zone-to-zone distance matrix and save to dict
-    dist_dict = {
-        (df_zone.loc[i, 'name'], df_zone.loc[j, 'name']): {
-            "o_zone_id": df_zone.loc[i, 'id'],
-            "o_zone_name": df_zone.loc[i, 'name'],
-            "d_zone_id": df_zone.loc[j, 'id'],
-            "d_zone_name": df_zone.loc[j, 'name'],
-            "dist_km": calc_distance_on_unit_sphere(
-                df_zone.loc[i, 'centroid'],
-                df_zone.loc[j, 'centroid'],
-                unit='km'),
-            "volume": 0,
-            "geometry": shapely.LineString(
-                [df_zone.loc[i, 'centroid'], df_zone.loc[j, 'centroid']]),
-        }
-        for i, j in itertools.product(range(len_df_zone), range(len_df_zone))
-    }
+    # dist_dict = {
+    #     (df_zone.loc[i, 'name'], df_zone.loc[j, 'name']): {
+    #         "o_zone_id": df_zone.loc[i, 'id'],
+    #         "o_zone_name": df_zone.loc[i, 'name'],
+    #         "d_zone_id": df_zone.loc[j, 'id'],
+    #         "d_zone_name": df_zone.loc[j, 'name'],
+    #         "dist_km": calc_distance_on_unit_sphere(
+    #             df_zone.loc[i, 'centroid'],
+    #             df_zone.loc[j, 'centroid'],
+    #             unit='km'),
+    #         "volume": 0,
+    #         "geometry": shapely.LineString(
+    #             [df_zone.loc[i, 'centroid'], df_zone.loc[j, 'centroid']]),
+    #     }
+    #     for i, j in itertools.product(range(len_df_zone), range(len_df_zone))
+    # }
+
+    # Prepare arguments for the pool
+    print(f"  : Parallel calculating zone-to-zone distance matrix using Pool with {cpu_count()} CPUs. Please wait...")
+    args_list = [(i, j, df_zone) for i, j in itertools.product(range(len_df_zone), range(len_df_zone))]
+
+    # Create a pool of worker processes
+    pool = Pool(processes=cpu_count())
+
+    # Distribute work to the pool
+    results = pool.map(distance_calculation, args_list)
+
+    # Gather results
+    dist_dict = dict(results)
+
     print("  : Successfully calculated zone-to-zone distance matrix")
     return dist_dict
