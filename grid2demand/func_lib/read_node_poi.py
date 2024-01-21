@@ -11,7 +11,7 @@ import shapely
 import os
 from multiprocessing import Pool
 
-from grid2demand.utils_lib.net_utils import Node, POI
+from grid2demand.utils_lib.net_utils import Node, POI, Zone
 from grid2demand.utils_lib.pkg_settings import pkg_settings
 from grid2demand.utils_lib.utils import (func_running_time, path2linux,
                                          get_filenames_from_folder_by_type,
@@ -186,6 +186,27 @@ def read_poi(poi_file: str = "", cpu_cores: int = 1) -> dict[int: POI]:
 
     print(f"  : Successfully loaded poi.csv: {len(poi_dict_final)} POIs loaded.")
     return poi_dict_final
+
+
+def read_zone(zone_file: str = "", cpu_cores: int = 1) -> dict[int: Zone]:
+    """_summary_
+
+    Raises:
+        FileNotFoundError: _description_
+        FileNotFoundError: _description_
+
+    Returns:
+        _type_: _description_
+    """
+
+    # convert path to linux path
+    zone_file = path2linux(zone_file)
+
+    # check if zone_file exists
+    if not os.path.exists(zone_file):
+        raise FileNotFoundError(f"File: {zone_file} does not exist.")
+
+
 
 
 @func_running_time

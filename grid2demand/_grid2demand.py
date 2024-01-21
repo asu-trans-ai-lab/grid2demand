@@ -31,7 +31,9 @@ class GRID2DEMAND:
         # check input directory
         if not input_dir:
             self.input_dir = path2linux(os.getcwd())
-            print(f"  : Input directory is not specified. Use current working directory {self.input_dir} as input directory. Please make sure node.csv and poi.csv are in {self.input_dir}.")
+            print(f"  : Input directory is not specified.
+                  Use current working directory {self.input_dir} as input directory.
+                  Please make sure node.csv and poi.csv are in {self.input_dir}.")
         else:
             self.input_dir = path2linux(input_dir)
         self.output_dir = path2linux(output_dir) if output_dir else self.input_dir

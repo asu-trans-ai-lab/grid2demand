@@ -7,10 +7,20 @@
 import os
 
 pkg_settings = {
+    # specify required files for grid2demand, and optional files for grid2demand
     "required_files": ["node.csv", "poi.csv"],
-    "node_required_fields": ["node_id", "x_coord", "y_coord", "activity_type", "is_boundary", "poi_id"],
+    "optional_files": ["zone.csv"],
+
+    # specify required fields for node.csv and poi.csv and zone.csv (optional)
+    "node_required_fields": ["node_id", "x_coord", "y_coord",
+                             "activity_type", "is_boundary", "poi_id"],
     "poi_required_fields": ["poi_id", "building", "centroid", "area", "geometry"],
+    "zone_required_fields": ["zone_id", "geometry"],
+
+    # if input data is too large, you can split the input data into chunks and process them separately
     "data_chunk_size": 100000,
+
+    # run the program in parallel mode, if cpu_cores > 1
     "set_cpu_cores": os.cpu_count(),
 
     # the initial value for trip purpose, usr can add more trip purposes
