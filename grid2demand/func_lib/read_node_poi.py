@@ -11,7 +11,7 @@ import shapely
 import os
 from multiprocessing import Pool
 
-from grid2demand.utils_lib.net_utils import Node, POI
+from grid2demand.utils_lib.net_utils import Node, POI, Zone
 from grid2demand.utils_lib.pkg_settings import pkg_settings
 from grid2demand.utils_lib.utils import (func_running_time, path2linux,
                                          get_filenames_from_folder_by_type,
@@ -32,27 +32,30 @@ def create_node_from_dataframe(df_node: pd.DataFrame) -> dict[int, Node]:
 
     node_dict = {}
     for i in range(len(df_node)):
-        # check activity location tab
-        activity_type = df_node.loc[i, 'activity_type']
-        boundary_flag = df_node.loc[i, 'is_boundary']
-        if activity_type in ["residential", "poi"]:
-            activity_location_tab = activity_type
-        elif boundary_flag == 1:
-            activity_location_tab = "boundary"
-        else:
-            activity_location_tab = ''
+        try:
+            # check activity location tab
+            activity_type = df_node.loc[i, 'activity_type']
+            boundary_flag = df_node.loc[i, 'is_boundary']
+            if activity_type in ["residential", "poi"]:
+                activity_location_tab = activity_type
+            elif boundary_flag == 1:
+                activity_location_tab = "boundary"
+            else:
+                activity_location_tab = ''
 
-        node = Node(
-            id=df_node.loc[i, 'node_id'],
-            activity_type=activity_type,
-            activity_location_tab=activity_location_tab,
-            x_coord=df_node.loc[i, 'x_coord'],
-            y_coord=df_node.loc[i, 'y_coord'],
-            poi_id=df_node.loc[i, 'poi_id'],
-            boundary_flag=boundary_flag,
-            geometry=shapely.Point(df_node.loc[i, 'x_coord'], df_node.loc[i, 'y_coord'])
-        )
-        node_dict[df_node.loc[i, 'node_id']] = node
+            node = Node(
+                id=df_node.loc[i, 'node_id'],
+                activity_type=activity_type,
+                activity_location_tab=activity_location_tab,
+                x_coord=df_node.loc[i, 'x_coord'],
+                y_coord=df_node.loc[i, 'y_coord'],
+                poi_id=df_node.loc[i, 'poi_id'],
+                boundary_flag=boundary_flag,
+                geometry=shapely.Point(df_node.loc[i, 'x_coord'], df_node.loc[i, 'y_coord'])
+            )
+            node_dict[df_node.loc[i, 'node_id']] = node
+        except Exception as e:
+            print(f"  : Unable to create node: {df_node.loc[i, 'node_id']}, error: {e}")
     return node_dict
 
 
@@ -119,20 +122,22 @@ def create_poi_from_dataframe(df_poi: pd.DataFrame) -> dict[int, POI]:
     poi_dict = {}
 
     for i in range(len(df_poi)):
-
-        centroid = shapely.from_wkt(df_poi.loc[i, 'centroid'])
-        area = df_poi.loc[i, 'area']
-        if area > 90000:
-            area = 0
-        poi = POI(
-            id=df_poi.loc[i, 'poi_id'],
-            x_coord=centroid.x,
-            y_coord=centroid.y,
-            area=[area, area * 10.7639104],  # square meter and square feet
-            poi_type=df_poi.loc[i, 'building'] or "",
-            geometry=df_poi.loc[i, "geometry"]
-        )
-        poi_dict[df_poi.loc[i, 'poi_id']] = poi
+        try:
+            centroid = shapely.from_wkt(df_poi.loc[i, 'centroid'])
+            area = df_poi.loc[i, 'area']
+            if area > 90000:
+                area = 0
+            poi = POI(
+                id=df_poi.loc[i, 'poi_id'],
+                x_coord=centroid.x,
+                y_coord=centroid.y,
+                area=[area, area * 10.7639104],  # square meter and square feet
+                poi_type=df_poi.loc[i, 'building'] or "",
+                geometry=df_poi.loc[i, "geometry"]
+            )
+            poi_dict[df_poi.loc[i, 'poi_id']] = poi
+        except Exception as e:
+            print(f"  : Unable to create poi: {df_poi.loc[i, 'poi_id']}, error: {e}")
     return poi_dict
 
 
@@ -186,6 +191,102 @@ def read_poi(poi_file: str = "", cpu_cores: int = 1) -> dict[int: POI]:
 
     print(f"  : Successfully loaded poi.csv: {len(poi_dict_final)} POIs loaded.")
     return poi_dict_final
+
+
+def create_zone_from_dataframe(df_zone: pd.DataFrame) -> dict[int, Zone]:
+    """Create Zone from df_zone.
+
+    Args:
+        df_zone (pd.DataFrame): the dataframe of zone from zone.csv, the required fields are: [zone_id, geometry]
+
+    Returns:
+        dict[int, Zone]: a dict of Zones.{zone_id: Zone}
+    """
+    df_zone = df_zone.reset_index(drop=True)
+    zone_dict = {}
+
+    for i in range(len(df_zone)):
+        try:
+            zone_id = df_zone.loc[i, 'zone_id']
+            zone_geometry = df_zone.loc[i, 'geometry']
+
+            zone_geometry_shapely = shapely.from_wkt(zone_geometry)
+            centroid_wkt = zone_geometry_shapely.centroid.wkt
+            centroid_x = zone_geometry_shapely.centroid.x
+            centroid_y = zone_geometry_shapely.centroid.y
+            zone = Zone(
+                id=zone_id,
+                name=zone_id,
+                centroid_x=centroid_x,
+                centroid_y=centroid_y,
+                centroid=centroid_wkt,
+                x_max=zone_geometry_shapely.bounds[2],
+                x_min=zone_geometry_shapely.bounds[0],
+                y_max=zone_geometry_shapely.bounds[3],
+                y_min=zone_geometry_shapely.bounds[1],
+                node_id_list=[],
+                poi_id_list=[],
+                production=0,
+                attraction=0,
+                production_fixed=0,
+                attraction_fixed=0,
+                geometry=zone_geometry
+            )
+
+            zone_dict[zone_id] = zone
+        except Exception as e:
+            print(f"  : Unable to create zone: {zone_id}, error: {e}")
+    return zone_dict
+
+
+@func_running_time
+def read_zone(zone_file: str = "", cpu_cores: int = 1) -> dict[int: Zone]:
+    """_summary_
+
+    Raises:
+        FileNotFoundError: _description_
+        FileNotFoundError: _description_
+
+    Returns:
+        _type_: _description_
+    """
+
+    # convert path to linux path
+    zone_file = path2linux(zone_file)
+
+    # check if zone_file exists
+    if not os.path.exists(zone_file):
+        raise FileNotFoundError(f"File: {zone_file} does not exist.")
+
+    # load default settings for zone required fields and chunk size
+    zone_required_cols = pkg_settings["zone_required_fields"]
+    chunk_size = pkg_settings["data_chunk_size"]
+    print(f"  : Reading zone.csv with specified columns: {zone_required_cols} \
+              \n   and chunksize {chunk_size} for iterations...")
+
+    # check whether required fields are in zone.csv
+    df_zone = pd.read_csv(zone_file, nrows=1)
+    col_names = df_zone.columns.tolist()
+    for col in zone_required_cols:
+        if col not in col_names:
+            raise FileNotFoundError(f"Required column: {col} is not in zone.csv. \
+                Please make sure you have {zone_required_cols} in zone.csv.")
+
+    # load zone.csv with specified columns and chunksize for iterations
+    df_zone_chunk = pd.read_csv(zone_file, usecols=zone_required_cols, chunksize=chunk_size)
+
+    # Parallel processing using Pool
+    print(f"  : Parallel creating Zones using Pool with {cpu_cores} CPUs. Please wait...")
+    zone_dict_final = {}
+
+    with Pool(cpu_cores) as pool:
+        results = pool.map(create_zone_from_dataframe, df_zone_chunk)
+
+    for zone_dict in results:
+        zone_dict_final.update(zone_dict)
+
+    print(f"  : Successfully loaded zone.csv: {len(zone_dict_final)} Zones loaded.")
+    return zone_dict_final
 
 
 @func_running_time

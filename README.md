@@ -5,7 +5,7 @@ for engaging traffic simulation games such as A/B street and DTALite?
 \*How to teach our undergraduate students the important **trip generation and
 trip distribution steps**, using their own beautiful campus as examples?
 \*How to analyze the resident locations and other land use properties using
-flexible **grid zones, based on POI data from Openstreetmap** data and using
+flexible **grid zones, based on POI data from OpenStreetMap** data and using
 **open transportation modeling format**
 
 ![](doc/media/9ed9631f17469d631f9dfe97e4320c10.png)
@@ -14,14 +14,22 @@ flexible **grid zones, based on POI data from Openstreetmap** data and using
 If you have not used Grid2demand before, here are some advices to get started.
 
 1. Read the user guide or watch the video at https://www.youtube.com/watch?v=EfjCERQQGTs.
+
 2. Obtain a map.osm or map.osm.pbf file for your area of interest at https://extract.bbbike.org/ or openstreetmap.org
+
 3. Look at the examples at Google colab environment https://github.com/asu-trans-ai-lab/grid2demand/blob/main/grid2demand_tutorial.ipynb
-4. Install Python, Grid2demand and QGIS on your computer or using google colab environmentModify one of the examples to implement your own model.
-5. Post your questions on the users group: groups.google.com/d/forum/grid2demand
+
+4. Install Python, Grid2demand and QGIS on your computer or using Google Colab environment to modify one of the examples to implement your own model.
+
+5. Post your questions on the users group: 
+
+     GitHub: https://github.com/asu-trans-ai-lab/grid2demand/issues
+
+     Google: groups.google.com/d/forum/grid2demand
 
 Open-source tool of grid2demand aims to provide an open-source quick demand
 generation python package, which can work anywhere in the world, thanks to open
-data from [Openstreetmap](Openstreetmap) users.
+data from [OpenStreetMap](Openstreetmap) users.
 
 To know more about this tool, please check out the 3rd mini teaching lesson in
 our podcast series, [https://www.youtube.com/watch?v=EfjCERQQGTs](https://www.youtube.com/watch?v=EfjCERQQGTs).
@@ -47,7 +55,7 @@ which is also accessible through Google Colab.
 
 Mini teaching lesson: [https://www.youtube.com/watch?v=EfjCERQQGTs](https://www.youtube.com/watch?v=EfjCERQQGTs)
 
-**I．Introduction and Background Knowledge**
+**I. Introduction and Background Knowledge**
 
 Trip generation and trip distribution are the first 2 steps in the larger
 context of the 4-step process in transportation planning. The standard four
@@ -382,7 +390,11 @@ node_dict, poi_dict = gd.load_network.values()
 zone_dict = gd.net2zone(node_dict, num_x_blocks=10,num_y_blocks=10)
 
 # Generate zone based on grid size with 10 km width and 10km height for each zone
-# zone_dict = gd.net2zone(node_dict, cell_width=10, cell_height=10)
+# zone_dict = gd.net2zone(node_dict, cell_width=10, cell_height=10, unit="km")
+
+# if you have your own zone.csv(TAZs), we can generate zones from your personal TAZs
+# zone_dict = gd.taz2zone()
+
 
 # Synchronize geometry info between zone, node and poi
 #       add zone_id to node and poi dictionaries

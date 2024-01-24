@@ -41,9 +41,12 @@ if __name__ == "__main__":
     # Step 2: Generate zone dictionary from node dictionary by specifying number of x blocks and y blocks
     zone_dict = gd.net2zone(node_dict, num_x_blocks=10, num_y_blocks=10)
 
-    # # Generate zone based on grid size with 10 km width and 10km height for each zone
+    # Step 2: Generate zone based on grid size with 10 km width and 10km height for each zone
     # zone_dict = gd.net2zone(node_dict, cell_width=10, cell_height=10)
 
+    # Step 2: Generate zone dictionary from zone.cvs(TAZs) prepared from users.
+    # zone_dict = gd.taz2zone()
+    
     # Step 3: synchronize geometry info between zone, node and poi
     #       add zone_id to node and poi dictionaries
     #       also add node_list and poi_list to zone dictionary
@@ -98,7 +101,7 @@ The grid2demand project welcomes your expertise and enthusiasm!
 Small improvements or fixes are always appreciated. If you are considering larger contributions to the source code, please contact us through email:
 
     Xiangyong Luo :  luoxiangyong01@gmail.com
-
+    
     Dr. Xuesong Simon Zhou :  xzhou74@asu.edu
 
 Writing code isn't the only way to contribute to grid2demand. You can also:

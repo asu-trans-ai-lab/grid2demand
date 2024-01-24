@@ -25,6 +25,7 @@ class Node:
         poi_id: The POI ID of the node. default = -1; to be assigned to a POI ID after reading poi.csv
         activity_type: The activity type of the node. provided from osm2gmns such as motoway, residential, ...
         activity_location_tab: The activity location tab of the node.
+        geometry: The geometry of the node. based on wkt format.
     """
     id: int = 0
     x_coord: float = 0
@@ -49,7 +50,7 @@ class POI:
         y_coord: The y coordinate of the POI.
         count: The count of the POI. Total POI values for this POI node or POI zone
         area: The area of the POI. Total area of polygon for this POI zone. unit is square meter
-        type: The type of the POI. Default is empty string
+        poi_type: The type of the POI. Default is empty string
         geometry: The polygon of the POI. based on wkt format. Default is empty string
         zone_id: The zone ID. mapping from zone
     """
@@ -79,12 +80,13 @@ class Zone:
         x_min: The min x coordinate of the zone.
         y_max: The max y coordinate of the zone.
         y_min: The min y coordinate of the zone.
-        poi_count: The POI count of the zone. Total POIs in this zone
         node_id_list: Node IDs which belong to this zone.
         poi_id_list: The POIs which belong to this zone.
         production: The production of the zone.
         attraction: The attraction of the zone.
-        polygon: The polygon of the zone. based on wkt format
+        production_fixed: The fixed production of the zone (implement different models).
+        attraction_fixed: The fixed attraction of the zone (implement different models).
+        geometry: The geometry of the zone. based on wkt format
     """
 
     id: int = 0
@@ -110,18 +112,25 @@ class Agent:
     """An agent in the network.
 
     Attributes:
-        agent_id: The agent ID.
-        agent_type: The agent type.
-        o_zone_id: The origin zone ID.
-        d_zone_id: The destination zone ID.
+        id: The agent ID. default = 0
+        agent_type: The agent type. default = ''
+        o_zone_id: The origin zone ID. default = 0
+        d_zone_id: The destination zone ID. default = 0
+        o_zone_name: The origin zone name. default = ''
+        d_zone_name: The destination zone name. default = ''
+
         o_node_id: The origin node ID. default = 0
         d_node_id: The destination node ID. default = 0
+
         path_node_seq_no_list: The path node sequence number list. default = []
         path_link_seq_no_list: The path link sequence number list. default = []
-        current_link_se_no_in_path: The current link sequence number in path. default = 0
         path_cost: The path cost. default = 0
+
         b_generated: The flag of whether the agent is generated. default = False
         b_complete_trip: The flag of whether the agent completes the trip. default = False
+
+        geometry: The geometry of the agent. based on wkt format. default = ''
+        departure_time: The departure time of the agent. unit is second. default = 0
     """
 
     id: int = 0

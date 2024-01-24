@@ -8,3 +8,8 @@
 7. Advanced Traffic Assignment: Alternative or user-defined volume delay function; HOV assignment; Multi-modal multi-class assignment(MMA);  Volume-Dependent Turning delays and signal opeimization traffic assignment; Combined trip distribution- assignment model; Create volume delay function DDLs
 8. Good source: https://github.com/joshchea/python-tdm/tree/master
 9. Link performance functions  t = $t_f [1 + \alpha(\dfrac{v}{c})^\beta)] $
+10. Add save node and poi function
+11. user can update trip rate
+12. for zone file, change change column id to zone_id
+13. change file name from zone.csv to zone_grid2demand.csv
+14.

@@ -13,7 +13,7 @@ from grid2demand.utils_lib.utils import (get_filenames_from_folder_by_type,
                                          check_required_files_exist,
                                          gen_unique_filename,
                                          path2linux)
-from grid2demand.func_lib.read_node_poi import read_node, read_poi, read_network
+from grid2demand.func_lib.read_node_poi import read_node, read_poi, read_network, read_zone
 from grid2demand.func_lib.gen_zone import (net2zone,
                                            sync_zone_and_node_geometry,
                                            sync_zone_and_poi_geometry,
@@ -31,13 +31,17 @@ class GRID2DEMAND:
         # check input directory
         if not input_dir:
             self.input_dir = path2linux(os.getcwd())
-            print(f"  : Input directory is not specified. Use current working directory {self.input_dir} as input directory. Please make sure node.csv and poi.csv are in {self.input_dir}.")
+            print(f"  : Input directory is not specified. \
+                  Use current working directory {self.input_dir} as input directory. \
+                  Please make sure node.csv and poi.csv are in {self.input_dir}.")
         else:
             self.input_dir = path2linux(input_dir)
         self.output_dir = path2linux(output_dir) if output_dir else self.input_dir
 
         # check input directory
         self.__check_input_dir()
+
+        # load default package settings, user can modify the settings before running the model
         self.__load_pkg_settings()
 
     def __check_input_dir(self) -> None:
@@ -50,6 +54,7 @@ class GRID2DEMAND:
         Returns:
             None: will generate self.path_node and self.path_poi for class instance.
         """
+
         print("  : Checking input directory...")
         if not os.path.isdir(self.input_dir):
             raise NotADirectoryError(f"Error: Input directory {self.input_dir} does not exist.")
@@ -63,10 +68,21 @@ class GRID2DEMAND:
 
         self.path_node = path2linux(os.path.join(self.input_dir, "node.csv"))
         self.path_poi = path2linux(os.path.join(self.input_dir, "poi.csv"))
+        self.path_zone = ""
+
+        # check optional files in input directory (zone.csv)
+        optional_files = pkg_settings.get("optional_files", [])
+        is_optional_files_exist = check_required_files_exist(optional_files, dir_files)
+
+        if is_optional_files_exist:
+            print(f"  : Optional files: {optional_files} are found in {self.input_dir}.")
+            print( "  : Optional files could be used in the following steps.")
+            self.path_zone = path2linux(os.path.join(self.input_dir, "zone.csv"))
+
         print("  : Input directory is valid.\n")
 
     def __load_pkg_settings(self) -> None:
-        print("  : Loading package settings...")
+        print("  : Loading default package settings...")
         self.pkg_settings = pkg_settings
         print("  : Package settings loaded successfully.\n")
 
@@ -151,9 +167,31 @@ class GRID2DEMAND:
         Returns:
             dict[str, Zone]: zone_dict {zone_name: Zone}
         """
+        print("  : Note: This method will generate grid-based zones from node_dict. \
+              \n  : If you want to use your own zones(TAZs), \
+              \n  : please skip this method and use taz2zone() instead. \n")
+
         print("  : Generating zone dictionary...")
         self.zone_dict = net2zone(node_dict, num_x_blocks, num_y_blocks, cell_width, cell_height, unit)
         return self.zone_dict
+
+    def taz2zone(self) -> dict[str, Zone]:
+
+        print("  : Note: This method will generate zones from zone.csv (TAZs). \
+                \n  : If you want to use grid-based zones (generate zones from node_dict) , \
+                \n  : please skip this method and use net2zone() instead. \n")
+
+        if self.path_zone:
+            print("  : Generating zone dictionary...")
+            self.zone_dict = read_zone(self.path_zone, self.pkg_settings.get("set_cpu_cores"))
+
+            return self.zone_dict
+
+        print("  : zone.csv does not exist in your input directory. \
+              \n    Please check your input directory. \
+              \n    Or you can use net2zone() to generate grid-based zones from node_dict.")
+        return None
+
 
     def sync_geometry_between_zone_and_node_poi(self, zone_dict: dict = "",
                                                 node_dict: dict = "", poi_dict: dict = "") -> dict[str, dict]:
