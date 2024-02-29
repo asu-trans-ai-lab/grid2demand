@@ -8,8 +8,8 @@
 import pandas as pd
 import os
 
-from grid2demand.utils_lib.utils import path2linux
 from grid2demand.utils_lib.pkg_settings import pkg_settings
+from pyufunc import path2linux
 
 
 def gen_poi_trip_rate(poi_dict: dict,

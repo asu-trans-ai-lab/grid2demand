@@ -6,9 +6,9 @@
 ##############################################################
 
 import pandas as pd
-from grid2demand.utils_lib.net_utils import Agent
 from random import choice, uniform
 import math
+from pyufunc import gmns_geo
 
 
 def gen_agent_based_demand(node_dict: dict, zone_dict: dict,
@@ -44,7 +44,7 @@ def gen_agent_based_demand(node_dict: dict, zone_dict: dict,
                 departure_time = f"07{rand_time}"
 
             agent_lst.append(
-                Agent(
+                gmns_geo.Agent(
                     id=i + 1,
                     agent_type=agent_type,
                     o_zone_id=o_zone_id,

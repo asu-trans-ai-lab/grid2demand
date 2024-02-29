@@ -13,9 +13,9 @@ import numpy as np
 from multiprocessing import Pool, cpu_count
 
 from grid2demand.utils_lib.net_utils import Zone, Node
-from grid2demand.utils_lib.utils import calc_distance_on_unit_sphere, int2alpha
-from grid2demand.utils_lib.utils import func_running_time
 from grid2demand.utils_lib.pkg_settings import pkg_settings
+
+from pyufunc import (calc_distance_on_unit_sphere, cvt_int_to_alpha, func_running_time)
 
 
 @func_running_time
@@ -160,7 +160,7 @@ def net2zone(node_dict: dict[int, Node],
             y_max = y_block_maxmin_list[j][1]
 
             cell_polygon = generate_polygon(x_min, x_max, y_min, y_max)
-            row_alpha = int2alpha(j)
+            row_alpha = cvt_int_to_alpha(j)
             zone_dict[f"{row_alpha}{i}"] = Zone(
                 id=zone_id_flag,
                 name=f"{row_alpha}{i}",

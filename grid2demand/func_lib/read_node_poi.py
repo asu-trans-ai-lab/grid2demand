@@ -13,9 +13,9 @@ from multiprocessing import Pool
 
 from grid2demand.utils_lib.net_utils import Node, POI, Zone
 from grid2demand.utils_lib.pkg_settings import pkg_settings
-from grid2demand.utils_lib.utils import (func_running_time, path2linux,
-                                         get_filenames_from_folder_by_type,
-                                         check_required_files_exist)
+from grid2demand.utils_lib.utils import check_required_files_exist
+from pyufunc import (func_running_time, path2linux,
+                     get_filenames_by_ext,)
 
 
 def create_node_from_dataframe(df_node: pd.DataFrame) -> dict[int, Node]:
@@ -329,7 +329,7 @@ def read_network(input_folder: str = "", cpu_cores: int = 1) -> dict[str: dict]:
         raise FileNotFoundError(f"Input folder: {input_folder} does not exist.")
 
     # get all csv files in the folder
-    dir_files = get_filenames_from_folder_by_type(input_folder, "csv")
+    dir_files = get_filenames_by_ext(input_folder, "csv")
 
     # check if required files exist
     is_required_files_exist = check_required_files_exist(pkg_settings["required_files"], dir_files)

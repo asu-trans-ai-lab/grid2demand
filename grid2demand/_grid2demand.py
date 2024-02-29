@@ -9,10 +9,8 @@ import os
 import pandas as pd
 from grid2demand.utils_lib.pkg_settings import pkg_settings
 from grid2demand.utils_lib.net_utils import Node, POI, Zone, Agent
-from grid2demand.utils_lib.utils import (get_filenames_from_folder_by_type,
-                                         check_required_files_exist,
-                                         gen_unique_filename,
-                                         path2linux)
+from grid2demand.utils_lib.utils import check_required_files_exist
+
 from grid2demand.func_lib.read_node_poi import read_node, read_poi, read_network, read_zone
 from grid2demand.func_lib.gen_zone import (net2zone,
                                            sync_zone_and_node_geometry,
@@ -22,6 +20,9 @@ from grid2demand.func_lib.trip_rate_production_attraction import (gen_poi_trip_r
                                                                   gen_node_prod_attr)
 from grid2demand.func_lib.gravity_model import run_gravity_model, calc_zone_production_attraction
 from grid2demand.func_lib.gen_agent_demand import gen_agent_based_demand
+
+from pyufunc import (path2linux, get_filenames_by_ext,
+                     generate_unique_filename)
 
 
 class GRID2DEMAND:
@@ -60,7 +61,7 @@ class GRID2DEMAND:
             raise NotADirectoryError(f"Error: Input directory {self.input_dir} does not exist.")
 
         # check required files in input directory
-        dir_files = get_filenames_from_folder_by_type(self.input_dir, "csv")
+        dir_files = get_filenames_by_ext(self.input_dir, "csv")
         required_files = pkg_settings.get("required_files", [])
         is_required_files_exist = check_required_files_exist(required_files, dir_files)
         if not is_required_files_exist:
@@ -382,7 +383,7 @@ class GRID2DEMAND:
             print("Error: df_demand does not exist. Please run run_gravity_model() first.")
             return
 
-        path_output = gen_unique_filename(path2linux(os.path.join(self.output_dir, "demand.csv")))
+        path_output = generate_unique_filename(path2linux(os.path.join(self.output_dir, "demand.csv")))
         df_demand_non_zero = self.df_demand[self.df_demand["volume"] > 0]
         df_demand_non_zero.to_csv(path_output, index=False)
         print(f"  : Successfully saved demand.csv to {self.output_dir}")
@@ -394,7 +395,7 @@ class GRID2DEMAND:
             print("Error: df_agent does not exist. Please run gen_agent_based_demand() first.")
             return
 
-        path_output = gen_unique_filename(path2linux(os.path.join(self.output_dir, "agent.csv")))
+        path_output = generate_unique_filename(path2linux(os.path.join(self.output_dir, "agent.csv")))
         self.df_agent.to_csv(path_output, index=False)
         print(f"  : Successfully saved agent.csv to {self.output_dir}")
 
@@ -405,7 +406,7 @@ class GRID2DEMAND:
             print("Error: zone_dict does not exist. Please run sync_geometry_between_zone_and_node_poi() first.")
             return
 
-        path_output = gen_unique_filename(path2linux(os.path.join(self.output_dir, "zone.csv")))
+        path_output = generate_unique_filename(path2linux(os.path.join(self.output_dir, "zone.csv")))
         zone_df = pd.DataFrame(self.zone_dict.values())
         zone_df.to_csv(path_output, index=False)
         print(f"  : Successfully saved zone.csv to {self.output_dir}")
@@ -417,7 +418,7 @@ class GRID2DEMAND:
             print("Error: zone_od_dist_matrix does not exist. Please run calc_zone_od_distance_matrix() first.")
             return
 
-        path_output = gen_unique_filename(path2linux(os.path.join(self.output_dir, "zone_od_dist_table.csv")))
+        path_output = generate_unique_filename(path2linux(os.path.join(self.output_dir, "zone_od_dist_table.csv")))
         zone_od_dist_table_df = pd.DataFrame(self.zone_od_dist_matrix.values())
         zone_od_dist_table_df = zone_od_dist_table_df[["o_zone_id", "o_zone_name", "d_zone_id", "d_zone_name", "dist_km", "geometry"]]
         zone_od_dist_table_df.to_csv(path_output, index=False)
@@ -430,7 +431,7 @@ class GRID2DEMAND:
             print("Error: zone_od_dist_matrix does not exist. Please run calc_zone_od_distance_matrix() first.")
             return
 
-        path_output = gen_unique_filename(path2linux(os.path.join(self.output_dir, "zone_od_dist_matrix.csv")))
+        path_output = generate_unique_filename(path2linux(os.path.join(self.output_dir, "zone_od_dist_matrix.csv")))
 
         zone_od_dist_table_df = pd.DataFrame(self.zone_od_dist_matrix.values())
         zone_od_dist_table_df = zone_od_dist_table_df[["o_zone_id", "o_zone_name", "d_zone_id", "d_zone_name", "dist_km", "geometry"]]
