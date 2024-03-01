@@ -1,0 +1,21 @@
+/*
+ * Filename: c:\Users\roche\Anaconda_workspace\001_Github\grid2demand\requirements copy.txt
+ * Path: c:\Users\roche
+ * Created Date: Friday, March 1st 2024, 4:40:19 pm
+ * Author: Mr. Xiangyong Luo
+ *
+ * Copyright (c) 2024 Mr. Xiangyong Luo
+ */
+
+
+numpy>=1.26.4
+osm2gmns>=0.7.5
+pandas>=2.2.1
+pytest>=8.0.2
+pyufunc>=0.2.1
+setuptools>=68.2.2
+Shapely>=2.0.3
+urllib3
+requests
+tqdm
+beautifulsoup4
