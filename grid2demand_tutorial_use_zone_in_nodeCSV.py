@@ -21,10 +21,10 @@ if __name__ == "__main__":
 
     # Step 2: Generate zone dictionary from node dictionary
     #   by specifying number of x blocks and y blocks
-    zone_dict = gd.net2zone(node_dict, num_x_blocks=10, num_y_blocks=10)
+    zone_dict = gd.net2zone(node_dict, num_x_blocks=10, num_y_blocks=10, use_zone_id=True)
 
-    # Step 2: Generate zone based on grid size with 10 km width and 10 km height for each zone
-    # zone_dict = gd.net2zone(node_dict, cell_width=10, cell_height=10)
+    # Step 2: Generate zone based on grid size with 10 km width and 10km height for each zone
+    # zone_dict = gd.net2zone(node_dict, cell_width=10, cell_height=10, use_zone_id=True)
 
     # Step 3: synchronize geometry info between zone, node and poi
     #       add zone_id to node and poi dictionaries
@@ -45,7 +45,7 @@ if __name__ == "__main__":
     zone_prod_attr = gd.calc_zone_prod_attr(node_prod_attr, zone_dict_update)
 
     # Step 7: Run gravity model to generate agent-based demand
-    df_demand = gd.run_gravity_model(zone_prod_attr, zone_od_dist_matrix)
+    df_demand = gd.run_gravity_model(zone_prod_attr, zone_od_dist_matrix, use_zone_id=True)
 
     # Step 8: generate agent-based demand
     df_agent = gd.gen_agent_based_demand(node_prod_attr, zone_prod_attr, df_demand=df_demand)
