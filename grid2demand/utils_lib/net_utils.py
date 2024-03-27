@@ -42,6 +42,7 @@ class Node:
     geometry: str = ''
     __zone_id: int = -1
 
+    @property
     def as_dict(self):
         return asdict(self)
 
@@ -70,6 +71,10 @@ class POI:
     trip_rate: dict = field(default_factory=dict)
     geometry: str = ''
     zone_id: int = 0
+
+    @property
+    def as_dict(self):
+        return asdict(self)
 
 
 @dataclass
@@ -111,6 +116,10 @@ class Zone:
     production_fixed: float = 0
     attraction_fixed: float = 0
     geometry: str = ''
+
+    @property
+    def as_dict(self):
+        return asdict(self)
 
 
 @dataclass
@@ -156,3 +165,7 @@ class Agent:
     b_complete_trip: bool = False
     geometry: str = ''
     departure_time: int = 0  # unit is second
+
+    @property
+    def as_dict(self):
+        return asdict(self)

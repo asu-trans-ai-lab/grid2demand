@@ -43,10 +43,10 @@ def create_node_from_dataframe(df_node: pd.DataFrame) -> dict[int, Node]:
             else:
                 activity_location_tab = ''
 
-            # check zone_id field in node.csv
+            # check whether zone_id field in node.csv or not
             # if zone_id field exists and is not empty, assign it to __zone_id
             try:
-                __zone_id = df_node.loc[i, 'zone_id']
+                __zone_id = df_node.loc[i, 'zone_id'] or -1
             except Exception:
                 __zone_id = -1
 
@@ -97,7 +97,6 @@ def read_node(node_file: str = "", cpu_cores: int = 1) -> dict[int: Node]:
     if not os.path.exists(node_file):
         raise FileNotFoundError(f"File: {node_file} does not exist.")
 
-    print(f"  : Parallel creating Nodes using Pool with {cpu_cores} CPUs. Please wait...")
     # read node.csv with specified columns and chunksize for iterations
     node_required_cols = pkg_settings["node_required_fields"]
     chunk_size = pkg_settings["data_chunk_size"]
@@ -105,13 +104,16 @@ def read_node(node_file: str = "", cpu_cores: int = 1) -> dict[int: Node]:
                 \n    and chunksize {chunk_size} for iterations...")
     df_node_chunk = pd.read_csv(node_file, usecols=node_required_cols, chunksize=chunk_size)
 
-    # Parallel processing using Pool
+    print(f"  : Parallel creating Nodes using Pool with {cpu_cores} CPUs. Please wait...")
     node_dict_final = {}
+
+    # Parallel processing using Pool
     with Pool(cpu_cores) as pool:
         results = pool.map(create_node_from_dataframe, df_node_chunk)
 
     for node_dict in results:
         node_dict_final.update(node_dict)
+
     print(f"  : Successfully loaded node.csv: {len(node_dict_final)} Nodes loaded.")
     return node_dict_final
 

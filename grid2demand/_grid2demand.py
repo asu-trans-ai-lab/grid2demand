@@ -63,6 +63,7 @@ class GRID2DEMAND:
         # check required files in input directory
         dir_files = get_filenames_by_ext(self.input_dir, "csv")
         required_files = pkg_settings.get("required_files", [])
+
         is_required_files_exist = check_required_files_exist(required_files, dir_files)
         if not is_required_files_exist:
             raise Exception(f"Error: Required files are not satisfied. Please check {required_files} in {self.input_dir}.")
@@ -73,7 +74,7 @@ class GRID2DEMAND:
 
         # check optional files in input directory (zone.csv)
         optional_files = pkg_settings.get("optional_files", [])
-        is_optional_files_exist = check_required_files_exist(optional_files, dir_files)
+        is_optional_files_exist = check_required_files_exist(optional_files, dir_files, verbose=False)
 
         if is_optional_files_exist:
             print(f"  : Optional files: {optional_files} are found in {self.input_dir}.")
