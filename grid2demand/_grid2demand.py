@@ -6,7 +6,9 @@
 ##############################################################
 
 import os
+from itertools import combinations
 import pandas as pd
+import shapely
 from grid2demand.utils_lib.pkg_settings import pkg_settings
 from grid2demand.utils_lib.net_utils import Node, POI, Zone, Agent
 from grid2demand.utils_lib.utils import check_required_files_exist
@@ -21,7 +23,7 @@ from grid2demand.func_lib.trip_rate_production_attraction import (gen_poi_trip_r
 from grid2demand.func_lib.gravity_model import run_gravity_model, calc_zone_production_attraction
 from grid2demand.func_lib.gen_agent_demand import gen_agent_based_demand
 
-from pyufunc import (path2linux, get_filenames_by_ext,
+from pyufunc import (path2linux, get_filenames_by_ext, cvt_int_to_alpha,
                      generate_unique_filename)
 
 
@@ -119,7 +121,7 @@ class GRID2DEMAND:
             for node_id in self.node_dict
             if self.node_dict[node_id]._zone_id != -1
         }
-        self.node_zone_pair = node_zone_pair
+        self.node_zone_id_pair = node_zone_pair
 
         return self.node_dict
 
@@ -156,10 +158,19 @@ class GRID2DEMAND:
         network_dict = read_network(self.input_dir, self.pkg_settings.get("set_cpu_cores"))
         self.node_dict = network_dict.get('node_dict')
         self.poi_dict = network_dict.get('poi_dict')
+
+        # generate node_zone_pair {node_id: zone_id} for later use
+        node_zone_pair = {
+            node_id: self.node_dict[node_id]._zone_id
+            for node_id in self.node_dict
+            if self.node_dict[node_id]._zone_id != -1
+        }
+        self.node_zone_id_pair = node_zone_pair
         return network_dict
 
     def net2zone(self, node_dict: dict[int, Node], num_x_blocks: int = 10, num_y_blocks: int = 10,
-                 cell_width: float = 0, cell_height: float = 0, unit: str = "km", use_zone_id: bool = False) -> dict[str, Zone]:
+                 cell_width: float = 0, cell_height: float = 0,
+                 unit: str = "km", use_zone_id: bool = False) -> dict[str, Zone]:
         """convert node_dict to zone_dict by grid.
         The grid can be defined by num_x_blocks and num_y_blocks, or cell_width and cell_height.
         if num_x_blocks and num_y_blocks are specified, the grid will be divided into num_x_blocks * num_y_blocks.
@@ -186,6 +197,7 @@ class GRID2DEMAND:
 
         print("  : Generating zone dictionary...")
         self.zone_dict = net2zone(node_dict, num_x_blocks, num_y_blocks, cell_width, cell_height, unit)
+        self.zone_id_name_pair = {Zone.id: Zone.name for Zone in self.zone_dict.values()}
         return self.zone_dict
 
     def taz2zone(self) -> dict[str, Zone]:
@@ -197,6 +209,7 @@ class GRID2DEMAND:
         if self.path_zone:
             print("  : Generating zone dictionary...")
             self.zone_dict = read_zone(self.path_zone, self.pkg_settings.get("set_cpu_cores"))
+            self.zone_id_name_pair = {Zone.id: Zone.name for Zone in self.zone_dict.values()}
 
             return self.zone_dict
 
@@ -343,7 +356,8 @@ class GRID2DEMAND:
                           trip_purpose: int = 1,
                           alpha: float = 28507,
                           beta: float = -0.02,
-                          gamma: float = -0.123) -> pd.DataFrame:
+                          gamma: float = -0.123,
+                          use_zone_id: bool = False) -> pd.DataFrame:
         """run gravity model to generate demand
 
         Args:
@@ -361,8 +375,42 @@ class GRID2DEMAND:
             zone_dict = self.zone_dict
             zone_od_dist_matrix = self.zone_od_dist_matrix
 
-        self.zone_od_demand_matrix = run_gravity_model(zone_dict, zone_od_dist_matrix, trip_purpose, alpha, beta, gamma)
-        self.df_demand = pd.DataFrame(list(self.zone_od_demand_matrix.values()))
+        self.zone_od_dist_matrix = run_gravity_model(zone_dict, zone_od_dist_matrix, trip_purpose, alpha, beta, gamma)
+        self.df_demand = pd.DataFrame(list(self.zone_od_dist_matrix.values()))
+
+        if use_zone_id:
+            comb = combinations(self.node_zone_id_pair.keys(), 2)
+            comb_grid_zone_name = {}
+
+            for pair in comb:
+                o_node_id, d_node_id = pair
+                o_zone_id = self.node_dict[o_node_id].zone_id
+                d_zone_id = self.node_dict[d_node_id].zone_id
+                o_zone_name = self.zone_id_name_pair[o_zone_id]
+                d_zone_name = self.zone_id_name_pair[d_zone_id]
+                if o_zone_name != d_zone_name:
+                    try:
+                        comb_grid_zone_name[(o_zone_name, d_zone_name)] = self.zone_od_dist_matrix[(
+                            o_zone_name, d_zone_name)]
+                    except KeyError:
+                        print(f"  : Error: zone_od_dist_matrix does not contain {o_zone_name, d_zone_name}.")
+
+            demand_lst = []
+            for zone_od_pair in comb_grid_zone_name:
+                demand_lst.append(
+                    {
+                        "o_node_id": o_node_id,
+                        "o_zone_id": self.node_zone_id_pair[o_node_id],
+                        "d_node_id": d_node_id,
+                        "d_zone_id": self.node_zone_id_pair[d_node_id],
+                        "volume": self.zone_od_dist_matrix[zone_od_pair]['volume'],
+                        "geometry": shapely.LineString([self.node_dict[o_node_id].geometry,
+                                                        self.node_dict[d_node_id].geometry])
+
+                    }
+                )
+            return pd.DataFrame(demand_lst)
+
         return self.df_demand
 
     def gen_agent_based_demand(self, node_dict: dict = "", zone_dict: dict = "",

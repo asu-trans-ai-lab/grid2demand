@@ -40,7 +40,7 @@ if __name__ == "__main__":
     zone_dict_update, node_dict_update, poi_dict_update = updated_dict.values()
 
     # Step 4: Calculate zone-to-zone od distance matrix
-    zone_od_distance_matrix = gd.calc_zone_od_distance_matrix(zone_dict_update)
+    zone_od_dist_matrix = gd.calc_zone_od_distance_matrix(zone_dict_update)
 
     # Step 5: Generate poi trip rate for each poi
     poi_trip_rate = gd.gen_poi_trip_rate(poi_dict_update)
@@ -52,7 +52,7 @@ if __name__ == "__main__":
     zone_prod_attr = gd.calc_zone_prod_attr(node_prod_attr, zone_dict_update)
 
     # Step 7: Run gravity model to generate agent-based demand
-    df_demand = gd.run_gravity_model(zone_prod_attr, zone_od_distance_matrix)
+    df_demand = gd.run_gravity_model(zone_prod_attr, zone_od_dist_matrix, use_zone_id=True)
 
     # Step 8: generate agent-based demand
     df_agent = gd.gen_agent_based_demand(node_prod_attr, zone_prod_attr, df_demand=df_demand)

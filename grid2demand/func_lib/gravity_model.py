@@ -33,7 +33,7 @@ def calc_zone_od_friction_attraction(zone_od_friction_matrix_dict: dict, zone_di
 
 
 def run_gravity_model(zone_dict: dict,
-                      zone_od_matrix_dict: dict,
+                      zone_od_dist_matrix: dict,
                       trip_purpose: int = 1,
                       alpha: float = 28507,
                       beta: float = -0.02,
@@ -53,7 +53,7 @@ def run_gravity_model(zone_dict: dict,
     # perform zone od friction matrix
     zone_od_friction_matrix_dict = {
         zone_name_pair: alpha * (od_dist["dist_km"] ** beta) * (np.exp(od_dist["dist_km"] * gamma)) if od_dist["dist_km"] != 0 else 0
-        for zone_name_pair, od_dist in zone_od_matrix_dict.items()
+        for zone_name_pair, od_dist in zone_od_dist_matrix.items()
     }
 
     # perform attraction calculation
@@ -61,7 +61,7 @@ def run_gravity_model(zone_dict: dict,
 
     # perform od trip flow (volume) calculation
     for zone_name_pair in zone_od_friction_matrix_dict:
-        zone_od_matrix_dict[zone_name_pair]["volume"] = float(zone_dict[zone_name_pair[0]].production *
+        zone_od_dist_matrix[zone_name_pair]["volume"] = float(zone_dict[zone_name_pair[0]].production *
                                                               zone_dict[zone_name_pair[1]].attraction *
                                                               zone_od_friction_matrix_dict[zone_name_pair] /
                                                               zone_od_friction_attraction_dict[zone_name_pair[0]])
@@ -69,4 +69,4 @@ def run_gravity_model(zone_dict: dict,
     # Generate demand.csv
     print("  : Successfully run gravity model to generate demand.csv.")
     # return pd.DataFrame(list(zone_od_matrix_dict.values()))
-    return zone_od_matrix_dict
+    return zone_od_dist_matrix
