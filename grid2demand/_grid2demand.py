@@ -112,6 +112,15 @@ class GRID2DEMAND:
             raise FileNotFoundError(f"Error: File {self.path_node} does not exist.")
 
         self.node_dict = read_node(self.path_node, self.pkg_settings.get("set_cpu_cores"))
+
+        # generate node_zone_pair {node_id: zone_id} for later use
+        node_zone_pair = {
+            node_id: self.node_dict[node_id]._zone_id
+            for node_id in self.node_dict
+            if self.node_dict[node_id]._zone_id != -1
+        }
+        self.node_zone_pair = node_zone_pair
+
         return self.node_dict
 
     @property
@@ -150,7 +159,7 @@ class GRID2DEMAND:
         return network_dict
 
     def net2zone(self, node_dict: dict[int, Node], num_x_blocks: int = 10, num_y_blocks: int = 10,
-                 cell_width: float = 0, cell_height: float = 0, unit: str = "km") -> dict[str, Zone]:
+                 cell_width: float = 0, cell_height: float = 0, unit: str = "km", use_zone_id: bool = False) -> dict[str, Zone]:
         """convert node_dict to zone_dict by grid.
         The grid can be defined by num_x_blocks and num_y_blocks, or cell_width and cell_height.
         if num_x_blocks and num_y_blocks are specified, the grid will be divided into num_x_blocks * num_y_blocks.
@@ -165,6 +174,8 @@ class GRID2DEMAND:
             cell_width (float, optional): the width for each block/grid . Defaults to 0. unit: km.
             cell_height (float, optional): the height for each block/grid. Defaults to 0. unit: km.
             unit (str, optional): the unit of cell_width and cell_height. Defaults to "km".
+                Options: ["km", "meter", "mile"]
+            use_zone_id (bool, optional): whether to use zone_id from node_dict. Defaults to False.
 
         Returns:
             dict[str, Zone]: zone_dict {zone_name: Zone}
@@ -350,7 +361,8 @@ class GRID2DEMAND:
             zone_dict = self.zone_dict
             zone_od_dist_matrix = self.zone_od_dist_matrix
 
-        self.df_demand = run_gravity_model(zone_dict, zone_od_dist_matrix)
+        self.zone_od_demand_matrix = run_gravity_model(zone_dict, zone_od_dist_matrix, trip_purpose, alpha, beta, gamma)
+        self.df_demand = pd.DataFrame(list(self.zone_od_demand_matrix.values()))
         return self.df_demand
 
     def gen_agent_based_demand(self, node_dict: dict = "", zone_dict: dict = "",

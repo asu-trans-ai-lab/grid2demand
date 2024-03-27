@@ -21,7 +21,7 @@ if __name__ == "__main__":
 
     # Step 2: Generate zone dictionary from node dictionary
     #   by specifying number of x blocks and y blocks
-    zone_dict = gd.net2zone(node_dict, num_x_blocks=10, num_y_blocks=10)
+    zone_dict = gd.net2zone(node_dict, num_x_blocks=10, num_y_blocks=10, use_zone_id=True)
 
     # Step 2: Generate zone based on grid size with 10 km width and 10km height for each zone
     # zone_dict = gd.net2zone(node_dict, cell_width=10, cell_height=10)

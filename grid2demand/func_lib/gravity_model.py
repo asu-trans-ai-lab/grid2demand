@@ -37,7 +37,7 @@ def run_gravity_model(zone_dict: dict,
                       trip_purpose: int = 1,
                       alpha: float = 28507,
                       beta: float = -0.02,
-                      gamma: float = -0.123) -> pd.DataFrame:
+                      gamma: float = -0.123) -> dict:
     # if trip purpose is specified in trip_purpose_dict, use the default value
     # otherwise, use the user-specified value
     trip_purpose_dict = pkg_settings.get("trip_purpose_dict")
@@ -68,4 +68,5 @@ def run_gravity_model(zone_dict: dict,
 
     # Generate demand.csv
     print("  : Successfully run gravity model to generate demand.csv.")
-    return pd.DataFrame(list(zone_od_matrix_dict.values()))
+    # return pd.DataFrame(list(zone_od_matrix_dict.values()))
+    return zone_od_matrix_dict
