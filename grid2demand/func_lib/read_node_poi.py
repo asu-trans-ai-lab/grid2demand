@@ -43,6 +43,13 @@ def create_node_from_dataframe(df_node: pd.DataFrame) -> dict[int, Node]:
             else:
                 activity_location_tab = ''
 
+            # check zone_id field in node.csv
+            # if zone_id field exists and is not empty, assign it to __zone_id
+            try:
+                __zone_id = df_node.loc[i, 'zone_id']
+            except Exception:
+                __zone_id = -1
+
             node = Node(
                 id=df_node.loc[i, 'node_id'],
                 activity_type=activity_type,
@@ -51,7 +58,8 @@ def create_node_from_dataframe(df_node: pd.DataFrame) -> dict[int, Node]:
                 y_coord=df_node.loc[i, 'y_coord'],
                 poi_id=df_node.loc[i, 'poi_id'],
                 boundary_flag=boundary_flag,
-                geometry=shapely.Point(df_node.loc[i, 'x_coord'], df_node.loc[i, 'y_coord'])
+                geometry=shapely.Point(df_node.loc[i, 'x_coord'], df_node.loc[i, 'y_coord']),
+                __zone_id=__zone_id
             )
             node_dict[df_node.loc[i, 'node_id']] = node
         except Exception as e:

@@ -6,7 +6,7 @@
 ##############################################################
 
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, asdict
 
 
 @dataclass
@@ -26,6 +26,8 @@ class Node:
         activity_type: The activity type of the node. provided from osm2gmns such as motoway, residential, ...
         activity_location_tab: The activity location tab of the node.
         geometry: The geometry of the node. based on wkt format.
+        __zone_id: The zone ID. default == -1,
+                this will be assigned if field zone_id exists in the node.csv and is not empty
     """
     id: int = 0
     x_coord: float = 0
@@ -38,6 +40,10 @@ class Node:
     activity_type: str = ''
     activity_location_tab: str = ''
     geometry: str = ''
+    __zone_id: int = -1
+
+    def as_dict(self):
+        return asdict(self)
 
 
 @dataclass
@@ -45,14 +51,14 @@ class POI:
     """A POI in the network.
 
     Attributes:
-        id: The POI ID.
-        x_coord: The x coordinate of the POI.
-        y_coord: The y coordinate of the POI.
-        count: The count of the POI. Total POI values for this POI node or POI zone
-        area: The area of the POI. Total area of polygon for this POI zone. unit is square meter
+        id      : The POI ID.
+        x_coord : The x coordinate of the POI.
+        y_coord : The y coordinate of the POI.
+        count   : The count of the POI. Total POI values for this POI node or POI zone
+        area    : The area of the POI. Total area of polygon for this POI zone. unit is square meter
         poi_type: The type of the POI. Default is empty string
         geometry: The polygon of the POI. based on wkt format. Default is empty string
-        zone_id: The zone ID. mapping from zone
+        zone_id : The zone ID. mapping from zone
     """
 
     id: int = 0
@@ -71,22 +77,22 @@ class Zone:
     """A zone in the network.
 
     Attributes:
-        id: The zone ID.
-        name: The name of the zone.
-        centroid_x: The centroid x coordinate of the zone.
-        centroid_y: The centroid y coordinate of the zone.
-        centroid: The centroid of the zone. (x, y) based on wkt format
-        x_max: The max x coordinate of the zone.
-        x_min: The min x coordinate of the zone.
-        y_max: The max y coordinate of the zone.
-        y_min: The min y coordinate of the zone.
-        node_id_list: Node IDs which belong to this zone.
-        poi_id_list: The POIs which belong to this zone.
-        production: The production of the zone.
-        attraction: The attraction of the zone.
+        id              : The zone ID.
+        name            : The name of the zone.
+        centroid_x      : The centroid x coordinate of the zone.
+        centroid_y      : The centroid y coordinate of the zone.
+        centroid        : The centroid of the zone. (x, y) based on wkt format
+        x_max           : The max x coordinate of the zone.
+        x_min           : The min x coordinate of the zone.
+        y_max           : The max y coordinate of the zone.
+        y_min           : The min y coordinate of the zone.
+        node_id_list    : Node IDs which belong to this zone.
+        poi_id_list     : The POIs which belong to this zone.
+        production      : The production of the zone.
+        attraction      : The attraction of the zone.
         production_fixed: The fixed production of the zone (implement different models).
         attraction_fixed: The fixed attraction of the zone (implement different models).
-        geometry: The geometry of the zone. based on wkt format
+        geometry        : The geometry of the zone. based on wkt format
     """
 
     id: int = 0
