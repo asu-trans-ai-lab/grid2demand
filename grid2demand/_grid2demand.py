@@ -77,7 +77,7 @@ class GRID2DEMAND:
 
         if is_optional_files_exist:
             print(f"  : Optional files: {optional_files} are found in {self.input_dir}.")
-            print( "  : Optional files could be used in the following steps.")
+            print("  : Optional files could be used in the following steps.")
             self.path_zone = path2linux(os.path.join(self.input_dir, "zone.csv"))
 
         print("  : Input directory is valid.\n")
@@ -192,7 +192,6 @@ class GRID2DEMAND:
               \n    Please check your input directory. \
               \n    Or you can use net2zone() to generate grid-based zones from node_dict.")
         return None
-
 
     def sync_geometry_between_zone_and_node_poi(self, zone_dict: dict = "",
                                                 node_dict: dict = "", poi_dict: dict = "") -> dict[str, dict]:
