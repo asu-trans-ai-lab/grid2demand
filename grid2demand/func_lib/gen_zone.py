@@ -6,6 +6,7 @@
 ##############################################################
 
 from __future__ import absolute_import
+import contextlib
 import itertools
 import pandas as pd
 import shapely
@@ -49,7 +50,7 @@ def net2zone(node_dict: dict[int, Node],
              num_x_blocks: int = 0,
              num_y_blocks: int = 0,
              cell_width: float = 0,
-             cell_height: float = 0, unit: str = "km") -> dict[str, Zone]:
+             cell_height: float = 0, unit: str = "km", use_zone_id: bool = False) -> dict[str, Zone]:
     """convert node_dict to zone_dict by grid.
     The grid can be defined by num_x_blocks and num_y_blocks, or cell_width and cell_height.
     if num_x_blocks and num_y_blocks are specified, the grid will be divided into num_x_blocks * num_y_blocks.
@@ -63,7 +64,7 @@ def net2zone(node_dict: dict[int, Node],
         num_y_blocks (int, optional): total number of blocks/grids from y direction. Defaults to 10.
         cell_width (float, optional): the width for each block/grid . Defaults to 0. unit: km.
         cell_height (float, optional): the height for each block/grid. Defaults to 0. unit: km.
-        unit (str, optional): the unit of cell_width and cell_height. Defaults to "km".
+        unit (str, optional): the unit of cell_width and cell_height. Defaults to "km". Options:"meter", "km", "mile".
 
     Raises
         ValueError: Please provide num_x_blocks and num_y_blocks or cell_width and cell_height
@@ -86,6 +87,20 @@ def net2zone(node_dict: dict[int, Node],
     # ) - 0.000001, df_node['x_coord'].max() + 0.000001
     # coord_y_min, coord_y_max = df_node['y_coord'].min(
     # ) - 0.000001, df_node['y_coord'].max() + 0.000001
+
+    # generate zone based on zone_id in node.csv
+    if use_zone_id:
+        node_dict_zone_id = {}
+
+        for node_id in node_dict:
+            with contextlib.suppress(AttributeError):
+                if node_dict[node_id]._zone_id != -1:
+                    node_dict_zone_id[node_id] = node_dict[node_id]
+
+        if not node_dict_zone_id:
+            print("  : No zone_id found in node_dict, will generate zone based on original node_dict")
+        else:
+            node_dict = node_dict_zone_id
 
     coord_x_min, coord_x_max, coord_y_min, coord_y_max = get_lng_lat_min_max(node_dict)
 

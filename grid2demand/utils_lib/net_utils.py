@@ -26,7 +26,7 @@ class Node:
         activity_type: The activity type of the node. provided from osm2gmns such as motoway, residential, ...
         activity_location_tab: The activity location tab of the node.
         geometry: The geometry of the node. based on wkt format.
-        __zone_id: The zone ID. default == -1,
+        _zone_id: The zone ID. default == -1,
                 this will be assigned if field zone_id exists in the node.csv and is not empty
     """
     id: int = 0
@@ -40,7 +40,7 @@ class Node:
     activity_type: str = ''
     activity_location_tab: str = ''
     geometry: str = ''
-    __zone_id: int = -1
+    _zone_id: int = -1
 
     @property
     def as_dict(self):

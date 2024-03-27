@@ -46,9 +46,14 @@ def create_node_from_dataframe(df_node: pd.DataFrame) -> dict[int, Node]:
             # check whether zone_id field in node.csv or not
             # if zone_id field exists and is not empty, assign it to __zone_id
             try:
-                __zone_id = df_node.loc[i, 'zone_id'] or -1
+                _zone_id = df_node.loc[i, 'zone_id']
+
+                # check if _zone is none or empty, assign -1
+                if pd.isna(_zone_id) or not _zone_id:
+                    _zone_id = -1
+
             except Exception:
-                __zone_id = -1
+                _zone_id = -1
 
             node = Node(
                 id=df_node.loc[i, 'node_id'],
@@ -59,7 +64,7 @@ def create_node_from_dataframe(df_node: pd.DataFrame) -> dict[int, Node]:
                 poi_id=df_node.loc[i, 'poi_id'],
                 boundary_flag=boundary_flag,
                 geometry=shapely.Point(df_node.loc[i, 'x_coord'], df_node.loc[i, 'y_coord']),
-                __zone_id=__zone_id
+                _zone_id=_zone_id
             )
             node_dict[df_node.loc[i, 'node_id']] = node
         except Exception as e:
@@ -100,6 +105,13 @@ def read_node(node_file: str = "", cpu_cores: int = 1) -> dict[int: Node]:
     # read node.csv with specified columns and chunksize for iterations
     node_required_cols = pkg_settings["node_required_fields"]
     chunk_size = pkg_settings["data_chunk_size"]
+
+    # read first two rows to check whether required fields are in node.csv
+    df_node_2rows = pd.read_csv(node_file, nrows=2)
+    col_names = df_node_2rows.columns.tolist()
+    if "zone_id" in col_names:
+        node_required_cols.append("zone_id")
+
     print(f"  : Reading node.csv with specified columns: {node_required_cols} \
                 \n    and chunksize {chunk_size} for iterations...")
     df_node_chunk = pd.read_csv(node_file, usecols=node_required_cols, chunksize=chunk_size)
