@@ -10,25 +10,31 @@ from grid2demand.utils_lib.pkg_settings import pkg_settings
 import pandas as pd
 
 
-def calc_zone_production_attraction(node_dict: dict, zone_dict: dict) -> dict:
+def calc_zone_production_attraction(node_dict: dict, zone_dict: dict, verbose: bool = False) -> dict:
     # calculate zone production and attraction based on node production and attraction
     for zone_name in zone_dict:
         if zone_dict[zone_name].node_id_list:
             for node_id in zone_dict[zone_name].node_id_list:
                 zone_dict[zone_name].production += node_dict[node_id].production
                 zone_dict[zone_name].attraction += node_dict[node_id].attraction
-    print("  : Successfully calculated zone production and attraction based on node production and attraction.")
+
+    if verbose:
+        print("  : Successfully calculated zone production and attraction based on node production and attraction.")
+
     return zone_dict
 
 
-def calc_zone_od_friction_attraction(zone_od_friction_matrix_dict: dict, zone_dict: dict) -> dict:
+def calc_zone_od_friction_attraction(zone_od_friction_matrix_dict: dict, zone_dict: dict, verbose: bool = False) -> dict:
     zone_od_friction_attraction_dict = {}
     for zone_name, friction_val in zone_od_friction_matrix_dict.items():
         if zone_name[0] not in zone_od_friction_attraction_dict:
             zone_od_friction_attraction_dict[zone_name[0]] = friction_val * zone_dict[zone_name[1]].attraction
         else:
             zone_od_friction_attraction_dict[zone_name[0]] += friction_val * zone_dict[zone_name[1]].attraction
-    print("  : Successfully calculated zone od friction attraction.")
+
+    if verbose:
+        print("  : Successfully calculated zone od friction attraction.")
+
     return zone_od_friction_attraction_dict
 
 
@@ -37,7 +43,8 @@ def run_gravity_model(zone_dict: dict,
                       trip_purpose: int = 1,
                       alpha: float = 28507,
                       beta: float = -0.02,
-                      gamma: float = -0.123) -> dict:
+                      gamma: float = -0.123,
+                      verbose: bool = False) -> dict:
     # if trip purpose is specified in trip_purpose_dict, use the default value
     # otherwise, use the user-specified value
     trip_purpose_dict = pkg_settings.get("trip_purpose_dict")
@@ -57,7 +64,7 @@ def run_gravity_model(zone_dict: dict,
     }
 
     # perform attraction calculation
-    zone_od_friction_attraction_dict = calc_zone_od_friction_attraction(zone_od_friction_matrix_dict, zone_dict)
+    zone_od_friction_attraction_dict = calc_zone_od_friction_attraction(zone_od_friction_matrix_dict, zone_dict, verbose=verbose)
 
     # perform od trip flow (volume) calculation
     for zone_name_pair in zone_od_friction_matrix_dict:
@@ -67,6 +74,8 @@ def run_gravity_model(zone_dict: dict,
                                                               zone_od_friction_attraction_dict[zone_name_pair[0]])
 
     # Generate demand.csv
-    print("  : Successfully run gravity model to generate demand.csv.")
+    if verbose:
+        print("  : Successfully run gravity model to generate demand.csv.")
+
     # return pd.DataFrame(list(zone_od_matrix_dict.values()))
     return zone_od_dist_matrix

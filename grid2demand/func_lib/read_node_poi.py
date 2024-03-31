@@ -73,11 +73,13 @@ def create_node_from_dataframe(df_node: pd.DataFrame) -> dict[int, Node]:
 
 
 @func_running_time
-def read_node(node_file: str = "", cpu_cores: int = 1) -> dict[int: Node]:
+def read_node(node_file: str = "", cpu_cores: int = 1, verbose: bool = False) -> dict[int: Node]:
     """Read node.csv file and return a dict of nodes.
 
     Args:
         node_file (str, optional): node file path. Defaults to "".
+        cpu_cores (int, optional): number of cpu cores for parallel processing. Defaults to 1.
+        verbose (bool, optional): print processing information. Defaults to False.
 
     Raises:
         FileNotFoundError: File: {node_file} does not exist.
@@ -112,11 +114,13 @@ def read_node(node_file: str = "", cpu_cores: int = 1) -> dict[int: Node]:
     if "zone_id" in col_names:
         node_required_cols.append("zone_id")
 
-    print(f"  : Reading node.csv with specified columns: {node_required_cols} \
-                \n    and chunksize {chunk_size} for iterations...")
+    if verbose:
+        print(f"  : Reading node.csv with specified columns: {node_required_cols} \
+                    \n    and chunksize {chunk_size} for iterations...")
     df_node_chunk = pd.read_csv(node_file, usecols=node_required_cols, chunksize=chunk_size)
 
-    print(f"  : Parallel creating Nodes using Pool with {cpu_cores} CPUs. Please wait...")
+    if verbose:
+        print(f"  : Parallel creating Nodes using Pool with {cpu_cores} CPUs. Please wait...")
     node_dict_final = {}
 
     # Parallel processing using Pool
@@ -126,7 +130,8 @@ def read_node(node_file: str = "", cpu_cores: int = 1) -> dict[int: Node]:
     for node_dict in results:
         node_dict_final.update(node_dict)
 
-    print(f"  : Successfully loaded node.csv: {len(node_dict_final)} Nodes loaded.")
+    if verbose:
+        print(f"  : Successfully loaded node.csv: {len(node_dict_final)} Nodes loaded.")
     return node_dict_final
 
 
@@ -164,11 +169,13 @@ def create_poi_from_dataframe(df_poi: pd.DataFrame) -> dict[int, POI]:
 
 
 @func_running_time
-def read_poi(poi_file: str = "", cpu_cores: int = 1) -> dict[int: POI]:
+def read_poi(poi_file: str = "", cpu_cores: int = 1, verbose: bool = False) -> dict[int: POI]:
     """Read poi.csv file and return a dict of POIs.
 
     Args:
         poi_file (str): The poi.csv file path. default is "".
+        cpu_cores (int, optional): number of cpu cores for parallel processing. Defaults to 1.
+        verbose (bool, optional): print processing information. Defaults to False.
 
     Raises:
         FileNotFoundError: if poi_file does not exist.
@@ -197,12 +204,15 @@ def read_poi(poi_file: str = "", cpu_cores: int = 1) -> dict[int: POI]:
     # Read poi.csv with specified columns and chunksize for iterations
     poi_required_cols = pkg_settings["poi_required_fields"]
     chunk_size = pkg_settings["data_chunk_size"]
-    print(f"  : Reading poi.csv with specified columns: {poi_required_cols} \
-                \n    and chunksize {chunk_size} for iterations...")
+
+    if verbose:
+        print(f"  : Reading poi.csv with specified columns: {poi_required_cols} \
+                    \n    and chunksize {chunk_size} for iterations...")
     df_poi_chunk = pd.read_csv(poi_file, usecols=poi_required_cols, chunksize=chunk_size)
 
     # Parallel processing using Pool
-    print(f"  : Parallel creating POIs using Pool with {cpu_cores} CPUs. Please wait...")
+    if verbose:
+        print(f"  : Parallel creating POIs using Pool with {cpu_cores} CPUs. Please wait...")
     poi_dict_final = {}
 
     with Pool(cpu_cores) as pool:
@@ -211,7 +221,9 @@ def read_poi(poi_file: str = "", cpu_cores: int = 1) -> dict[int: POI]:
     for poi_dict in results:
         poi_dict_final.update(poi_dict)
 
-    print(f"  : Successfully loaded poi.csv: {len(poi_dict_final)} POIs loaded.")
+    if verbose:
+        print(f"  : Successfully loaded poi.csv: {len(poi_dict_final)} POIs loaded.")
+
     return poi_dict_final
 
 
@@ -262,12 +274,17 @@ def create_zone_from_dataframe(df_zone: pd.DataFrame) -> dict[int, Zone]:
 
 
 @func_running_time
-def read_zone(zone_file: str = "", cpu_cores: int = 1) -> dict[int: Zone]:
-    """_summary_
+def read_zone(zone_file: str = "", cpu_cores: int = 1, verbose: bool = False) -> dict[int: Zone]:
+    """Read zone.csv file and return a dict of Zones.
 
     Raises:
         FileNotFoundError: _description_
         FileNotFoundError: _description_
+
+    Args:
+        zone_file (str, optional): the input zone file path. Defaults to "".
+        cpu_cores (int, optional): number of cpu cores for parallel processing. Defaults to 1.
+        verbose (bool, optional): print processing information. Defaults to False.
 
     Returns:
         _type_: _description_
@@ -283,8 +300,10 @@ def read_zone(zone_file: str = "", cpu_cores: int = 1) -> dict[int: Zone]:
     # load default settings for zone required fields and chunk size
     zone_required_cols = pkg_settings["zone_required_fields"]
     chunk_size = pkg_settings["data_chunk_size"]
-    print(f"  : Reading zone.csv with specified columns: {zone_required_cols} \
-              \n   and chunksize {chunk_size} for iterations...")
+
+    if verbose:
+        print(f"  : Reading zone.csv with specified columns: {zone_required_cols} \
+                \n   and chunksize {chunk_size} for iterations...")
 
     # check whether required fields are in zone.csv
     df_zone = pd.read_csv(zone_file, nrows=1)
@@ -298,7 +317,8 @@ def read_zone(zone_file: str = "", cpu_cores: int = 1) -> dict[int: Zone]:
     df_zone_chunk = pd.read_csv(zone_file, usecols=zone_required_cols, chunksize=chunk_size)
 
     # Parallel processing using Pool
-    print(f"  : Parallel creating Zones using Pool with {cpu_cores} CPUs. Please wait...")
+    if verbose:
+        print(f"  : Parallel creating Zones using Pool with {cpu_cores} CPUs. Please wait...")
     zone_dict_final = {}
 
     with Pool(cpu_cores) as pool:
@@ -307,16 +327,20 @@ def read_zone(zone_file: str = "", cpu_cores: int = 1) -> dict[int: Zone]:
     for zone_dict in results:
         zone_dict_final.update(zone_dict)
 
-    print(f"  : Successfully loaded zone.csv: {len(zone_dict_final)} Zones loaded.")
+    if verbose:
+        print(f"  : Successfully loaded zone.csv: {len(zone_dict_final)} Zones loaded.")
+
     return zone_dict_final
 
 
 @func_running_time
-def read_network(input_folder: str = "", cpu_cores: int = 1) -> dict[str: dict]:
+def read_network(input_folder: str = "", cpu_cores: int = 1, verbose: bool = False) -> dict[str: dict]:
     """Read node.csv and poi.csv files and return a dict of nodes and a dict of POIs.
 
     Args:
         input_folder (str, optional): required files within this folder. Defaults to current folder.
+        cpu_cores (int, optional): number of cpu cores for parallel processing. Defaults to 1.
+        verbose (bool, optional): print processing information. Defaults to False.
 
     Raises:
         FileNotFoundError: if input_folder does not exist.
@@ -360,8 +384,10 @@ def read_network(input_folder: str = "", cpu_cores: int = 1) -> dict[str: dict]:
     if not is_required_files_exist:
         raise FileNotFoundError(f"Required files: {pkg_settings['required_files']} are not satisfied, please check your input folder.")
 
-    node_dict = read_node(input_folder + "/node.csv", cpu_cores)
-    poi_dict = read_poi(input_folder + "/poi.csv", cpu_cores)
+    node_dict = read_node(input_folder + "/node.csv", cpu_cores, verbose=verbose)
+    poi_dict = read_poi(input_folder + "/poi.csv", cpu_cores, verbose=verbose)
 
-    print(f"  : Successfully loaded node.csv and poi.csv: {len(node_dict)} Nodes and {len(poi_dict)} POIs.")
+    if verbose:
+        print(f"  : Successfully loaded node.csv and poi.csv: {len(node_dict)} Nodes and {len(poi_dict)} POIs.")
+
     return {"node_dict": node_dict, "poi_dict": poi_dict}

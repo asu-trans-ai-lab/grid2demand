@@ -29,7 +29,16 @@ from pyufunc import (path2linux, get_filenames_by_ext, cvt_int_to_alpha,
 
 class GRID2DEMAND:
 
-    def __init__(self, input_dir: str = "", output_dir: str = "") -> None:
+    def __init__(self, input_dir: str = "", output_dir: str = "",
+                 use_zone_id: bool = False, verbose: bool = False) -> None:
+        """initialize GRID2DEMAND object
+
+        Args:
+            input_dir (str, optional): input directory of your data. Defaults to "".
+            output_dir (str, optional): output directory. Defaults to "".
+            use_zone_id (bool, optional): whether to use zone_id from node.csv. Defaults to False.
+            verbose (bool, optional): print processing message. Defaults to False.
+        """
 
         # check input directory
         if not input_dir:
@@ -40,6 +49,9 @@ class GRID2DEMAND:
         else:
             self.input_dir = path2linux(input_dir)
         self.output_dir = path2linux(output_dir) if output_dir else self.input_dir
+
+        self.verbose = verbose
+        self.use_zone_id = use_zone_id
 
         # check input directory
         self.__check_input_dir()
@@ -58,7 +70,8 @@ class GRID2DEMAND:
             None: will generate self.path_node and self.path_poi for class instance.
         """
 
-        print("  : Checking input directory...")
+        if self.verbose:
+            print("  : Checking input directory...")
         if not os.path.isdir(self.input_dir):
             raise NotADirectoryError(f"Error: Input directory {self.input_dir} does not exist.")
 
@@ -66,7 +79,7 @@ class GRID2DEMAND:
         dir_files = get_filenames_by_ext(self.input_dir, "csv")
         required_files = pkg_settings.get("required_files", [])
 
-        is_required_files_exist = check_required_files_exist(required_files, dir_files)
+        is_required_files_exist = check_required_files_exist(required_files, dir_files, verbose=self.verbose)
         if not is_required_files_exist:
             raise Exception(f"Error: Required files are not satisfied. Please check {required_files} in {self.input_dir}.")
 
@@ -83,12 +96,16 @@ class GRID2DEMAND:
             print("  : Optional files could be used in the following steps.")
             self.path_zone = path2linux(os.path.join(self.input_dir, "zone.csv"))
 
-        print("  : Input directory is valid.\n")
+        if self.verbose:
+            print("  : Input directory is valid.\n")
 
     def __load_pkg_settings(self) -> None:
-        print("  : Loading default package settings...")
+        if self.verbose:
+            print("  : Loading default package settings...")
         self.pkg_settings = pkg_settings
-        print("  : Package settings loaded successfully.\n")
+
+        if self.verbose:
+            print("  : Package settings loaded successfully.\n")
 
     @property
     def load_node(self) -> dict[int, Node]:
@@ -113,15 +130,19 @@ class GRID2DEMAND:
         if not os.path.exists(self.path_node):
             raise FileNotFoundError(f"Error: File {self.path_node} does not exist.")
 
-        self.node_dict = read_node(self.path_node, self.pkg_settings.get("set_cpu_cores"))
+        # add zone_id to node_dict if use_zone_id is True
+        if self.use_zone_id and "zone_id" not in pkg_settings["node_required_fields"]:
+            pkg_settings["node_required_fields"].append("zone_id")
+
+        self.node_dict = read_node(self.path_node, self.pkg_settings.get("set_cpu_cores"), verbose=self.verbose)
 
         # generate node_zone_pair {node_id: zone_id} for later use
-        node_zone_pair = {
+        # the zone_id based on node.csv in field zone_id
+        self.__pair_node_zone_id = {
             node_id: self.node_dict[node_id]._zone_id
             for node_id in self.node_dict
             if self.node_dict[node_id]._zone_id != -1
         }
-        self.node_zone_id_pair = node_zone_pair
 
         return self.node_dict
 
@@ -139,7 +160,7 @@ class GRID2DEMAND:
         if not os.path.exists(self.path_poi):
             raise FileExistsError(f"Error: File {self.path_poi} does not exist.")
 
-        self.poi_dict = read_poi(self.path_poi, self.pkg_settings.get("set_cpu_cores"))
+        self.poi_dict = read_poi(self.path_poi, self.pkg_settings.get("set_cpu_cores"), verbose=self.verbose)
         return self.poi_dict
 
     @property
@@ -155,22 +176,28 @@ class GRID2DEMAND:
 
         if not os.path.isdir(self.input_dir):
             raise FileExistsError(f"Error: Input directory {self.input_dir} does not exist.")
-        network_dict = read_network(self.input_dir, self.pkg_settings.get("set_cpu_cores"))
+
+        # add zone_id to node_dict if use_zone_id is True
+        if self.use_zone_id and "zone_id" not in pkg_settings["node_required_fields"]:
+            pkg_settings["node_required_fields"].append("zone_id")
+
+        network_dict = read_network(self.input_dir, self.pkg_settings.get("set_cpu_cores"), verbose=self.verbose)
         self.node_dict = network_dict.get('node_dict')
         self.poi_dict = network_dict.get('poi_dict')
 
         # generate node_zone_pair {node_id: zone_id} for later use
-        node_zone_pair = {
+        # the zone_id based on node.csv in field zone_id
+        self.__pair_node_zone_id = {
             node_id: self.node_dict[node_id]._zone_id
             for node_id in self.node_dict
             if self.node_dict[node_id]._zone_id != -1
         }
-        self.node_zone_id_pair = node_zone_pair
+
         return network_dict
 
     def net2zone(self, node_dict: dict[int, Node], num_x_blocks: int = 10, num_y_blocks: int = 10,
                  cell_width: float = 0, cell_height: float = 0,
-                 unit: str = "km", use_zone_id: bool = False) -> dict[str, Zone]:
+                 unit: str = "km") -> dict[str, Zone]:
         """convert node_dict to zone_dict by grid.
         The grid can be defined by num_x_blocks and num_y_blocks, or cell_width and cell_height.
         if num_x_blocks and num_y_blocks are specified, the grid will be divided into num_x_blocks * num_y_blocks.
@@ -191,25 +218,36 @@ class GRID2DEMAND:
         Returns:
             dict[str, Zone]: zone_dict {zone_name: Zone}
         """
-        print("  : Note: This method will generate grid-based zones from node_dict. \
-              \n  : If you want to use your own zones(TAZs), \
-              \n  : please skip this method and use taz2zone() instead. \n")
+        if self.verbose:
+            print("  : Note: net2zone will generate grid-based zones from node_dict. \
+                \n  : If you want to use your own zones(TAZs), \
+                \n  : please skip this method and use taz2zone() instead. \n")
 
         print("  : Generating zone dictionary...")
-        self.zone_dict = net2zone(node_dict, num_x_blocks, num_y_blocks, cell_width, cell_height, unit)
-        self.zone_id_name_pair = {Zone.id: Zone.name for Zone in self.zone_dict.values()}
+        self.zone_dict, self.node_dict_within_zone = net2zone(node_dict,
+                                                              num_x_blocks,
+                                                              num_y_blocks,
+                                                              cell_width,
+                                                              cell_height,
+                                                              unit,
+                                                              self.use_zone_id,
+                                                              verbose=self.verbose)
+        self.__pair_zone_id_name = {Zone.id: Zone.name for Zone in self.zone_dict.values()}
         return self.zone_dict
 
     def taz2zone(self) -> dict[str, Zone]:
 
-        print("  : Note: This method will generate zones from zone.csv (TAZs). \
-                \n  : If you want to use grid-based zones (generate zones from node_dict) , \
-                \n  : please skip this method and use net2zone() instead. \n")
+        if self.verbose:
+            print("  : Note: taz2zone will generate zones from zone.csv (TAZs). \
+                    \n  : If you want to use grid-based zones (generate zones from node_dict) , \
+                    \n  : please skip this method and use net2zone() instead. \n")
 
         if self.path_zone:
-            print("  : Generating zone dictionary...")
+            if self.verbose:
+                print("  : Generating zone dictionary...")
             self.zone_dict = read_zone(self.path_zone, self.pkg_settings.get("set_cpu_cores"))
-            self.zone_id_name_pair = {Zone.id: Zone.name for Zone in self.zone_dict.values()}
+            self.__pair_zone_id_name = {
+                Zone.id: Zone.name for Zone in self.zone_dict.values()}
 
             return self.zone_dict
 
@@ -237,7 +275,8 @@ class GRID2DEMAND:
         Returns:
             dict[str, dict]: {"zone_dict": self.zone_dict, "node_dict": self.node_dict, "poi_dict": self.poi_dict}
         """
-        print("  : Synchronizing geometry between zone and node/poi...")
+        if self.verbose:
+            print("  : Synchronizing geometry between zone and node/poi...")
 
         # if not specified, use self.zone_dict, self.node_dict, self.poi_dict as input
         if not all([zone_dict, node_dict, poi_dict]):
@@ -247,7 +286,7 @@ class GRID2DEMAND:
 
         # synchronize zone with node
         try:
-            zone_node_dict = sync_zone_and_node_geometry(zone_dict, node_dict, self.pkg_settings.get("set_cpu_cores"))
+            zone_node_dict = sync_zone_and_node_geometry(zone_dict, node_dict, self.pkg_settings.get("set_cpu_cores"), verbose=self.verbose)
             zone_dict_add_node = zone_node_dict.get('zone_dict')
             self.node_dict = zone_node_dict.get('node_dict')
         except Exception as e:
@@ -286,7 +325,9 @@ class GRID2DEMAND:
         if not zone_dict:
             zone_dict = self.zone_dict
 
-        self.zone_od_dist_matrix = calc_zone_od_matrix(zone_dict, self.pkg_settings.get("set_cpu_cores"))
+        self.zone_od_dist_matrix = calc_zone_od_matrix(zone_dict,
+                                                       self.pkg_settings.get("set_cpu_cores"),
+                                                       verbose=self.verbose)
         return self.zone_od_dist_matrix
 
     def gen_poi_trip_rate(self, poi_dict: dict = "", trip_rate_file: str = "", trip_purpose: int = 1) -> dict[int, POI]:
@@ -313,7 +354,7 @@ class GRID2DEMAND:
                 raise Exception(f"  : Error: trip_rate_file {trip_rate_file} must be a csv file.")
             self.pkg_settings["trip_rate_file"] = pd.read_csv(trip_rate_file)
 
-        self.poi_dict = gen_poi_trip_rate(poi_dict, trip_rate_file, trip_purpose)
+        self.poi_dict = gen_poi_trip_rate(poi_dict, trip_rate_file, trip_purpose, verbose=self.verbose)
         return self.poi_dict
 
     def gen_node_prod_attr(self, node_dict: dict = "", poi_dict: dict = "") -> dict[int, Node]:
@@ -331,7 +372,7 @@ class GRID2DEMAND:
             node_dict = self.node_dict
             poi_dict = self.poi_dict
 
-        self.node_dict = gen_node_prod_attr(node_dict, poi_dict)
+        self.node_dict = gen_node_prod_attr(node_dict, poi_dict,verbose=self.verbose)
         return self.node_dict
 
     def calc_zone_prod_attr(self, node_dict: dict = "", zone_dict: dict = "") -> dict[str, Zone]:
@@ -347,7 +388,7 @@ class GRID2DEMAND:
         if not all([node_dict, zone_dict]):
             node_dict = self.node_dict
             zone_dict = self.zone_dict
-        self.zone = calc_zone_production_attraction(node_dict, zone_dict)
+        self.zone = calc_zone_production_attraction(node_dict, zone_dict, verbose=self.verbose)
 
         return self.zone
 
@@ -356,60 +397,87 @@ class GRID2DEMAND:
                           trip_purpose: int = 1,
                           alpha: float = 28507,
                           beta: float = -0.02,
-                          gamma: float = -0.123,
-                          use_zone_id: bool = False) -> pd.DataFrame:
+                          gamma: float = -0.123) -> pd.DataFrame:
         """run gravity model to generate demand
 
         Args:
-            zone_dict (dict, optional): _description_. Defaults to "".
-            zone_od_dist_matrix (dict, optional): _description_. Defaults to "".
-            trip_purpose (int, optional): _description_. Defaults to 1.
-            alpha (float, optional): _description_. Defaults to 28507.
-            beta (float, optional): _description_. Defaults to -0.02.
-            gamma (float, optional): _description_. Defaults to -0.123.
+            zone_dict (dict, optional): dict store zones info. Defaults to "".
+            zone_od_dist_matrix (dict, optional): OD distance matrix. Defaults to "".
+            trip_purpose (int, optional): purpose of trip. Defaults to 1.
+            alpha (float, optional): parameter alpha. Defaults to 28507.
+            beta (float, optional): parameter beta. Defaults to -0.02.
+            gamma (float, optional): parameter gamma. Defaults to -0.123.
 
         Returns:
             pd.DataFrame: the final demand dataframe
         """
+        # if not specified, use self.zone_dict, self.zone_od_dist_matrix as input
         if not all([zone_dict, zone_od_dist_matrix]):
             zone_dict = self.zone_dict
             zone_od_dist_matrix = self.zone_od_dist_matrix
 
-        self.zone_od_dist_matrix = run_gravity_model(zone_dict, zone_od_dist_matrix, trip_purpose, alpha, beta, gamma)
+        # run gravity model to generate demand
+        self.zone_od_dist_matrix = run_gravity_model(zone_dict, zone_od_dist_matrix, trip_purpose, alpha, beta, gamma, verbose=self.verbose)
         self.df_demand = pd.DataFrame(list(self.zone_od_dist_matrix.values()))
 
-        if use_zone_id:
-            comb = combinations(self.node_zone_id_pair.keys(), 2)
-            comb_grid_zone_name = {}
+        # if use_zone_id is True, generate demand dataframe based on zone_id from node.csv
+        if self.use_zone_id:
 
+            # generate comb {(o_node_id, d_node_id)}
+            # pair_node_zone_id: node_id and zone_id from node.csv, they are unique pairs
+            # comb: all possible combinations of node_id pairs
+            # comb: can be seen as all possible zone_id pairs from node.csv
+            node_zone_lst = list(self.__pair_node_zone_id.keys())
+
+            # create all possible combinations of node_id pairs
+            comb = [(i, j) for i in node_zone_lst for j in node_zone_lst]
+
+            # generate demand_lst to store demand dataframe
+            demand_lst = []
+
+            # create demand dictionary
             for pair in comb:
                 o_node_id, d_node_id = pair
-                o_zone_id = self.node_dict[o_node_id].zone_id
-                d_zone_id = self.node_dict[d_node_id].zone_id
-                o_zone_name = self.zone_id_name_pair[o_zone_id]
-                d_zone_name = self.zone_id_name_pair[d_zone_id]
+                o_zone_id = self.node_dict[o_node_id].zone_id  # zone_id from generated zone
+                d_zone_id = self.node_dict[d_node_id].zone_id  # zone_id from generated zone
+
+                o_zone_name = self.__pair_zone_id_name[o_zone_id]  # zone_name from generated zone
+                d_zone_name = self.__pair_zone_id_name[d_zone_id]  # zone_name from generated zone
                 if o_zone_name != d_zone_name:
                     try:
-                        comb_grid_zone_name[(o_zone_name, d_zone_name)] = self.zone_od_dist_matrix[(
-                            o_zone_name, d_zone_name)]
+                        dist_km = self.zone_od_dist_matrix[(o_zone_name, d_zone_name)].get('dist_km')
+                        volume = self.zone_od_dist_matrix[(o_zone_name, d_zone_name)].get('volume')
+
+                        demand_lst.append(
+                            {
+                                # "o_node_id": o_node_id,
+                                "o_zone_id": self.__pair_node_zone_id[o_node_id],
+                                "o_zone_name": self.__pair_node_zone_id[o_node_id],
+
+                                # "d_node_id": d_node_id,
+                                "d_zone_id": self.__pair_node_zone_id[d_node_id],
+                                "d_zone_name": self.__pair_node_zone_id[d_node_id],
+                                "dist_km": dist_km,
+                                "volume": volume,
+                                "geometry": shapely.LineString([self.node_dict[o_node_id].geometry,
+                                                                self.node_dict[d_node_id].geometry])
+
+                            }
+                        )
+
                     except KeyError:
-                        print(f"  : Error: zone_od_dist_matrix does not contain {o_zone_name, d_zone_name}.")
+                        dist_km = 0
+                        volume = 0
 
-            demand_lst = []
-            for zone_od_pair in comb_grid_zone_name:
-                demand_lst.append(
-                    {
-                        "o_node_id": o_node_id,
-                        "o_zone_id": self.node_zone_id_pair[o_node_id],
-                        "d_node_id": d_node_id,
-                        "d_zone_id": self.node_zone_id_pair[d_node_id],
-                        "volume": self.zone_od_dist_matrix[zone_od_pair]['volume'],
-                        "geometry": shapely.LineString([self.node_dict[o_node_id].geometry,
-                                                        self.node_dict[d_node_id].geometry])
-
-                    }
-                )
-            return pd.DataFrame(demand_lst)
+                        if self.verbose:
+                            print(f"  : Error: zone_od_dist_matrix does not contain {o_zone_name, d_zone_name}.")
+            if demand_lst:
+                self.df_demand_based_zone_id = pd.DataFrame(demand_lst)
+            else:
+                self.df_demand_based_zone_id = pd.DataFrame(columns=["o_zone_id", "o_zone_name",
+                                                                     "d_zone_id", "d_zone_name",
+                                                                     "dist_km", "volume", "geometry"])
+            return self.df_demand_based_zone_id
 
         return self.df_demand
 
@@ -433,7 +501,7 @@ class GRID2DEMAND:
             node_dict = self.node_dict
             zone_dict = self.zone_dict
 
-        self.df_agent = gen_agent_based_demand(node_dict, zone_dict, df_demand=df_demand)
+        self.df_agent = gen_agent_based_demand(node_dict, zone_dict, df_demand=df_demand, verbose=self.verbose)
         return self.df_agent
 
     @property
@@ -444,9 +512,17 @@ class GRID2DEMAND:
             return
 
         path_output = generate_unique_filename(path2linux(os.path.join(self.output_dir, "demand.csv")))
+
+        if self.use_zone_id:
+            df_demand_non_zero = self.df_demand_based_zone_id[self.df_demand_based_zone_id["volume"] > 0]
+            df_demand_non_zero.to_csv(path_output, index=False)
+            print(f"  : Successfully saved demand.csv to {self.output_dir}")
+            return None
+
         df_demand_non_zero = self.df_demand[self.df_demand["volume"] > 0]
         df_demand_non_zero.to_csv(path_output, index=False)
         print(f"  : Successfully saved demand.csv to {self.output_dir}")
+        return None
 
     @property
     def save_agent(self) -> None:
@@ -500,3 +576,14 @@ class GRID2DEMAND:
 
         zone_od_dist_matrix_df.to_csv(path_output)
         print(f"  : Successfully saved zone_od_dist_matrix.csv to {self.output_dir}")
+
+    @property
+    def save_node_within_zone(self):
+        if not hasattr(self, "node_dict_within_zone"):
+            print("Error: node_dict_within_zone does not exist. Please run net2zone() first.")
+            return
+
+        path_output = generate_unique_filename(path2linux(os.path.join(self.output_dir, "node_within_zone.csv")))
+        node_within_zone_df = pd.DataFrame(self.node_dict_within_zone.values())
+        node_within_zone_df.to_csv(path_output, index=False)
+        print(f"  : Successfully saved node_within_zone.csv to {self.output_dir}")

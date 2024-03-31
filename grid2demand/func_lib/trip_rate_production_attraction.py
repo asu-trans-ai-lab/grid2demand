@@ -14,7 +14,8 @@ from pyufunc import path2linux
 
 def gen_poi_trip_rate(poi_dict: dict,
                       trip_rate_file: str = "",
-                      trip_purpose: int = 1) -> dict:
+                      trip_purpose: int = 1,
+                      verbose: bool = False) -> dict:
     """Generate trip rate for each poi.
 
     Args:
@@ -38,7 +39,7 @@ def gen_poi_trip_rate(poi_dict: dict,
 
     # if no poi trip rate file provided, use default trip rate
     if not trip_rate_file:
-        print("No trip rate file is provided, use default trip rate.")
+        print("  No trip rate file provided, use default trip rate.")
         default_flag = True
     # if trip rate file provided is not valid, use default trip rate
     elif not os.path.isfile(path2linux(trip_rate_file)):
@@ -88,7 +89,10 @@ def gen_poi_trip_rate(poi_dict: dict,
         poi_type = poi_dict[poi_id].poi_type
         if poi_type in df_trip_rate_dict:
             poi_dict[poi_id].trip_rate = df_trip_rate_dict[poi_type].to_dict()
-    print(f"  : Successfully generated poi trip rate from {trip_rate_file}.")
+
+    if verbose:
+        print(f"  : Successfully generated poi trip rate from {trip_rate_file}.")
+
     return poi_dict
 
 
@@ -97,7 +101,8 @@ def gen_node_prod_attr(node_dict: dict,
                        residential_production: float = 10.0,
                        residential_attraction: float = 10.0,
                        boundary_production: float = 1000.0,
-                       boundary_attraction: float = 1000.0) -> dict:
+                       boundary_attraction: float = 1000.0,
+                       verbose: bool = False) -> dict:
     """Generate production and attraction for each node.
 
     Args:
@@ -139,5 +144,7 @@ def gen_node_prod_attr(node_dict: dict,
         else:
             node.production = 0
             node.attraction = 0
-    print("  : Successfully generated production and attraction for each node based on poi trip rate.")
+    if verbose:
+        print("  : Successfully generated production and attraction for each node based on poi trip rate.")
+
     return node_dict
