@@ -19,12 +19,12 @@ if __name__ == "__main__":
     # Step 1: Load node and poi data from input directory
     node_dict, poi_dict = gd.load_network.values()
 
-    # Step 2: Generate zone dictionary from node dictionary
-    #   by specifying number of x blocks and y blocks
-    zone_dict = gd.net2zone(node_dict, num_x_blocks=10, num_y_blocks=10)
-
-    # Step 2: Generate zone based on grid size with 10 km width and 10 km height for each zone
-    # zone_dict = gd.net2zone(node_dict, cell_width=10, cell_height=10)
+    # Step 2: Generate zone dictionary from zone.csv file
+    #   please note, if you use this function,
+    #   you need to make sure the zone.csv file is in the input directory
+    #   this will generate zones based on your own TAZs
+    #   and zone.csv requires at least two columns: zone_id and geometry
+    zone_dict = gd.taz2zone()
 
     # Step 3: synchronize geometry info between zone, node and poi
     #       add zone_id to node and poi dictionaries

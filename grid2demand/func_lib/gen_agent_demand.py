@@ -6,14 +6,16 @@
 ##############################################################
 
 import pandas as pd
-from grid2demand.utils_lib.net_utils import Agent
 from random import choice, uniform
 import math
+from pyufunc import gmns_geo
 
 
 def gen_agent_based_demand(node_dict: dict, zone_dict: dict,
-                           path_demand: str = "", df_demand: pd.DataFrame = "",
-                           agent_type: str = "v") -> pd.DataFrame:
+                           path_demand: str = "",
+                           df_demand: pd.DataFrame = "",
+                           agent_type: str = "v",
+                           verbose: bool = False) -> pd.DataFrame:
     # either path_demand or df_demand must be provided
 
     # if path_demand is provided, read demand data from path_demand
@@ -44,7 +46,7 @@ def gen_agent_based_demand(node_dict: dict, zone_dict: dict,
                 departure_time = f"07{rand_time}"
 
             agent_lst.append(
-                Agent(
+                gmns_geo.Agent(
                     id=i + 1,
                     agent_type=agent_type,
                     o_zone_id=o_zone_id,
@@ -57,5 +59,8 @@ def gen_agent_based_demand(node_dict: dict, zone_dict: dict,
                     departure_time=departure_time
                 )
             )
-    print("  : Successfully generated agent-based demand data.")
+
+    if verbose:
+        print("  :Successfully generated agent-based demand data.")
+
     return pd.DataFrame(agent_lst)

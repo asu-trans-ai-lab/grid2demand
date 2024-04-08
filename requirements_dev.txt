@@ -1,5 +1,11 @@
 numpy>=1.26.4
 osm2gmns>=0.7.5
 pandas>=2.2.1
+pytest>=8.0.2
 pyufunc>=0.2.1
+setuptools>=68.2.2
 Shapely>=2.0.3
+urllib3
+requests
+tqdm
+beautifulsoup4

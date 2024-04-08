@@ -6,6 +6,7 @@
 ##############################################################
 
 from __future__ import absolute_import
+import contextlib
 import itertools
 import pandas as pd
 import shapely
@@ -13,9 +14,9 @@ import numpy as np
 from multiprocessing import Pool, cpu_count
 
 from grid2demand.utils_lib.net_utils import Zone, Node
-from grid2demand.utils_lib.utils import calc_distance_on_unit_sphere, int2alpha
-from grid2demand.utils_lib.utils import func_running_time
 from grid2demand.utils_lib.pkg_settings import pkg_settings
+
+from pyufunc import (calc_distance_on_unit_sphere, cvt_int_to_alpha, func_running_time)
 
 
 @func_running_time
@@ -28,8 +29,10 @@ def get_lng_lat_min_max(node_dict: dict[int, Node]) -> list:
     Returns:
         list: [min_lng, max_lng, min_lat, max_lat]
     """
-    coord_x_min, coord_x_max = node_dict[0].x_coord, node_dict[0].x_coord
-    coord_y_min, coord_y_max = node_dict[0].y_coord, node_dict[0].y_coord
+    first_key = list(node_dict.keys())[0]
+
+    coord_x_min, coord_x_max = node_dict[first_key].x_coord, node_dict[first_key].x_coord
+    coord_y_min, coord_y_max = node_dict[first_key].y_coord, node_dict[first_key].y_coord
 
     for node_id in node_dict:
         if node_dict[node_id].x_coord < coord_x_min:
@@ -49,7 +52,9 @@ def net2zone(node_dict: dict[int, Node],
              num_x_blocks: int = 0,
              num_y_blocks: int = 0,
              cell_width: float = 0,
-             cell_height: float = 0, unit: str = "km") -> dict[str, Zone]:
+             cell_height: float = 0, unit: str = "km",
+             use_zone_id: bool = False,
+             verbose: bool = False) -> dict[str, Zone]:
     """convert node_dict to zone_dict by grid.
     The grid can be defined by num_x_blocks and num_y_blocks, or cell_width and cell_height.
     if num_x_blocks and num_y_blocks are specified, the grid will be divided into num_x_blocks * num_y_blocks.
@@ -63,7 +68,9 @@ def net2zone(node_dict: dict[int, Node],
         num_y_blocks (int, optional): total number of blocks/grids from y direction. Defaults to 10.
         cell_width (float, optional): the width for each block/grid . Defaults to 0. unit: km.
         cell_height (float, optional): the height for each block/grid. Defaults to 0. unit: km.
-        unit (str, optional): the unit of cell_width and cell_height. Defaults to "km".
+        unit (str, optional): the unit of cell_width and cell_height. Defaults to "km". Options:"meter", "km", "mile".
+        use_zone_id (bool, optional): whether to use zone_id in node_dict. Defaults to False.
+        verbose (bool, optional): print processing information. Defaults to False.
 
     Raises
         ValueError: Please provide num_x_blocks and num_y_blocks or cell_width and cell_height
@@ -87,7 +94,31 @@ def net2zone(node_dict: dict[int, Node],
     # coord_y_min, coord_y_max = df_node['y_coord'].min(
     # ) - 0.000001, df_node['y_coord'].max() + 0.000001
 
+    # generate zone based on zone_id in node.csv
+    if use_zone_id:
+        node_dict_zone_id = {}
+
+        for node_id in node_dict:
+            with contextlib.suppress(AttributeError):
+                if node_dict[node_id]._zone_id != -1:
+                    node_dict_zone_id[node_id] = node_dict[node_id]
+
+        if not node_dict_zone_id:
+            print("  : No zone_id found in node_dict, will generate zone based on original node_dict")
+        else:
+            node_dict = node_dict_zone_id
+
     coord_x_min, coord_x_max, coord_y_min, coord_y_max = get_lng_lat_min_max(node_dict)
+
+    # get nodes within the boundary
+    if use_zone_id:
+        node_dict_within_boundary = {}
+        for node_id in node_dict:
+            if node_dict[node_id].x_coord >= coord_x_min and node_dict[node_id].x_coord <= coord_x_max and \
+                    node_dict[node_id].y_coord >= coord_y_min and node_dict[node_id].y_coord <= coord_y_max:
+                node_dict_within_boundary[node_id] = node_dict[node_id]
+    else:
+        node_dict_within_boundary = node_dict
 
     # Priority: num_x_blocks, number_y_blocks > cell_width, cell_height
     # if num_x_blocks and num_y_blocks are given, use them to partition the study area
@@ -160,7 +191,7 @@ def net2zone(node_dict: dict[int, Node],
             y_max = y_block_maxmin_list[j][1]
 
             cell_polygon = generate_polygon(x_min, x_max, y_min, y_max)
-            row_alpha = int2alpha(j)
+            row_alpha = cvt_int_to_alpha(j)
             zone_dict[f"{row_alpha}{i}"] = Zone(
                 id=zone_id_flag,
                 name=f"{row_alpha}{i}",
@@ -212,9 +243,11 @@ def net2zone(node_dict: dict[int, Node],
             geometry=points_lst[i]
         )
         zone_id_flag += 1
-    print(f"  : Successfully generated zone dictionary: {len(zone_dict) - 4 * len(zone_upper_row)} Zones generated, \
-        \n    plus {4 * len(zone_upper_row)} boundary gates (points))")
-    return zone_dict
+
+    if verbose:
+        print(f"  : Successfully generated zone dictionary: {len(zone_dict) - 4 * len(zone_upper_row)} Zones generated, \
+            \n    plus {4 * len(zone_upper_row)} boundary gates (points))")
+    return (zone_dict, node_dict_within_boundary)
 
 
 def sync_node_with_zones(args: tuple) -> tuple:
@@ -235,7 +268,7 @@ def sync_node_with_zones(args: tuple) -> tuple:
 
 
 @func_running_time
-def sync_zone_and_node_geometry(zone_dict: dict, node_dict: dict, cpu_cores: int = 1) -> dict:
+def sync_zone_and_node_geometry(zone_dict: dict, node_dict: dict, cpu_cores: int = 1, verbose: bool = False) -> dict:
     """Map nodes to zone cells
 
     Parameters
@@ -247,7 +280,8 @@ def sync_zone_and_node_geometry(zone_dict: dict, node_dict: dict, cpu_cores: int
 
     """
     # Create a pool of worker processes
-    print(f"  : Parallel synchronizing Nodes and Zones using Pool with {cpu_cores} CPUs. Please wait...")
+    if verbose:
+        print(f"  : Parallel synchronizing Nodes and Zones using Pool with {cpu_cores} CPUs. Please wait...")
     # Prepare arguments for the pool
     args_list = [(node_id, node, zone_dict)
                  for node_id, node in node_dict.items()]
@@ -261,7 +295,9 @@ def sync_zone_and_node_geometry(zone_dict: dict, node_dict: dict, cpu_cores: int
             zone_dict[zone_name].node_id_list.append(node_id)
         node_dict[node_id] = node
 
-    print("  : Successfully synchronized zone and node geometry")
+    if verbose:
+        print("  : Successfully synchronized zone and node geometry")
+
     return {"node_dict": node_dict, "zone_dict": zone_dict}
 
 
@@ -283,7 +319,7 @@ def sync_poi_with_zones(args: tuple) -> tuple:
 
 
 @func_running_time
-def sync_zone_and_poi_geometry(zone_dict: dict, poi_dict: dict, cpu_cores: int = 1) -> dict:
+def sync_zone_and_poi_geometry(zone_dict: dict, poi_dict: dict, cpu_cores: int = 1, verbose: bool = False) -> dict:
     """Synchronize zone cells and POIs to update zone_id attribute for POIs and poi_id_list attribute for zone cells
 
     Args:
@@ -295,7 +331,8 @@ def sync_zone_and_poi_geometry(zone_dict: dict, poi_dict: dict, cpu_cores: int =
     """
 
     # Create a pool of worker processes
-    print(f"  : Parallel synchronizing POIs and Zones using Pool with {cpu_cores} CPUs. Please wait...")
+    if verbose:
+        print(f"  : Parallel synchronizing POIs and Zones using Pool with {cpu_cores} CPUs. Please wait...")
     # Prepare arguments for the pool
     args_list = [(poi_id, poi, zone_dict) for poi_id, poi in poi_dict.items()]
 
@@ -309,7 +346,8 @@ def sync_zone_and_poi_geometry(zone_dict: dict, poi_dict: dict, cpu_cores: int =
             zone_dict[zone_name].poi_id_list.append(poi_id)
         poi_dict[poi_id] = poi
 
-    print("  : Successfully synchronized zone and poi geometry")
+    if verbose:
+        print("  : Successfully synchronized zone and poi geometry")
     return {"poi_dict": poi_dict, "zone_dict": zone_dict}
 
 
@@ -334,7 +372,7 @@ def distance_calculation(args: tuple) -> tuple:
 
 
 @func_running_time
-def calc_zone_od_matrix(zone_dict: dict, cpu_cores: int = 1) -> dict[tuple[str, str], dict]:
+def calc_zone_od_matrix(zone_dict: dict, cpu_cores: int = 1, verbose: bool = False) -> dict[tuple[str, str], dict]:
     """Calculate the zone-to-zone distance matrix
 
     Args:
@@ -354,7 +392,8 @@ def calc_zone_od_matrix(zone_dict: dict, cpu_cores: int = 1) -> dict[tuple[str, 
     len_df_zone = len(df_zone)
 
     # Prepare arguments for the pool
-    print(f"  : Parallel calculating zone-to-zone distance matrix using Pool with {cpu_cores} CPUs. Please wait...")
+    if verbose:
+        print(f"  : Parallel calculating zone-to-zone distance matrix using Pool with {cpu_cores} CPUs. Please wait...")
     args_list = [(i, j, df_zone) for i, j in itertools.product(range(len_df_zone), range(len_df_zone))]
 
     with Pool(processes=cpu_cores) as pool:
@@ -364,5 +403,6 @@ def calc_zone_od_matrix(zone_dict: dict, cpu_cores: int = 1) -> dict[tuple[str, 
     # Gather results
     dist_dict = dict(results)
 
-    print("  : Successfully calculated zone-to-zone distance matrix")
+    if verbose:
+        print("  : Successfully calculated zone-to-zone distance matrix")
     return dist_dict

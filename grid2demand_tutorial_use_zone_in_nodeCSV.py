@@ -14,7 +14,7 @@ if __name__ == "__main__":
     input_dir = "./datasets/dubai"
 
     # Initialize a GRID2DEMAND object
-    gd = GRID2DEMAND(input_dir)
+    gd = GRID2DEMAND(input_dir, use_zone_id=True)
 
     # Step 1: Load node and poi data from input directory
     node_dict, poi_dict = gd.load_network.values()
@@ -23,8 +23,8 @@ if __name__ == "__main__":
     #   by specifying number of x blocks and y blocks
     zone_dict = gd.net2zone(node_dict, num_x_blocks=10, num_y_blocks=10)
 
-    # Step 2: Generate zone based on grid size with 10 km width and 10 km height for each zone
-    # zone_dict = gd.net2zone(node_dict, cell_width=10, cell_height=10)
+    #   by specifying cell_width and cell_height in km
+    # zone_dict = gd.net2zone(node_dict, cell_width=10, cell_height=10, use_zone_id=True)
 
     # Step 3: synchronize geometry info between zone, node and poi
     #       add zone_id to node and poi dictionaries
@@ -48,7 +48,7 @@ if __name__ == "__main__":
     df_demand = gd.run_gravity_model(zone_prod_attr, zone_od_dist_matrix)
 
     # Step 8: generate agent-based demand
-    df_agent = gd.gen_agent_based_demand(node_prod_attr, zone_prod_attr, df_demand=df_demand)
+    df_agent = gd.gen_agent_based_demand(node_prod_attr, zone_prod_attr, df_demand=gd.df_demand)
 
     # You can also view and edit the package setting by using gd.pkg_settings
     print(gd.pkg_settings)
@@ -59,3 +59,4 @@ if __name__ == "__main__":
     gd.save_zone
     gd.save_zone_od_dist_table
     gd.save_zone_od_dist_matrix
+    gd.save_node_within_zone
