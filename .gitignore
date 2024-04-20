@@ -21,3 +21,4 @@ x64/
 *dist/*
 *build/*
 .ipynb_checkpoints/*
+te.py
