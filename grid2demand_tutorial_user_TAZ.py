@@ -7,6 +7,7 @@
 
 from __future__ import absolute_import
 import grid2demand as gd
+import pandas as pd
 
 if __name__ == "__main__":
 
