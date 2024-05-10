@@ -93,7 +93,7 @@ class GRID2DEMAND:
 
         if is_optional_files_exist:
             print(f"  : Optional files: {optional_files} are found in {self.input_dir}.")
-            print("  : Optional files could be used in the following steps.")
+            print("  : Optional files could be used in the future steps.")
             self.path_zone = path2linux(os.path.join(self.input_dir, "zone.csv"))
 
         if self.verbose:
