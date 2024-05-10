@@ -11,7 +11,7 @@ from grid2demand import GRID2DEMAND
 if __name__ == "__main__":
 
     # Step 0: Specify input directory, if not, use current working directory as default input directory
-    input_dir = "./datasets/dubai"
+    input_dir = "./datasets/DC_Downtown"
 
     # Initialize a GRID2DEMAND object
     gd = GRID2DEMAND(input_dir)
