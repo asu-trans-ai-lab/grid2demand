@@ -229,7 +229,11 @@ def net2zone(node_dict: dict[int, Node],
             polygon: sg.Polygon, Polygon
 
         """
-        return shapely.geometry.Polygon([(x_min, y_min), (x_max, y_min), (x_max, y_max), (x_min, y_max), (x_min, y_min)])
+        return shapely.geometry.Polygon([(x_min, y_min),
+                                         (x_max, y_min),
+                                         (x_max, y_max),
+                                         (x_min, y_max),
+                                         (x_min, y_min)])
 
     zone_dict = {}
     zone_upper_row = []
@@ -307,8 +311,9 @@ def net2zone(node_dict: dict[int, Node],
         zone_id_flag += 1
 
     if verbose:
-        print(f"  : Successfully generated zone dictionary: {len(zone_dict) - 4 * len(zone_upper_row)} Zones generated, \
-            \n    plus {4 * len(zone_upper_row)} boundary gates (points))")
+        print(
+            f"  : Successfully generated zone dictionary: {len(zone_dict) - 4 * len(
+                zone_upper_row)} Zones generated, plus {4 * len(zone_upper_row)} boundary gates (points))")
     return zone_dict
 
 
