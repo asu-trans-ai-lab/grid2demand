@@ -15,7 +15,6 @@ x64/
 **log.txt
 *__pycache__*
 **.egg-info/*
-*setup.py
 *PKG-INFO*
 *Tutorial_PyPI.md
 *dist/*
