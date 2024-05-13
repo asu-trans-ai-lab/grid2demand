@@ -103,8 +103,7 @@ def _create_poi_from_dataframe(df_poi: pd.DataFrame) -> dict[int, POI]:
             )
             poi_dict[df_poi.loc[i, 'poi_id']] = poi
         except Exception as e:
-            print(f"  : Unable to create poi: {
-                  df_poi.loc[i, 'poi_id']}, error: {e}")
+            print(f"  : Unable to create poi: {df_poi.loc[i, 'poi_id']}, error: {e}")
     return poi_dict
 
 
