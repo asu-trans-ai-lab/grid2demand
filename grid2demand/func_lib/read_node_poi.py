@@ -215,7 +215,7 @@ def read_node(node_file: str = "", cpu_cores: int = 1, verbose: bool = False) ->
     Examples:
         >>> node_dict = read_node(node_file = r"../dataset/ASU/node.csv")
         >>> node_dict[1]
-        Node(id=1, zone_id=0, x_coord=0.0, y_coord=0.0, production=0.0, attraction=0.0, boundary_flag=0, geometry='POINT (0 0)')
+        Node(id=1, zone_id=0, x_coord=0.0, y_coord=0.0, boundary_flag=0, geometry='POINT (0 0)',...)
 
         # if node_file does not exist, raise error
         >>> node_dict = read_node(node_file = r"../dataset/ASU/node.csv")
@@ -390,7 +390,7 @@ def read_zone_by_centroid(zone_file: str = "", cpu_cores: int = 1, verbose: bool
 
     Raises:
         FileNotFoundError: File: {zone_file} does not exist.
-        FileNotFoundError: Required column: {col} is not in zone.csv. Please make sure you have {zone_required_cols} in zone.csv.
+        FileNotFoundError: Required column: {col} is not in zone.csv. Please make sure zone_required_cols in zone.csv.
 
     Returns:
         dict: a dict of Zones.
@@ -488,7 +488,8 @@ def read_network(input_folder: str = "", cpu_cores: int = 1, verbose: bool = Fal
 
     # if not all required files exist, raise error
     if not is_required_files_exist:
-        raise FileNotFoundError(f"Required files: {pkg_settings['required_files']} are not satisfied, please check your input folder.")
+        raise FileNotFoundError(
+            f"Required files: {pkg_settings['required_files']} are not satisfied, please check your input folder.")
 
     node_dict = read_node(input_folder + "/node.csv", cpu_cores, verbose=verbose)
     poi_dict = read_poi(input_folder + "/poi.csv", cpu_cores, verbose=verbose)
