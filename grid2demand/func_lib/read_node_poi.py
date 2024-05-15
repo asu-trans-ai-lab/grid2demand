@@ -17,8 +17,10 @@ from grid2demand.utils_lib.utils import check_required_files_exist
 from pyufunc import (func_running_time, path2linux,
                      get_filenames_by_ext,)
 
+# supporting functions for multiprocessing implementation
 
-def create_node_from_dataframe(df_node: pd.DataFrame) -> dict[int, Node]:
+
+def _create_node_from_dataframe(df_node: pd.DataFrame) -> dict[int, Node]:
     """Create Node from df_node.
 
     Args:
@@ -72,70 +74,7 @@ def create_node_from_dataframe(df_node: pd.DataFrame) -> dict[int, Node]:
     return node_dict
 
 
-@func_running_time
-def read_node(node_file: str = "", cpu_cores: int = 1, verbose: bool = False) -> dict[int: Node]:
-    """Read node.csv file and return a dict of nodes.
-
-    Args:
-        node_file (str, optional): node file path. Defaults to "".
-        cpu_cores (int, optional): number of cpu cores for parallel processing. Defaults to 1.
-        verbose (bool, optional): print processing information. Defaults to False.
-
-    Raises:
-        FileNotFoundError: File: {node_file} does not exist.
-
-    Returns:
-        dict: a dict of nodes.
-
-    Examples:
-        >>> node_dict = read_node(node_file = r"../dataset/ASU/node.csv")
-        >>> node_dict[1]
-        Node(id=1, zone_id=0, x_coord=0.0, y_coord=0.0, production=0.0, attraction=0.0, boundary_flag=0, geometry='POINT (0 0)')
-
-        # if node_file does not exist, raise error
-        >>> node_dict = read_node(node_file = r"../dataset/ASU/node.csv")
-        FileNotFoundError: File: ../dataset/ASU/node.csv does not exist.
-    """
-
-    # convert path to linux path
-    node_file = path2linux(node_file)
-
-    # check if node_file exists
-    if not os.path.exists(node_file):
-        raise FileNotFoundError(f"File: {node_file} does not exist.")
-
-    # read node.csv with specified columns and chunksize for iterations
-    node_required_cols = pkg_settings["node_required_fields"]
-    chunk_size = pkg_settings["data_chunk_size"]
-
-    # read first two rows to check whether required fields are in node.csv
-    df_node_2rows = pd.read_csv(node_file, nrows=2)
-    col_names = df_node_2rows.columns.tolist()
-    if "zone_id" in col_names:
-        node_required_cols.append("zone_id")
-
-    if verbose:
-        print(f"  : Reading node.csv with specified columns: {node_required_cols} \
-                    \n    and chunksize {chunk_size} for iterations...")
-    df_node_chunk = pd.read_csv(node_file, usecols=node_required_cols, chunksize=chunk_size)
-
-    if verbose:
-        print(f"  : Parallel creating Nodes using Pool with {cpu_cores} CPUs. Please wait...")
-    node_dict_final = {}
-
-    # Parallel processing using Pool
-    with Pool(cpu_cores) as pool:
-        results = pool.map(create_node_from_dataframe, df_node_chunk)
-
-    for node_dict in results:
-        node_dict_final.update(node_dict)
-
-    if verbose:
-        print(f"  : Successfully loaded node.csv: {len(node_dict_final)} Nodes loaded.")
-    return node_dict_final
-
-
-def create_poi_from_dataframe(df_poi: pd.DataFrame) -> dict[int, POI]:
+def _create_poi_from_dataframe(df_poi: pd.DataFrame) -> dict[int, POI]:
     """Create POI from df_poi.
 
     Args:
@@ -168,66 +107,7 @@ def create_poi_from_dataframe(df_poi: pd.DataFrame) -> dict[int, POI]:
     return poi_dict
 
 
-@func_running_time
-def read_poi(poi_file: str = "", cpu_cores: int = 1, verbose: bool = False) -> dict[int: POI]:
-    """Read poi.csv file and return a dict of POIs.
-
-    Args:
-        poi_file (str): The poi.csv file path. default is "".
-        cpu_cores (int, optional): number of cpu cores for parallel processing. Defaults to 1.
-        verbose (bool, optional): print processing information. Defaults to False.
-
-    Raises:
-        FileNotFoundError: if poi_file does not exist.
-
-    Returns:
-        dict: A dict of POIs.
-
-    Examples:
-        >>> poi_dict = read_poi(poi_file = r"../dataset/ASU/poi.csv")
-        >>> poi_dict[1]
-        POI(id=1, x_coord=0.0, y_coord=0.0, area=[0, 0.0], poi_type='residential', geometry='POINT (0 0)')
-
-        # if poi_file does not exist, raise error
-        >>> poi_dict = read_poi(poi_file = r"../dataset/ASU/poi.csv")
-        FileNotFoundError: File: ../dataset/ASU/poi.csv does not exist.
-
-    """
-
-    # convert path to linux path
-    poi_file = path2linux(poi_file)
-
-    # check if poi_file exists
-    if not os.path.exists(poi_file):
-        raise FileNotFoundError(f"File: {poi_file} does not exist.")
-
-    # Read poi.csv with specified columns and chunksize for iterations
-    poi_required_cols = pkg_settings["poi_required_fields"]
-    chunk_size = pkg_settings["data_chunk_size"]
-
-    if verbose:
-        print(f"  : Reading poi.csv with specified columns: {poi_required_cols} \
-                    \n    and chunksize {chunk_size} for iterations...")
-    df_poi_chunk = pd.read_csv(poi_file, usecols=poi_required_cols, chunksize=chunk_size)
-
-    # Parallel processing using Pool
-    if verbose:
-        print(f"  : Parallel creating POIs using Pool with {cpu_cores} CPUs. Please wait...")
-    poi_dict_final = {}
-
-    with Pool(cpu_cores) as pool:
-        results = pool.map(create_poi_from_dataframe, df_poi_chunk)
-
-    for poi_dict in results:
-        poi_dict_final.update(poi_dict)
-
-    if verbose:
-        print(f"  : Successfully loaded poi.csv: {len(poi_dict_final)} POIs loaded.")
-
-    return poi_dict_final
-
-
-def create_zone_from_dataframe(df_zone: pd.DataFrame) -> dict[int, Zone]:
+def _create_zone_from_dataframe_by_geometry(df_zone: pd.DataFrame) -> dict[int, Zone]:
     """Create Zone from df_zone.
 
     Args:
@@ -273,8 +153,174 @@ def create_zone_from_dataframe(df_zone: pd.DataFrame) -> dict[int, Zone]:
     return zone_dict
 
 
+def _create_zone_from_dataframe_by_centroid(df_zone: pd.DataFrame) -> dict[int, Zone]:
+    """Create Zone from df_zone.
+
+    Args:
+        df_zone (pd.DataFrame): the dataframe of zone from zone.csv, the required fields are: [zone_id, geometry]
+
+    Returns:
+        dict[int, Zone]: a dict of Zones.{zone_id: Zone}
+    """
+    df_zone = df_zone.reset_index(drop=True)
+    zone_dict = {}
+
+    for i in range(len(df_zone)):
+        try:
+            zone_id = df_zone.loc[i, 'zone_id']
+            centroid_x = df_zone.loc[i, 'x_coord']
+            centroid_y = df_zone.loc[i, 'y_coord']
+
+            zone_centroid_shapely = shapely.Point(centroid_x, centroid_y)
+            centroid_wkt = zone_centroid_shapely.wkt
+
+            zone = Zone(
+                id=zone_id,
+                name=zone_id,
+                centroid_x=centroid_x,
+                centroid_y=centroid_y,
+                centroid=centroid_wkt,
+                node_id_list=[],
+                poi_id_list=[],
+                production=0,
+                attraction=0,
+                production_fixed=0,
+                attraction_fixed=0,
+            )
+
+            zone_dict[zone_id] = zone
+        except Exception as e:
+            print(f"  : Unable to create zone: {zone_id}, error: {e}")
+    return zone_dict
+
+
+# main functions for reading node, poi, zone files and network
+
+
 @func_running_time
-def read_zone(zone_file: str = "", cpu_cores: int = 1, verbose: bool = False) -> dict[int: Zone]:
+def read_node(node_file: str = "", cpu_cores: int = 1, verbose: bool = False) -> dict[int: Node]:
+    """Read node.csv file and return a dict of nodes.
+
+    Args:
+        node_file (str, optional): node file path. Defaults to "".
+        cpu_cores (int, optional): number of cpu cores for parallel processing. Defaults to 1.
+        verbose (bool, optional): print processing information. Defaults to False.
+
+    Raises:
+        FileNotFoundError: File: {node_file} does not exist.
+
+    Returns:
+        dict: a dict of nodes.
+
+    Examples:
+        >>> node_dict = read_node(node_file = r"../dataset/ASU/node.csv")
+        >>> node_dict[1]
+        Node(id=1, zone_id=0, x_coord=0.0, y_coord=0.0, boundary_flag=0, geometry='POINT (0 0)',...)
+
+        # if node_file does not exist, raise error
+        >>> node_dict = read_node(node_file = r"../dataset/ASU/node.csv")
+        FileNotFoundError: File: ../dataset/ASU/node.csv does not exist.
+    """
+
+    # convert path to linux path
+    node_file = path2linux(node_file)
+
+    # check if node_file exists
+    if not os.path.exists(node_file):
+        raise FileNotFoundError(f"File: {node_file} does not exist.")
+
+    # read node.csv with specified columns and chunksize for iterations
+    node_required_cols = pkg_settings["node_fields"]
+    chunk_size = pkg_settings["data_chunk_size"]
+
+    # read first two rows to check whether required fields are in node.csv
+    df_node_2rows = pd.read_csv(node_file, nrows=2)
+    col_names = df_node_2rows.columns.tolist()
+    if "zone_id" in col_names:
+        node_required_cols.append("zone_id")
+
+    if verbose:
+        print(f"  : Reading node.csv with specified columns: {node_required_cols} \
+                    \n    and chunksize {chunk_size} for iterations...")
+    df_node_chunk = pd.read_csv(node_file, usecols=node_required_cols, chunksize=chunk_size)
+
+    if verbose:
+        print(f"  : Parallel creating Nodes using Pool with {cpu_cores} CPUs. Please wait...")
+    node_dict_final = {}
+
+    # Parallel processing using Pool
+    with Pool(cpu_cores) as pool:
+        results = pool.map(_create_node_from_dataframe, df_node_chunk)
+
+    for node_dict in results:
+        node_dict_final.update(node_dict)
+
+    if verbose:
+        print(f"  : Successfully loaded node.csv: {len(node_dict_final)} Nodes loaded.")
+    return node_dict_final
+
+
+@func_running_time
+def read_poi(poi_file: str = "", cpu_cores: int = 1, verbose: bool = False) -> dict[int: POI]:
+    """Read poi.csv file and return a dict of POIs.
+
+    Args:
+        poi_file (str): The poi.csv file path. default is "".
+        cpu_cores (int, optional): number of cpu cores for parallel processing. Defaults to 1.
+        verbose (bool, optional): print processing information. Defaults to False.
+
+    Raises:
+        FileNotFoundError: if poi_file does not exist.
+
+    Returns:
+        dict: A dict of POIs.
+
+    Examples:
+        >>> poi_dict = read_poi(poi_file = r"../dataset/ASU/poi.csv")
+        >>> poi_dict[1]
+        POI(id=1, x_coord=0.0, y_coord=0.0, area=[0, 0.0], poi_type='residential', geometry='POINT (0 0)')
+
+        # if poi_file does not exist, raise error
+        >>> poi_dict = read_poi(poi_file = r"../dataset/ASU/poi.csv")
+        FileNotFoundError: File: ../dataset/ASU/poi.csv does not exist.
+
+    """
+
+    # convert path to linux path
+    poi_file = path2linux(poi_file)
+
+    # check if poi_file exists
+    if not os.path.exists(poi_file):
+        raise FileNotFoundError(f"File: {poi_file} does not exist.")
+
+    # Read poi.csv with specified columns and chunksize for iterations
+    poi_required_cols = pkg_settings["poi_fields"]
+    chunk_size = pkg_settings["data_chunk_size"]
+
+    if verbose:
+        print(f"  : Reading poi.csv with specified columns: {poi_required_cols} \
+                    \n    and chunksize {chunk_size} for iterations...")
+    df_poi_chunk = pd.read_csv(poi_file, usecols=poi_required_cols, chunksize=chunk_size)
+
+    # Parallel processing using Pool
+    if verbose:
+        print(f"  : Parallel creating POIs using Pool with {cpu_cores} CPUs. Please wait...")
+    poi_dict_final = {}
+
+    with Pool(cpu_cores) as pool:
+        results = pool.map(_create_poi_from_dataframe, df_poi_chunk)
+
+    for poi_dict in results:
+        poi_dict_final.update(poi_dict)
+
+    if verbose:
+        print(f"  : Successfully loaded poi.csv: {len(poi_dict_final)} POIs loaded.")
+
+    return poi_dict_final
+
+
+@func_running_time
+def read_zone_by_geometry(zone_file: str = "", cpu_cores: int = 1, verbose: bool = False) -> dict[int: Zone]:
     """Read zone.csv file and return a dict of Zones.
 
     Raises:
@@ -298,7 +344,7 @@ def read_zone(zone_file: str = "", cpu_cores: int = 1, verbose: bool = False) ->
         raise FileNotFoundError(f"File: {zone_file} does not exist.")
 
     # load default settings for zone required fields and chunk size
-    zone_required_cols = pkg_settings["zone_required_fields"]
+    zone_required_cols = pkg_settings["zone_geometry_fields"]
     chunk_size = pkg_settings["data_chunk_size"]
 
     if verbose:
@@ -322,7 +368,7 @@ def read_zone(zone_file: str = "", cpu_cores: int = 1, verbose: bool = False) ->
     zone_dict_final = {}
 
     with Pool(cpu_cores) as pool:
-        results = pool.map(create_zone_from_dataframe, df_zone_chunk)
+        results = pool.map(_create_zone_from_dataframe_by_geometry, df_zone_chunk)
 
     for zone_dict in results:
         zone_dict_final.update(zone_dict)
@@ -334,6 +380,66 @@ def read_zone(zone_file: str = "", cpu_cores: int = 1, verbose: bool = False) ->
 
 
 @func_running_time
+def read_zone_by_centroid(zone_file: str = "", cpu_cores: int = 1, verbose: bool = False) -> dict[int: Zone]:
+    """Read zone.csv file and return a dict of Zones.
+
+    Args:
+        zone_file (str, optional): the input zone file path. Defaults to "".
+        cpu_cores (int, optional): number of cpu cores for parallel processing. Defaults to 1.
+        verbose (bool, optional): print processing information. Defaults to False.
+
+    Raises:
+        FileNotFoundError: File: {zone_file} does not exist.
+        FileNotFoundError: Required column: {col} is not in zone.csv. Please make sure zone_required_cols in zone.csv.
+
+    Returns:
+        dict: a dict of Zones.
+    """
+
+    # convert path to linux path
+    zone_file = path2linux(zone_file)
+
+    # check if zone_file exists
+    if not os.path.exists(zone_file):
+        raise FileNotFoundError(f"File: {zone_file} does not exist.")
+
+    # load default settings for zone required fields and chunk size
+    zone_required_cols = pkg_settings["zone_centroid_fields"]
+    chunk_size = pkg_settings["data_chunk_size"]
+
+    if verbose:
+        print(f"  : Reading zone.csv with specified columns: {zone_required_cols} \
+                \n   and chunksize {chunk_size} for iterations...")
+
+    # check whether required fields are in zone.csv
+    df_zone = pd.read_csv(zone_file, nrows=1)
+    col_names = df_zone.columns.tolist()
+    for col in zone_required_cols:
+        if col not in col_names:
+            raise FileNotFoundError(f"Required column: {col} is not in zone.csv. \
+                Please make sure you have {zone_required_cols} in zone.csv.")
+
+    # load zone.csv with specified columns and chunksize for iterations
+    df_zone_chunk = pd.read_csv(zone_file, usecols=zone_required_cols, chunksize=chunk_size)
+
+    # Parallel processing using Pool
+    if verbose:
+        print(f"  : Parallel creating Zones using Pool with {cpu_cores} CPUs. Please wait...")
+
+    zone_dict_final = {}
+
+    with Pool(cpu_cores) as pool:
+        results = pool.map(_create_zone_from_dataframe_by_centroid, df_zone_chunk)
+
+    for zone_dict in results:
+        zone_dict_final.update(zone_dict)
+
+    if verbose:
+        print(f"  : Successfully loaded zone.csv: {len(zone_dict_final)} Zones loaded.")
+
+    return zone_dict_final
+
+
 def read_network(input_folder: str = "", cpu_cores: int = 1, verbose: bool = False) -> dict[str: dict]:
     """Read node.csv and poi.csv files and return a dict of nodes and a dict of POIs.
 
@@ -382,7 +488,8 @@ def read_network(input_folder: str = "", cpu_cores: int = 1, verbose: bool = Fal
 
     # if not all required files exist, raise error
     if not is_required_files_exist:
-        raise FileNotFoundError(f"Required files: {pkg_settings['required_files']} are not satisfied, please check your input folder.")
+        raise FileNotFoundError(
+            f"Required files: {pkg_settings['required_files']} are not satisfied, please check your input folder.")
 
     node_dict = read_node(input_folder + "/node.csv", cpu_cores, verbose=verbose)
     poi_dict = read_poi(input_folder + "/poi.csv", cpu_cores, verbose=verbose)

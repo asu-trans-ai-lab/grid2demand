@@ -12,10 +12,11 @@ pkg_settings = {
     "optional_files": ["zone.csv"],
 
     # specify required fields for node.csv and poi.csv and zone.csv (optional)
-    "node_required_fields": ["node_id", "x_coord", "y_coord",
-                             "activity_type", "is_boundary", "poi_id"],
-    "poi_required_fields": ["poi_id", "building", "centroid", "area", "geometry"],
-    "zone_required_fields": ["zone_id", "geometry"],
+    "node_fields": ["node_id", "x_coord", "y_coord",
+                    "activity_type", "is_boundary", "poi_id"],
+    "poi_fields": ["poi_id", "building", "centroid", "area", "geometry"],
+    "zone_geometry_fields": ["zone_id", "geometry"],
+    "zone_centroid_fields": ["zone_id", "x_coord", "y_coord"],
 
     # if input data is too large, you can split the input data into chunks and process them separately
     "data_chunk_size": 10000,

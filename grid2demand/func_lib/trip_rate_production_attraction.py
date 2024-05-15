@@ -30,7 +30,9 @@ def gen_poi_trip_rate(poi_dict: dict,
         >>> poi_dict = gd.read_poi("./dataset/ASU/poi.csv")
         >>> poi_trip_rate = gd.gen_poi_trip_rate(poi_dict, trip_rate_file="./dataset/ASU/trip_rate.csv", trip_purpose=1)
         >>> poi_trip_rate[0]
-        POI(poi_id=0, poi_type='residential', x=0.0, y=0.0, area=(0.0, 0.0), trip_rate={'building': 'residential', 'unit_of_measure': '1,000 Sq. Ft. GFA', 'trip_purpose': 1, 'production_rate1': 10.0, 'attraction_rate1': 10.0, 'production_notes': 1, 'attraction_notes': 1})
+        POI(poi_id=0, poi_type='residential', x=0.0, y=0.0, area=(0.0, 0.0), trip_rate={'building': 'residential',
+        'unit_of_measure': '1,000 Sq. Ft. GFA', 'trip_purpose': 1, 'production_rate1': 10.0,
+        'attraction_rate1': 10.0, 'production_notes': 1, 'attraction_notes': 1})
     """
     poi_purpose_prod_dict = pkg_settings.get("poi_purpose_prod_dict")
     poi_purpose_attr_dict = pkg_settings.get("poi_purpose_attr_dict")
@@ -110,8 +112,8 @@ def gen_node_prod_attr(node_dict: dict,
         poi_dict (dict): POI dictionary
         residential_production (float, optional): the production of residential area. Defaults to 10.0.
         residential_attraction (float, optional): the attraction of residential area. Defaults to 10.0.
-        boundary_production (float, optional): the boundary production, also known as the outside production. Defaults to 1000.0.
-        boundary_attraction (float, optional): the boundary attraction, also known as the outside attraction. Defaults to 1000.0.
+        boundary_production (float, optional): boundary production, also outside production. Defaults to 1000.0.
+        boundary_attraction (float, optional): boundary attraction, also the outside attraction. Defaults to 1000.0.
 
     Returns:
         dict: Node dictionary with generated production and attraction
@@ -119,7 +121,8 @@ def gen_node_prod_attr(node_dict: dict,
     Examples:
         >>> node_dict = gd.read_node("./dataset/ASU/node.csv")
         >>> poi_dict = gd.read_poi("./dataset/ASU/poi.csv")
-        >>> node_prod_attr = gd.gen_node_prod_attr(node_dict, poi_dict, residential_production=10.0, residential_attraction=10.0, boundary_production=1000.0, boundary_attraction=1000.0)
+        >>> node_prod_attr = gd.gen_node_prod_attr(node_dict, poi_dict, residential_production=10.0,
+        residential_attraction=10.0, boundary_production=1000.0, boundary_attraction=1000.0)
         >>> node_prod_attr[1]
         Node(node_id=1, poi_id=0, x=0.0, y=0.0, activity_location_tab='residential', production=10.0, attraction=10.0)
     """

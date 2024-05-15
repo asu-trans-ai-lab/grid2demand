@@ -24,7 +24,9 @@ def calc_zone_production_attraction(node_dict: dict, zone_dict: dict, verbose: b
     return zone_dict
 
 
-def calc_zone_od_friction_attraction(zone_od_friction_matrix_dict: dict, zone_dict: dict, verbose: bool = False) -> dict:
+def calc_zone_od_friction_attraction(zone_od_friction_matrix_dict: dict,
+                                     zone_dict: dict,
+                                     verbose: bool = False) -> dict:
     zone_od_friction_attraction_dict = {}
     for zone_name, friction_val in zone_od_friction_matrix_dict.items():
         if zone_name[0] not in zone_od_friction_attraction_dict:
@@ -59,19 +61,25 @@ def run_gravity_model(zone_dict: dict,
 
     # perform zone od friction matrix
     zone_od_friction_matrix_dict = {
-        zone_name_pair: alpha * (od_dist["dist_km"] ** beta) * (np.exp(od_dist["dist_km"] * gamma)) if od_dist["dist_km"] != 0 else 0
+        zone_name_pair: alpha * (od_dist["dist_km"] ** beta) * (
+            np.exp(od_dist["dist_km"] * gamma)) if od_dist["dist_km"] != 0 else 0
         for zone_name_pair, od_dist in zone_od_dist_matrix.items()
     }
 
     # perform attraction calculation
-    zone_od_friction_attraction_dict = calc_zone_od_friction_attraction(zone_od_friction_matrix_dict, zone_dict, verbose=verbose)
+    zone_od_friction_attraction_dict = calc_zone_od_friction_attraction(zone_od_friction_matrix_dict,
+                                                                        zone_dict,
+                                                                        verbose=verbose)
 
     # perform od trip flow (volume) calculation
     for zone_name_pair in zone_od_friction_matrix_dict:
-        zone_od_dist_matrix[zone_name_pair]["volume"] = float(zone_dict[zone_name_pair[0]].production *
-                                                              zone_dict[zone_name_pair[1]].attraction *
-                                                              zone_od_friction_matrix_dict[zone_name_pair] /
-                                                              zone_od_friction_attraction_dict[zone_name_pair[0]])
+        try:
+            zone_od_dist_matrix[zone_name_pair]["volume"] = float(zone_dict[zone_name_pair[0]].production *
+                                                                  zone_dict[zone_name_pair[1]].attraction *
+                                                                  zone_od_friction_matrix_dict[zone_name_pair] /
+                                                                  zone_od_friction_attraction_dict[zone_name_pair[0]])
+        except ZeroDivisionError:
+            zone_od_dist_matrix[zone_name_pair]["volume"] = 0
 
     # Generate demand.csv
     if verbose:
