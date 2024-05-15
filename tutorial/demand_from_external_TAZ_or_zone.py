@@ -19,11 +19,13 @@ except ImportError:
 if __name__ == "__main__":
 
     # Step 0: Specify input directory
-    input_dir = "./datasets/DC_Downtown"
-    # input_dir = "./datasets/Tuscon_zone"
+    # input_dir = "./datasets/DC_Downtown"
+    input_dir = "./datasets/Tuscon_zone"
+    zone = "./datasets/Tuscon_zone/zone.csv"
+    node = "./datasets/Tuscon_zone/node.csv"
 
     # Initialize a GRID2DEMAND object
-    net = gd.GRID2DEMAND(input_dir, verbose=False)
+    net = gd.GRID2DEMAND(node_file=node, zone_file=zone)
 
     # Step 1: Load node and poi data from input directory
     net.load_network()
