@@ -1,6 +1,6 @@
 ## Project description
 
-GRID2DEMAND: A tool for generating zone-to-zone travel demand based on grid cells or TAZs
+GRID2DEMAND: A tool for generating zone-to-zone travel demand based on grid cells or TAZs and gravity model
 
 ## Introduction
 
@@ -38,13 +38,13 @@ if __name__ == "__main__":
     path_poi = "your-path-to-poi.csv"
 
     # Initialize a GRID2DEMAND object
-    gd = GRID2DEMAND(node_file = path_node, poi_file = path_poi)
+    net = gd.GRID2DEMAND(node_file = path_node, poi_file = path_poi)
 
     # load network: node and poi
-    net = gd.load_network()
+    net.load_network()
 
     # Generate zone dictionary from node dictionary by specifying number of x blocks and y blocks
-    gd.net2zone(num_x_blocks=10, num_y_blocks=10)
+    net.net2zone(num_x_blocks=10, num_y_blocks=10)
     # net.net2zone(cell_width=10, cell_height=10, unit="km")
 
     # Synchronize geometry info between zone, node and poi
@@ -71,13 +71,13 @@ if __name__ == "__main__":
     path_zone = "your-path-to-zone.csv"  # zone_id, geometry are required columns
 
     # Initialize a GRID2DEMAND object
-    gd = GRID2DEMAND(zone_file = path_zone, node_file = path_node, poi_file = path_poi)
+    net = gd.GRID2DEMAND(zone_file = path_zone, node_file = path_node, poi_file = path_poi)
 
     # load network: node and poi
-    net = gd.load_network()
+    net.load_network()
 
     # Generate zone
-    gd.taz2zone()
+    net.taz2zone()
 
     # Synchronize geometry info between zone, node and poi
     net.sync_geometry_between_zone_and_node_poi()
@@ -103,13 +103,13 @@ if __name__ == "__main__":
     path_zone = "your-path-to-zone.csv"  # zone_id, x_coord, y_coord are required columns
 
     # Initialize a GRID2DEMAND object
-    gd = GRID2DEMAND(zone_file = path_zone, node_file = path_node, poi_file = path_poi)
+    net = gd.GRID2DEMAND(zone_file = path_zone, node_file = path_node, poi_file = path_poi)
 
     # load network: node and poi
-    net = gd.load_network()
+    net.load_network()
 
     # Generate zone
-    gd.taz2zone()
+    net.taz2zone()
 
     # Synchronize geometry info between zone, node and poi
     net.sync_geometry_between_zone_and_node_poi()
@@ -134,13 +134,13 @@ if __name__ == "__main__":
     path_poi = "your-path-to-poi.csv"
 
     # Initialize a GRID2DEMAND object
-    gd = GRID2DEMAND(node_file = path_node, poi_file = path_poi, use_zone_id=True)
+    net = gd.GRID2DEMAND(node_file = path_node, poi_file = path_poi, use_zone_id=True)
 
     # load network: node and poi
-    net = gd.load_network()
+    net.load_network()
 
     # Generate zone dictionary from node dictionary by specifying number of x blocks and y blocks
-    gd.net2zone(num_x_blocks=10, num_y_blocks=10)
+    net.net2zone(num_x_blocks=10, num_y_blocks=10)
     # net.net2zone(cell_width=10, cell_height=10, unit="km")
 
     # Synchronize geometry info between zone, node and poi
