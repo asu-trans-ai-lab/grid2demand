@@ -1,10 +1,10 @@
 ## Project description
 
-GRID2DEMAND: A tool for generating zone-to-zone travel demand based on grid cells
+GRID2DEMAND: A tool for generating zone-to-zone travel demand based on grid cells or TAZs
 
 ## Introduction
 
-Grid2demand is an open-source quick demand generation tool based on the trip generation and trip distribution methods of the standard 4-step travel model for teaching transportation planning and applications. By taking advantage of OSM2GMNS tool to obtain routable transportation network from OpenStreetMap, Grid2demand aims to further utilize Point of Interest (POI) data to construct trip demand matrix aligned with standard travel models.
+Grid2demand is an open-source quick demand generation tool based on the trip generation and trip distribution methods of the standard 4-step travel model for teaching transportation planning and applications. By taking advantage of OSM2GMNS tool to obtain route-able transportation network from OpenStreetMap, Grid2demand aims to further utilize Point of Interest (POI) data to construct trip demand matrix aligned with standard travel models.
 
 You can get access to the introduction video with the link: [https://www.youtube.com/watch?v=EfjCERQQGTs&amp;t=1021s](https://www.youtube.com/watch?v=EfjCERQQGTs&t=1021s)
 
@@ -22,87 +22,142 @@ If you meet installation issues, please refer to the [user guide](https://github
 
 ## Simple Example
 
+### Generate Demand with node.csv and poi.csv
+
+1. Create zone from node.csv (the boundary of nodes), this will generate grid cells (num_x_blocks, num_y_blocks, or x length and y length in km for each grid cell)
+2. Generate demands for between zones (utilize nodes and pois)
+
 ```python
 from __future__ import absolute_import
-from grid2demand import GRID2DEMAND
-
+import grid2demand as gd
 
 if __name__ == "__main__":
 
-    # Step 0: Specify input directory, if not, use current working directory as default input directory
-    input_dir = "./datasets/ASU"
+    # Specify input directory
+    path_node = "your-path-to-node.csv"
+    path_poi = "your-path-to-poi.csv"
 
     # Initialize a GRID2DEMAND object
-    gd = GRID2DEMAND(input_dir)
+    gd = GRID2DEMAND(node_file = path_node, poi_file = path_poi)
 
-    # Step 1: Load node and poi data from input directory
-    node_dict, poi_dict = gd.load_network.values()
+    # load network: node and poi
+    net = gd.load_network()
 
-    # Step 2: Generate zone dictionary from node dictionary by specifying number of x blocks and y blocks
-    zone_dict = gd.net2zone(node_dict, num_x_blocks=10, num_y_blocks=10)
+    # Generate zone dictionary from node dictionary by specifying number of x blocks and y blocks
+    gd.net2zone(num_x_blocks=10, num_y_blocks=10)
+    # net.net2zone(cell_width=10, cell_height=10, unit="km")
 
-    # Step 2: Generate zone based on grid size with 10 km width and 10km height for each zone
-    # zone_dict = gd.net2zone(node_dict, cell_width=10, cell_height=10)
+    # Synchronize geometry info between zone, node and poi
+    net.sync_geometry_between_zone_and_node_poi()
 
-    # Step 2: Generate zone dictionary from zone.cvs(TAZs) prepared from users.
-    # zone_dict = gd.taz2zone()
-    
-    # Step 3: synchronize geometry info between zone, node and poi
-    #       add zone_id to node and poi dictionaries
-    #       also add node_list and poi_list to zone dictionary
-    updated_dict = gd.sync_geometry_between_zone_and_node_poi(zone_dict, node_dict, poi_dict)
-    zone_dict_update, node_dict_update, poi_dict_update = updated_dict.values()
+    # Calculate demand by running gravity model
+    net.run_gravity_model(zone_prod_attr, zone_od_distance_matrix)
 
-    # Step 4: Calculate zone-to-zone od distance matrix
-    zone_od_distance_matrix = gd.calc_zone_od_distance_matrix(zone_dict_update)
-
-    # Step 5: Generate poi trip rate for each poi
-    poi_trip_rate = gd.gen_poi_trip_rate(poi_dict_update)
-
-    # Step 6: Generate node production attraction for each node based on poi_trip_rate
-    node_prod_attr = gd.gen_node_prod_attr(node_dict_update, poi_trip_rate)
-
-    # Step 6.1: Calculate zone production and attraction based on node production and attraction
-    zone_prod_attr = gd.calc_zone_prod_attr(node_prod_attr, zone_dict_update)
-
-    # Step 7: Run gravity model to generate agent-based demand
-    df_demand = gd.run_gravity_model(zone_prod_attr, zone_od_distance_matrix)
-
-    # Step 8: generate agent-based demand
-    df_agent = gd.gen_agent_based_demand(node_prod_attr, zone_prod_attr, df_demand=df_demand)
-
-    # You can also view and edit the package setting by using gd.pkg_settings
-    print(gd.pkg_settings)
-
-    # Step 9: Output demand, agent, zone, zone_od_dist_table, zone_od_dist_matrix files
-    gd.save_demand
-    gd.save_agent
-    gd.save_zone
-    gd.save_zone_od_dist_table
-    gd.save_zone_od_dist_matrix
+    # Save demand, zone, updated node, updated poi to csv
+    net.save_results_to_csv(overwrite_file=True)
 ```
 
-## Visualization
+# Generate Demand with node.csv, poi.csv and zone.csv (geometry filed in zone.csv)
 
-Option 1: Open [QGIS](https://www.qgis.org/) and add Delimited Text Layer of the files.
+```python
+from __future__ import absolute_import
+import grid2demand as gd
 
-Option 2: Upload files to the website of [ASU Trans+AI Lab](https://asu-trans-ai-lab.github.io/index.html#/) and view input and output files.
+if __name__ == "__main__":
 
-Option 3: Import input_agent.csv to [A/B Street](https://a-b-street.github.io/docs/howto/asu.html) and view dynamic simulation of the demand.
+    # Specify input directory
+    path_node = "your-path-to-node.csv"
+    path_poi = "your-path-to-poi.csv"
+    path_zone = "your-path-to-zone.csv"  # zone_id, geometry are required columns
 
-## User guide
+    # Initialize a GRID2DEMAND object
+    gd = GRID2DEMAND(zone_file = path_zone, node_file = path_node, poi_file = path_poi)
 
-Users can check the [user guide](https://github.com/asu-trans-ai-lab/grid2demand/blob/main/README.md) for a detailed introduction of grid2demand.
+    # load network: node and poi
+    net = gd.load_network()
+
+    # Generate zone
+    gd.taz2zone()
+
+    # Synchronize geometry info between zone, node and poi
+    net.sync_geometry_between_zone_and_node_poi()
+
+    # Calculate demand by running gravity model
+    net.run_gravity_model(zone_prod_attr, zone_od_distance_matrix)
+
+    # Save demand, zone, updated node, updated poi to csv
+    net.save_results_to_csv(overwrite_file=True)
+```
+
+# Generate Demand with node.csv, poi.csv and zone.csv (x_coord, y_coord fields represent zone centroids)
+
+```python
+from __future__ import absolute_import
+import grid2demand as gd
+
+if __name__ == "__main__":
+
+    # Specify input directory
+    path_node = "your-path-to-node.csv"
+    path_poi = "your-path-to-poi.csv"
+    path_zone = "your-path-to-zone.csv"  # zone_id, x_coord, y_coord are required columns
+
+    # Initialize a GRID2DEMAND object
+    gd = GRID2DEMAND(zone_file = path_zone, node_file = path_node, poi_file = path_poi)
+
+    # load network: node and poi
+    net = gd.load_network()
+
+    # Generate zone
+    gd.taz2zone()
+
+    # Synchronize geometry info between zone, node and poi
+    net.sync_geometry_between_zone_and_node_poi()
+
+    # Calculate demand by running gravity model
+    net.run_gravity_model(zone_prod_attr, zone_od_distance_matrix)
+
+    # Save demand, zone, updated node, updated poi to csv
+    net.save_results_to_csv(overwrite_file=True)
+```
+
+# Generate Demand with node.csv (if zone_id field exist, generated zone boundary cover zone_id that are not empty) and poi.csv
+
+```python
+from __future__ import absolute_import
+import grid2demand as gd
+
+if __name__ == "__main__":
+
+    # Specify input directory
+    path_node = "your-path-to-node.csv"  # make sure you have zone_id field in node.csv
+    path_poi = "your-path-to-poi.csv"
+
+    # Initialize a GRID2DEMAND object
+    gd = GRID2DEMAND(node_file = path_node, poi_file = path_poi, use_zone_id=True)
+
+    # load network: node and poi
+    net = gd.load_network()
+
+    # Generate zone dictionary from node dictionary by specifying number of x blocks and y blocks
+    gd.net2zone(num_x_blocks=10, num_y_blocks=10)
+    # net.net2zone(cell_width=10, cell_height=10, unit="km")
+
+    # Synchronize geometry info between zone, node and poi
+    net.sync_geometry_between_zone_and_node_poi()
+
+    # Calculate demand by running gravity model
+    net.run_gravity_model(zone_prod_attr, zone_od_distance_matrix)
+
+    # Save demand, zone, updated node, updated poi to csv
+    net.save_results_to_csv(overwrite_file=True)
+```
 
 ## Call for Contributions
 
 The grid2demand project welcomes your expertise and enthusiasm!
 
-Small improvements or fixes are always appreciated. If you are considering larger contributions to the source code, please contact us through email:
-
-    Xiangyong Luo :  luoxiangyong01@gmail.com
-    
-    Dr. Xuesong Simon Zhou :  xzhou74@asu.edu
+Small improvements or fixes are always appreciated. If you are considering larger contributions to the source code, please contact us through email: [Xiangyong Luo](mailto:luoxiangyong01@gmail.com), [Dr. Xuesong Simon Zhou](mailto:xzhou74@asu.edu)
 
 Writing code isn't the only way to contribute to grid2demand. You can also:
 
@@ -120,7 +175,6 @@ For more information about the ways you can contribute to grid2demand, visit [ou
 
 If you use grid2demand in your research please use the following BibTeX entry:
 
-```
+```cite
 Xiangyong Luo, Dustin Carlino, and Xuesong Simon Zhou. (2023). xyluo25/grid2demand: new lease to v0.4.1. Zenodo. https://doi.org/10.5281/zenodo.10899860
 ```
-
