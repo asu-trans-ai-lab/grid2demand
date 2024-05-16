@@ -1,4 +1,8 @@
 
+# **Grid2demand**
+
+GRID2DEMAND: A tool for generating zone-to-zone travel demand based on grid cells or TAZs
+
 - [**Grid2demand**](#grid2demand)
   - [**Code Examples**](#code-examples)
     - [**Installation**](#installation)
@@ -24,11 +28,6 @@
     - [**Trip distribution**](#trip-distribution-1)
     - [**OD demand estimation using link counts and different data sources**](#od-demand-estimation-using-link-counts-and-different-data-sources)
   - [**Quick Implementation and Visualization**](#quick-implementation-and-visualization)
-
-
-# **Grid2demand**
-
-GRID2DEMAND: A tool for generating zone-to-zone travel demand based on grid cells or TAZs
 
 ## **Code Examples**
 
@@ -180,14 +179,13 @@ The grid2demand project welcomes your expertise and enthusiasm!
 Small improvements or fixes are always appreciated. If you are considering larger contributions to the source code, please contact us through email: [Xiangyong Luo](mailto:luoxiangyong01@gmail.com), [Dr. Xuesong Simon Zhou](mailto:xzhou74@asu.edu)
 
 Writing code isn't the only way to contribute to grid2demand. You can also:
-
-* review pull requests
-* help us stay on top of new and old issues
-* develop tutorials, presentations, and other educational materials
-* develop graphic design for our brand assets and promotional materials
-* translate website content
-* help with outreach and onboard new contributors
-* write grant proposals and help with other fundraising efforts
+   * review pull requests
+   * help us stay on top of new and old issues
+   * develop tutorials, presentations, and other educational materials
+   * develop graphic design for our brand assets and promotional materials
+   * translate website content
+   * help with outreach and onboard new contributors
+   * write grant proposals and help with other fundraising efforts
 
 For more information about the ways you can contribute to grid2demand, visit [our GitHub](https://github.com/asu-trans-ai-lab/grid2demand). If you' re unsure where to start or how your skills fit in, reach out! You can ask by opening a new issue or leaving a comment on a relevant issue that is already open on GitHub.
 
