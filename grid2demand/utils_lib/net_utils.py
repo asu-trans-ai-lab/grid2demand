@@ -70,7 +70,7 @@ class POI:
     poi_type: str = ''
     trip_rate: dict = field(default_factory=dict)
     geometry: str = ''
-    zone_id: int = 0
+    zone_id: int = -1
 
     @property
     def as_dict(self):

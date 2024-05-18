@@ -67,10 +67,13 @@ if __name__ == "__main__":
     # net.net2zone(cell_width=10, cell_height=10, unit="km")
 
     # Synchronize geometry info between zone, node and poi
+    # if you want to save updated node, poi, zone without demand,
+    # you can skip net.run_gravity_model()
+    # and run net.save_results_to_csv(overwrite_file=True) directly
     net.sync_geometry_between_zone_and_node_poi()
 
     # Calculate demand by running gravity model
-    net.run_gravity_model(zone_prod_attr, zone_od_distance_matrix)
+    net.run_gravity_model()
 
     # Save demand, zone, updated node, updated poi to csv
     net.save_results_to_csv(overwrite_file=True)
@@ -99,10 +102,13 @@ if __name__ == "__main__":
     net.taz2zone()
 
     # Synchronize geometry info between zone, node and poi
+    # if you want to save updated node, poi, zone without demand,
+    # you can skip net.run_gravity_model()
+    # and run net.save_results_to_csv(overwrite_file=True) directly
     net.sync_geometry_between_zone_and_node_poi()
 
     # Calculate demand by running gravity model
-    net.run_gravity_model(zone_prod_attr, zone_od_distance_matrix)
+    net.run_gravity_model()
 
     # Save demand, zone, updated node, updated poi to csv
     net.save_results_to_csv(overwrite_file=True)
@@ -131,10 +137,13 @@ if __name__ == "__main__":
     net.taz2zone()
 
     # Synchronize geometry info between zone, node and poi
+    # if you want to save updated node, poi, zone without demand,
+    # you can skip net.run_gravity_model()
+    # and run net.save_results_to_csv(overwrite_file=True) directly
     net.sync_geometry_between_zone_and_node_poi()
 
     # Calculate demand by running gravity model
-    net.run_gravity_model(zone_prod_attr, zone_od_distance_matrix)
+    net.run_gravity_model()
 
     # Save demand, zone, updated node, updated poi to csv
     net.save_results_to_csv(overwrite_file=True)
@@ -163,10 +172,13 @@ if __name__ == "__main__":
     # net.net2zone(cell_width=10, cell_height=10, unit="km")
 
     # Synchronize geometry info between zone, node and poi
+    # if you want to save updated node, poi, zone without demand,
+    # you can skip net.run_gravity_model()
+    # and run net.save_results_to_csv(overwrite_file=True) directly
     net.sync_geometry_between_zone_and_node_poi()
 
     # Calculate demand by running gravity model
-    net.run_gravity_model(zone_prod_attr, zone_od_distance_matrix)
+    net.run_gravity_model()
 
     # Save demand, zone, updated node, updated poi to csv
     net.save_results_to_csv(overwrite_file=True)
