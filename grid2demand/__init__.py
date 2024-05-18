@@ -18,7 +18,7 @@ from .func_lib.gen_agent_demand import gen_agent_based_demand
 from .utils_lib.pkg_settings import pkg_settings
 from ._grid2demand import GRID2DEMAND
 
-print('grid2demand, version 0.4.3')
+print('grid2demand, version 0.4.5')
 print("Python version for running the model is 3.10 or higher")
 
 
