@@ -191,13 +191,14 @@ The grid2demand project welcomes your expertise and enthusiasm!
 Small improvements or fixes are always appreciated. If you are considering larger contributions to the source code, please contact us through email: [Xiangyong Luo](mailto:luoxiangyong01@gmail.com), [Dr. Xuesong Simon Zhou](mailto:xzhou74@asu.edu)
 
 Writing code isn't the only way to contribute to grid2demand. You can also:
-   * review pull requests
-   * help us stay on top of new and old issues
-   * develop tutorials, presentations, and other educational materials
-   * develop graphic design for our brand assets and promotional materials
-   * translate website content
-   * help with outreach and onboard new contributors
-   * write grant proposals and help with other fundraising efforts
+
+- review pull requests
+- help us stay on top of new and old issues
+- develop tutorials, presentations, and other educational materials
+- develop graphic design for our brand assets and promotional materials
+- translate website content
+- help with outreach and onboard new contributors
+- write grant proposals and help with other fundraising efforts
 
 For more information about the ways you can contribute to grid2demand, visit [our GitHub](https://github.com/asu-trans-ai-lab/grid2demand). If you' re unsure where to start or how your skills fit in, reach out! You can ask by opening a new issue or leaving a comment on a relevant issue that is already open on GitHub.
 
@@ -205,17 +206,13 @@ For more information about the ways you can contribute to grid2demand, visit [ou
 
 If you use grid2demand in your research please use the following BibTeX entry:
 
-```cite
-Xiangyong Luo, Dustin Carlino, and Xuesong Simon Zhou. (2023). xyluo25/grid2demand: new lease to v0.4.1. Zenodo. https://doi.org/10.5281/zenodo.10899860
-```
-
-
+Xiangyong Luo, Dustin Carlino, and Xuesong Simon Zhou. (2023). [xyluo25/grid2demand](https://github.com/xyluo25/grid2demand/): Zenodo. https://doi.org/10.5281/zenodo.11212556
 
 ## **Starting with Grid2demand - Learning Sources**
 
--   How to quickly generate **initial origin-destination transportation demand** for engaging traffic simulation games such as A/B street and DTALite?
--   How to teach our undergraduate students the important **trip generation and trip distribution steps**, using their own beautiful campus as examples?
--   How to analyze the resident locations and other land use properties using flexible **grid zones, based on POI data from OpenStreetMap** data and using **open transportation modeling format**
+- How to quickly generate **initial origin-destination transportation demand** for engaging traffic simulation games such as A/B street and DTALite?
+- How to teach our undergraduate students the important **trip generation and trip distribution steps**, using their own beautiful campus as examples?
+- How to analyze the resident locations and other land use properties using flexible **grid zones, based on POI data from OpenStreetMap** data and using **open transportation modeling format**
 
 <img src="docs/media/9ed9631f17469d631f9dfe97e4320c10.png" style="zoom:80%;" />
 
@@ -250,7 +247,7 @@ Mini teaching lesson: [https://www.youtube.com/watch?v=EfjCERQQGTs](https://www.
 
 ## **Introduction and Background Knowledge**
 
-###  **4-step transportation forecasting**
+### **4-step transportation forecasting**
 
 Trip generation and trip distribution are the first 2 steps in the larger context of the 4-step process in transportation planning. The standard four steps are briefly described below.
 
