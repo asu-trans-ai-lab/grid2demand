@@ -22,21 +22,19 @@ if __name__ == "__main__":
     # input_dir = "./datasets/DC_Downtown"
     input_dir = "./datasets/Tuscon_zone"
     zone = "./datasets/Tuscon_zone/zone.csv"
-    node = "./datasets/Tuscon_zone/node.csv"
+    # node = "./datasets/Tuscon_zone/node.csv"
 
     # Initialize a GRID2DEMAND object
-    net = gd.GRID2DEMAND(node_file=node, zone_file=zone)
+    net = gd.GRID2DEMAND(verbose=True)
 
     # Step 1: Load node and poi data from input directory
-    net.load_network()
+    net.load_network(input_dir=input_dir)
 
     # Step 2: Generate zone dictionary from zone.csv file
     zone_dict = net.taz2zone()
 
-    # Step 3: synchronize geometry info between zone, node and poi
-    net.sync_geometry_between_zone_and_node_poi()
-
-    # Step 7: Run gravity model to generate agent-based demand
+    # Step 3: Run gravity model to generate agent-based demand
     net.run_gravity_model()
 
+    # Step 4: Output demand, agent, zone, zone_od_dist_table, zone_od_dist_matrix files
     net.save_results_to_csv()

@@ -61,6 +61,7 @@ def _create_node_from_dataframe(df_node: pd.DataFrame) -> dict[int, Node]:
                 id=df_node.loc[i, 'node_id'],
                 activity_type=activity_type,
                 activity_location_tab=activity_location_tab,
+                ctrl_type=df_node.loc[i, 'ctrl_type'],
                 x_coord=df_node.loc[i, 'x_coord'],
                 y_coord=df_node.loc[i, 'y_coord'],
                 poi_id=df_node.loc[i, 'poi_id'],
@@ -236,12 +237,14 @@ def read_node(node_file: str = "", cpu_cores: int = 1, verbose: bool = False) ->
     # read first two rows to check whether required fields are in node.csv
     df_node_2rows = pd.read_csv(node_file, nrows=2)
     col_names = df_node_2rows.columns.tolist()
+
     if "zone_id" in col_names:
         node_required_cols.append("zone_id")
 
     if verbose:
         print(f"  : Reading node.csv with specified columns: {node_required_cols} \
                     \n    and chunksize {chunk_size} for iterations...")
+
     df_node_chunk = pd.read_csv(node_file, usecols=node_required_cols, chunksize=chunk_size)
 
     if verbose:
@@ -300,7 +303,10 @@ def read_poi(poi_file: str = "", cpu_cores: int = 1, verbose: bool = False) -> d
     if verbose:
         print(f"  : Reading poi.csv with specified columns: {poi_required_cols} \
                     \n    and chunksize {chunk_size} for iterations...")
-    df_poi_chunk = pd.read_csv(poi_file, usecols=poi_required_cols, chunksize=chunk_size)
+    try:
+        df_poi_chunk = pd.read_csv(poi_file, usecols=poi_required_cols, chunksize=chunk_size, encoding='utf-8')
+    except Exception:
+        df_poi_chunk = pd.read_csv(poi_file, usecols=poi_required_cols, chunksize=chunk_size, encoding='latin-1')
 
     # Parallel processing using Pool
     if verbose:

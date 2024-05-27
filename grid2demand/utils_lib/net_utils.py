@@ -30,11 +30,12 @@ class Node:
                 this will be assigned if field zone_id exists in the node.csv and is not empty
     """
     id: int = 0
-    x_coord: float = 0
-    y_coord: float = 0
+    x_coord: float = -1
+    y_coord: float = -1
     production: float = 0
     attraction: float = 0
     boundary_flag: int = 0
+    ctrl_type: int = -1
     zone_id: int = -1
     poi_id: int = -1
     activity_type: str = ''

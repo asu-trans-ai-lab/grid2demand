@@ -108,6 +108,10 @@ class GRID2DEMAND:
         self.verbose = verbose
         self.use_zone_id = use_zone_id
 
+        # load default package settings,
+        # user can modify the settings before running the model
+        self.__load_pkg_settings()
+
         # if use_zone_id is True, this parameter will be implemented
         self.node_as_zone_centroid = node_as_zone_centroid
 
@@ -124,10 +128,7 @@ class GRID2DEMAND:
         self.is_node_prod_attr = False
         self.is_zone_prod_attr = False
         self.is_zone_od_dist_matrix = False
-
-        # load default package settings,
-        # user can modify the settings before running the model
-        self.__load_pkg_settings()
+        self.is_sync_geometry = False
 
     def __check_input_dir(self) -> None:
         """check input directory
@@ -559,6 +560,7 @@ class GRID2DEMAND:
         #           not valid zone_dict or poi_dict"
         #     ) from e
 
+        self.is_sync_geometry = True
         return {"zone_dict": self.zone_dict,
                 "node_dict": self.node_dict,
                 "poi_dict": self.poi_dict} if return_value else None
@@ -756,6 +758,10 @@ class GRID2DEMAND:
         if gamma:
             self.gamma = gamma
 
+        # synchronize geometry between zone and node/poi
+        if not self.is_sync_geometry:
+            self.sync_geometry_between_zone_and_node_poi()
+
         # calculate zone production and attraction based on node production and attraction
         if not self.is_zone_prod_attr:
             self.calc_zone_prod_attr(zone_dict=self.zone_dict,
@@ -931,6 +937,8 @@ class GRID2DEMAND:
                         if original_zone_id == -1:
                             node_df.loc[i, "zone_id"] = None
 
+                # change column name from id to node_id
+                node_df.rename(columns={"id": "node_id"}, inplace=True)
                 node_df.to_csv(path_output, index=False)
                 print(f"  : Successfully saved updated node to node.csv to {self.output_dir}")
 
@@ -946,6 +954,9 @@ class GRID2DEMAND:
                 print("  : Could not save updated poi file: poi_dict does not exist. Please run load_poi() first.")
             else:
                 poi_df = pd.DataFrame(self.poi_dict.values())
+
+                # rename column name from id to poi_id
+                poi_df.rename(columns={"id": "poi_id"}, inplace=True)
                 poi_df.to_csv(path_output, index=False)
                 print(f"  : Successfully saved updated poi to poi.csv to {self.output_dir}")
 

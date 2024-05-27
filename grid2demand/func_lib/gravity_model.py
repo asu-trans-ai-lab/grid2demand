@@ -15,8 +15,11 @@ def calc_zone_production_attraction(node_dict: dict, zone_dict: dict, verbose: b
     for zone_name in zone_dict:
         if zone_dict[zone_name].node_id_list:
             for node_id in zone_dict[zone_name].node_id_list:
-                zone_dict[zone_name].production += node_dict[node_id].production
-                zone_dict[zone_name].attraction += node_dict[node_id].attraction
+                try:
+                    zone_dict[zone_name].production += node_dict[node_id].production
+                    zone_dict[zone_name].attraction += node_dict[node_id].attraction
+                except KeyError:
+                    continue
 
     if verbose:
         print("  : Successfully calculated zone production and attraction based on node production and attraction.")

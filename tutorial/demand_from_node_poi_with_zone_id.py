@@ -31,13 +31,8 @@ if __name__ == "__main__":
     #   by specifying number of x blocks and y blocks
     zone_dict = net.net2zone(num_x_blocks=10, num_y_blocks=10)
 
-    # Step 3: synchronize geometry info between zone, node and poi
-    net.sync_geometry_between_zone_and_node_poi()
-
-    # Step 4: Run gravity model to generate agent-based demand
+    # Step 3: Run gravity model to generate agent-based demand
     net.run_gravity_model()
 
-    # Step 5: Output demand, agent, zone, zone_od_dist_table, zone_od_dist_matrix files
+    # Step 4: Output demand, agent, zone, zone_od_dist_table, zone_od_dist_matrix files
     net.save_results_to_csv(output_dir="", demand=True, zone=True)
-
-
