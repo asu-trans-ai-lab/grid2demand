@@ -4,7 +4,6 @@
  *  Author/Copyright: Mr. Xiangyong Luo
 -->
 
-
 ## Project description
 
 GRID2DEMAND: A tool for generating zone-to-zone travel demand based on grid cells or TAZs and gravity model
@@ -21,7 +20,7 @@ Users can refer to the [code template and test data set](https://github.com/asu-
 
 ## Installation
 
-```
+```python
 pip install grid2demand
 ```
 
