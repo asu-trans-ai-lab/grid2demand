@@ -870,7 +870,7 @@ class GRID2DEMAND:
 
     def save_results_to_csv(self, output_dir: str = "",
                             demand: bool = True,
-                            *,
+                            *,  # enforce keyword-only arguments
                             zone: bool = False,
                             node: bool = True,  # save updated node
                             poi: bool = True,  # save updated poi
