@@ -163,13 +163,15 @@ def path2linux(path: str) -> str:
         return str(path).replace("\\", "/")
 
 
-def get_filenames_from_folder_by_type(dir_name: str, file_type: str = "txt", isTraverseSubdirectory: bool = False) -> list:
+def get_filenames_from_folder_by_type(dir_name: str,
+                                      file_type: str = "txt",
+                                      isTraverseSubdirectory: bool = False) -> list:
     """Get all files in the folder with the specified file type
 
     Args:
         dir_name (str): the folder path
-        file_type (str, optional): the exact file type to specify, if file_type is "*" or "all", return all files in the folder. Defaults to "txt".
-        isTraverseSubdirectory (bool, optional): get files inside the subfolder or not, if True, will traverse all subfolders. Defaults to False.
+        file_type (str, optional): file type to specify, if "*" or "all", return all files in folder. Defaults to "txt".
+        isTraverseSubdirectory (bool, optional): traverse all sub-folders or not. Defaults to False.
 
     Returns:
         list: a list of file paths
