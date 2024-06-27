@@ -409,8 +409,10 @@ class GRID2DEMAND:
         if set(self.pkg_settings.get("zone_geometry_fields")).issubset(set(zone_columns)):
             self.is_geometry = True
 
-        if set(self.pkg_settings.get("zone_centroid_fields")).issubset(set(zone_columns)):
+        elif set(self.pkg_settings.get("zone_centroid_fields")).issubset(set(zone_columns)):
             self.is_centroid = True
+        else:
+            raise Exception(f"Error: {self.zone_file} does not contain valid zone fields.")
 
         if self.verbose:
             print("  : Generating zone dictionary...")

@@ -20,8 +20,8 @@ if __name__ == "__main__":
 
     # Step 0: Specify input directory
     # input_dir = "./datasets/DC_Downtown"
-    input_dir = "./datasets/Tuscon_zone"
-    zone = "./datasets/Tuscon_zone/zone.csv"
+    input_dir = "../datasets/Sioux_Falls"
+    zone = "../datasets/Sioux_Falls/zone.csv"
     # node = "./datasets/Tuscon_zone/node.csv"
 
     # Initialize a GRID2DEMAND object
