@@ -1,4 +1,3 @@
-
 # **Grid2demand**
 
 GRID2DEMAND: A tool for generating zone-to-zone travel demand based on grid cells or TAZs and gravity model
@@ -104,25 +103,19 @@ Xiangyong Luo, Dustin Carlino, and Xuesong Simon Zhou. (2023). [xyluo25/grid2dem
 If you have not used Grid2demand before, here are some advices to get started.
 
 1. Read the user guide or watch the video at https://www.youtube.com/watch?v=EfjCERQQGTs.
-
 2. Obtain a map.osm or map.osm.pbf file for your area of interest at https://extract.bbbike.org/ or openstreetmap.org
-
 3. Look at the examples at Google colab environment https://github.com/asu-trans-ai-lab/grid2demand/blob/main/grid2demand_tutorial.ipynb
-
 4. Install Python, Grid2demand and QGIS on your computer or using Google Colab environment to modify one of the examples to implement your own model.
-
 5. Post your questions on the users group:
 
-     GitHub: https://github.com/asu-trans-ai-lab/grid2demand/issues
-
-     Google: groups.google.com/d/forum/grid2demand
+   GitHub: https://github.com/asu-trans-ai-lab/grid2demand/issues
+   GitHub: https://github.com/xyluo25/grid2demand/issues
 
 Open-source tool of grid2demand aims to provide an open-source quick demand generation python package, which can work anywhere in the world, thanks to open data from [OpenStreetMap](Openstreetmap) users.
 
 To know more about this tool, please check out the 3rd mini teaching lesson in our podcast series [https://www.youtube.com/watch?v=EfjCERQQGTs](https://www.youtube.com/watch?v=EfjCERQQGTs).
 
-Gird2demand is an open-source trip generation and distribution tool for teaching transportation planning and applications. It generates zone-to-zone travel demand based on alphanumeric grid zones. Users can obtain zone-to-zone and
-node-to-node travel demand with a few lines of python code based on OpenStreetMap and OSM2GMNS.
+Gird2demand is an open-source trip generation and distribution tool for teaching transportation planning and applications. It generates zone-to-zone travel demand based on alphanumeric grid zones. Users can obtain zone-to-zone and node-to-node travel demand with a few lines of python code based on OpenStreetMap and OSM2GMNS.
 
 For the python source code and sample network files, readers can visit the project homepage at ASU Trans+AI Lab Github
 ([https://github.com/asu-trans-ai-lab/grid2demand](https://github.com/asu-trans-ai-lab/grid2demand)). The Jupyter notebook example can be found at
@@ -208,16 +201,17 @@ When partitioning grid cells and calculating accessibility, World Geodetic Syste
 
 **Description of Data Files**
 
-| Step | Process                            | Input File or Parameter                                                                    | Output File                                                                                                        | Method                                                                  |
-| ---- | ---------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------- |
-| 0    | Network files preparation          | map file from OpenStreetMap                                                                | *node.csv, link.csv, poi.csv*                                                                                    | Osm2gmns tool                                                           |
-| 1    | Input files reading                | *node.csv, poi.csv*                                                                      |                                                                                                                    |                                                                         |
-| 2    | Zone generation and grid partition | Number of blocks or grid scales in meters with latitude of the area of interest (optional) | *zone,csv, poi.csv* (update with zone id)                                                                        | Alphanumeric grid                                                       |
-| 3    | Trip generation                    | *poi_trip_rate.csv* (optional), trip purpose                                             | *poi_trip_rate.csv* (output/update with utilization notes), *node.csv* (update with zone id and demand values) | Trip rate method                                                        |
-| 4    | Accessibility calculation          | *accessibility.csv* (optional), latitude of the area of interest                         | *accessibility.csv*                                                                                              | Simple straight-line distance between zone centroids                    |
-| 5    | Trip distribution                  | Trip purpose, friction factor coefficients                                                 | *demand.csv, zone,csv* (update with total production and attraction in each zone)                                | Gravity model                                                           |
-| 6    | Agent generation                   | *demand.csv*                                                                             | *agent.csv*                                                                                                      | Random sampling of node-to-node agents according to zone-to-zone demand |
-| 7    | Visualization                      |                                                                                            | QGIS or NEXTA                                                                                                      |                                                                         |
+
+| Step | Process                            | Input File or Parameter                                                             | Output File                                                                                                    | Method                                                                  |
+| ------ | ------------------------------------ | ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| 0    | Network files preparation          | map file from OpenStreetMap                                                         | *node.csv, link.csv, poi.csv*                                                                                  | Osm2gmns tool                                                           |
+| 1    | Input files reading                | *node.csv, poi.csv*                                                                 |                                                                                                                |                                                                         |
+| 2    | Zone generation and grid partition | Number of blocks or grid scales in defined units of the area of interest (optional) | *zone.csv, poi.csv* (update with zone id)                                                                      | Alphanumeric grid                                                       |
+| 3    | Trip generation                    | *poi_trip_rate.csv* (optional), trip purpose                                        | *poi_trip_rate.csv* (output/update with utilization notes), *node.csv* (update with zone id and demand values) | Trip rate method                                                        |
+| 4    | OD distance matrix                 | zone.csv                                                                            | OD matrix                                                                                                      | Distance between zone centroids                                         |
+| 5    | Trip distribution                  | Trip purpose, friction factor coefficients                                          | *demand.csv, zone,csv* (update with total production and attraction in each zone)                              | Gravity model                                                           |
+| 6    | Agent generation                   | *demand.csv*                                                                        | *agent.csv*                                                                                                    | Random sampling of node-to-node agents according to zone-to-zone demand |
+| 7    | Visualization                      |                                                                                     | QGIS or NEXTA                                                                                                  |                                                                         |
 
 ### **Flowchart of grid2demand**
 
@@ -283,14 +277,13 @@ You can install the latest release of grid2demand at [PyPI](https://pypi.org/pro
 
 \~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~
 
-pip install grid2demand
+`pip install grid2demand`
 
 \~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~
 
 After running the command above, the grid2demand package along with two required dependency packages (numpy, pandas) will be installed on your computer (if they have not been installed yet).
 
-**Step 2: Determine the boundary of interest and download .osm file from
-OpenStreetMap (https://www.openstreetmap.org/)**
+**Step 2: Determine the boundary of interest and download .osm file from OpenStreetMap (https://www.openstreetmap.org/)**
 
 1. Adjust the map to the location of interest and click on the “Export” button on the top.
 
@@ -308,9 +301,16 @@ Open the Python IDE, such as Pycharm, for a typical configuration. Then, use OSM
 
 Notes: User guide for osm2gmns can be found at https://osm2gmns.readthedocs.io/en/latest/.
 
-<img src="docs/media/6ea2cbc0b48354d4940c8e4f4c6e9f58.png" style="zoom:80%;" />
+```python
+import osm2gmns as og
 
-<img src="docs/media/bc783b917bac32c27b66e4649a472088.png" style="zoom:80%;" />
+# load network from osm file
+net = og.getNetFromFile("map.osm", network_type=('railway', 'aeroway', 'auto', 'walk', 'bile'), POI=True, default_lanes=True, default_speed=True)
+og.connectPOIWithNet(net)
+og.outputNetToCSV(net, output_folder)
+```
+
+Your will see node.csv, poi.csv and link.csv in your output_folder<img src="docs/media/bc783b917bac32c27b66e4649a472088.png" style="zoom:80%;" />
 
 <img src="docs/media/bff56bb4b68eef97dfb8ee4a337500bb.png" alt=" " style="zoom:80%;" />
 
@@ -333,14 +333,11 @@ net = gd.GRID2DEMAND(input_dir)
 
 1. **Partition network into grid cells**
 
-Users can customize the number of grid cells by setting “number_of_x_blocks” and
-“number_of_y_blocks”. On the other hand, users can customize the cell’s width
-and height in meters under the latitude of the area by setting “cell_width”,
-“cell_height” and “latitude”).
+Users can customize the number of grid cells by setting “num_x_blocks” and
+“num_y_blocks”.
 
-By default, “cell_width” and “cell_height” are set as the length on a flat
-surface under a specific latitude corresponding to the degree of 0.006
-(equivalent to 400 meters or 0.25 miles at latitude = 45 degree).
+Users can customize the cell’s width and height in prefered units by setting “cell_width”,
+“cell_height” and "unit").
 
 \~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~\~
 
@@ -350,6 +347,12 @@ net.load_network()
 
 # create zone
 net.net2zone(num_x_blocks=10,num_y_blocks=10)
+
+# or
+# net.net2zone(net.node_dict, num_x_blocks=10, num_y_blocks=10)
+
+# or generate zone based on grid size with 10 km width and 10 km height for each zone
+# net.net2zone(cell_width=10, cell_height=10, unit='km')
 
 # Synchronize geometry info between zone, node and poi
 net.sync_geometry_between_zone_and_node_poi()

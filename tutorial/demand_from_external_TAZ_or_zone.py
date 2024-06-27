@@ -31,7 +31,7 @@ if __name__ == "__main__":
     net.load_network(input_dir=input_dir)
 
     # Step 2: Generate zone dictionary from zone.csv file
-    zone_dict = net.taz2zone()
+    net.taz2zone()
 
     # Step 3: Run gravity model to generate agent-based demand
     net.run_gravity_model()
