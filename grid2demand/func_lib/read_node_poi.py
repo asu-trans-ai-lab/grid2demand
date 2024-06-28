@@ -37,10 +37,10 @@ def _create_node_from_dataframe(df_node: pd.DataFrame) -> dict[int, Node]:
         try:
             # check activity location tab
             activity_type = df_node.loc[i, 'activity_type']
-            boundary_flag = df_node.loc[i, 'is_boundary']
+            is_boundary = df_node.loc[i, 'is_boundary']
             if activity_type in ["residential", "poi"]:
                 activity_location_tab = activity_type
-            elif boundary_flag == 1:
+            elif is_boundary == 1:
                 activity_location_tab = "boundary"
             else:
                 activity_location_tab = ''
@@ -65,7 +65,7 @@ def _create_node_from_dataframe(df_node: pd.DataFrame) -> dict[int, Node]:
                 x_coord=df_node.loc[i, 'x_coord'],
                 y_coord=df_node.loc[i, 'y_coord'],
                 poi_id=df_node.loc[i, 'poi_id'],
-                boundary_flag=boundary_flag,
+                is_boundary=is_boundary,
                 geometry=shapely.Point(df_node.loc[i, 'x_coord'], df_node.loc[i, 'y_coord']),
                 _zone_id=_zone_id
             )
@@ -216,7 +216,7 @@ def read_node(node_file: str = "", cpu_cores: int = 1, verbose: bool = False) ->
     Examples:
         >>> node_dict = read_node(node_file = r"../dataset/ASU/node.csv")
         >>> node_dict[1]
-        Node(id=1, zone_id=0, x_coord=0.0, y_coord=0.0, boundary_flag=0, geometry='POINT (0 0)',...)
+        Node(id=1, zone_id=0, x_coord=0.0, y_coord=0.0, is_boundary=0, geometry='POINT (0 0)',...)
 
         # if node_file does not exist, raise error
         >>> node_dict = read_node(node_file = r"../dataset/ASU/node.csv")
@@ -463,7 +463,7 @@ def read_network(input_folder: str = "", cpu_cores: int = 1, verbose: bool = Fal
     Examples:
         >>> node_dict, poi_dict = read_network(input_folder = r"../dataset/ASU")
         >>> node_dict[1]
-        Node(id=1, zone_id=0, x_coord=0.0, y_coord=0.0, production=0.0, attraction=0.0, boundary_flag=0,
+        Node(id=1, zone_id=0, x_coord=0.0, y_coord=0.0, production=0.0, attraction=0.0, is_boundary=0,
         >>> poi_dict[1]
         POI(id=1, x_coord=0.0, y_coord=0.0, area=[0, 0.0], poi_type='residential', geometry='POINT (0 0)')
 

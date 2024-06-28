@@ -192,7 +192,7 @@ class GRID2DEMAND:
             >>> node_dict = gd.load_node
             >>> node_dict[1]
             Node(id=1, x_coord=121.469, y_coord=31.238, production=0, attraction=0,
-            boundary_flag=0, zone_id=-1, poi_id=-1, activity_type= '',
+            is_boundary=0, zone_id=-1, poi_id=-1, activity_type= '',
             activity_location_tab='', geometry='POINT (121.469 31.238)'
         """
 

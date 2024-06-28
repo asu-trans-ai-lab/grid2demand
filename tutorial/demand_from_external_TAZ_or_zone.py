@@ -20,8 +20,8 @@ if __name__ == "__main__":
 
     # Step 0: Specify input directory
     # input_dir = "./datasets/DC_Downtown"
-    input_dir = "../datasets/Sioux_Falls"
-    zone = "../datasets/Sioux_Falls/zone.csv"
+    input_dir = r"C:\Users\xyluo25\anaconda3_workspace\001_GitHub\grid2demand\datasets\Sioux_Falls"
+    zone = r"C:\Users\xyluo25\anaconda3_workspace\001_GitHub\grid2demand\datasets\Sioux_Falls/zone.csv"
     # node = "./datasets/Tuscon_zone/node.csv"
 
     # Initialize a GRID2DEMAND object

@@ -19,7 +19,7 @@ class Node:
         y_coord: The y coordinate of the node.
         production: The production of the node.
         attraction: The attraction of the node.
-        boundary_flag: The boundary flag of the node. = 1 (current node is boundary node)
+        is_boundary: The boundary flag of the node. = 1 (current node is boundary node)
         zone_id: The zone ID. default == -1, only three conditions to become an activity node
                 1) POI node, 2) is_boundary node(freeway),  3) residential in activity_type
         poi_id: The POI ID of the node. default = -1; to be assigned to a POI ID after reading poi.csv
@@ -34,7 +34,7 @@ class Node:
     y_coord: float = -1
     production: float = 0
     attraction: float = 0
-    boundary_flag: int = 0
+    is_boundary: int = 0
     ctrl_type: int = -1
     zone_id: int = -1
     poi_id: int = -1
