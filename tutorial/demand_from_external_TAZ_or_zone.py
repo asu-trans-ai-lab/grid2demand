@@ -21,14 +21,12 @@ if __name__ == "__main__":
     # Step 0: Specify input directory
     # input_dir = "./datasets/DC_Downtown"
     input_dir = r"C:\Users\xyluo25\anaconda3_workspace\001_GitHub\grid2demand\datasets\Sioux_Falls"
-    zone = r"C:\Users\xyluo25\anaconda3_workspace\001_GitHub\grid2demand\datasets\Sioux_Falls/zone.csv"
-    # node = "./datasets/Tuscon_zone/node.csv"
 
     # Initialize a GRID2DEMAND object
-    net = gd.GRID2DEMAND(verbose=True)
+    net = gd.GRID2DEMAND(input_dir=input_dir)
 
     # Step 1: Load node and poi data from input directory
-    net.load_network(input_dir=input_dir)
+    net.load_network()
 
     # Step 2: Generate zone dictionary from zone.csv file
     net.taz2zone()

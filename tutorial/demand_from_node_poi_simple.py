@@ -22,10 +22,10 @@ if __name__ == "__main__":
     input_dir = r"C:\Users\xyluo25\anaconda3_workspace\001_GitHub\grid2demand\datasets\dubai"
 
     # Initialize a GRID2DEMAND object
-    net = gd.GRID2DEMAND()
+    net = gd.GRID2DEMAND(input_dir=input_dir)
 
     # Step 1: Load node and poi data from input directory
-    net.load_network(input_dir=input_dir)
+    net.load_network()
 
     # Step 2: Generate zone dictionary from node dictionary
     net.net2zone(num_x_blocks=10, num_y_blocks=10)
@@ -34,4 +34,4 @@ if __name__ == "__main__":
     net.run_gravity_model()
 
     # Step 4: Output demand, agent, zone, zone_od_dist_table, zone_od_dist_matrix files
-    net.save_results_to_csv(output_dir="./")
+    net.save_results_to_csv()

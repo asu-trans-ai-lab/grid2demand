@@ -174,6 +174,10 @@ class GRID2DEMAND:
             print("  : Loading default package settings...")
         self.pkg_settings = pkg_settings
 
+        # add zone_id to node_dict if use_zone_id is True
+        if self.use_zone_id and "zone_id" not in self.pkg_settings["node_fields"]:
+            self.pkg_settings["node_fields"].append("zone_id")
+
         if self.verbose:
             print("  : Package settings loaded successfully.\n")
 
@@ -192,8 +196,7 @@ class GRID2DEMAND:
             >>> node_dict = gd.load_node
             >>> node_dict[1]
             Node(id=1, x_coord=121.469, y_coord=31.238, production=0, attraction=0,
-            is_boundary=0, zone_id=-1, poi_id=-1, activity_type= '',
-            activity_location_tab='', geometry='POINT (121.469 31.238)'
+            is_boundary=0, zone_id=-1, poi_id=-1, activity_type= '', geometry='POINT (121.469 31.238)'
         """
 
         # update node_file if specified
@@ -203,14 +206,40 @@ class GRID2DEMAND:
         if not os.path.exists(self.node_file):
             raise FileNotFoundError(f"Error: File {self.node_file} does not exist.")
 
-        # add zone_id to node_dict if use_zone_id is True
-        if self.use_zone_id and "zone_id" not in self.pkg_settings["node_required_fields"]:
-            self.pkg_settings["node_required_fields"].append("zone_id")
-
         self.node_dict = read_node(self.node_file, self.pkg_settings.get("set_cpu_cores"), verbose=self.verbose)
 
         # generate node_zone_pair {node_id: zone_id} for later use
         # the zone_id based on node.csv in field zone_id
+
+        # create zone.csv if use_zone_id is True
+        if self.use_zone_id:
+
+            # zone columns in zone.csv
+            _col = ["zone_id", "x_coord", "y_coord"]
+
+            # get values from node_dict
+            _val_list = []
+            _node_and_zone_id = []  # store node_id that is zone
+            self._node_is_zone = {}  # store node
+
+            for node_id in self.node_dict:
+                if self.node_dict[node_id]._zone_id != -1:
+                    _val_list.append([self.node_dict[node_id]._zone_id,
+                                      self.node_dict[node_id].x_coord,
+                                      self.node_dict[node_id].y_coord])
+
+                    _node_and_zone_id.append(node_id)
+
+            # delete zone from node_dict
+            for node_id in _node_and_zone_id:
+                self._node_is_zone[node_id] = self.node_dict[node_id]
+                del self.node_dict[node_id]
+
+            _zone_df = pd.DataFrame(_val_list, columns=_col)
+            self.zone_file = path2linux(os.path.join(self.input_dir, "zone.csv"))
+            _zone_df.to_csv(self.zone_file, index=False)
+            print(f"  : zone.csv is generated (use_zone_id = True) based on node.csv in {self.input_dir}.")
+
         self.__pair_node_zone_id = {
             node_id: self.node_dict[node_id]._zone_id
             for node_id in self.node_dict
@@ -269,39 +298,14 @@ class GRID2DEMAND:
             raise FileExistsError(f"Error: Input directory {self.input_dir} does not exist.")
 
         # read node.csv and poi.csv from input directory
-        network_dict = {}
-        if self.input_dir:
-            self.__check_input_dir()
-            network_dict = read_network(self.input_dir, self.pkg_settings.get("set_cpu_cores"), verbose=self.verbose)
-            self.node_dict = network_dict.get('node_dict')
-            self.poi_dict = network_dict.get('poi_dict')
+        if not self.input_dir:
+            raise Exception("Error: Input directory is not specified. Please specify input directory.")
 
-        # if input directory not specified, read node.csv and poi.csv if specified
-        else:
-            if self.node_file:
-                self.node_dict = self.load_node()
+        self.__check_input_dir()
+        self.node_dict = self.load_node()
+        self.poi_dict = self.load_poi()
 
-            if self.poi_file:
-                self.poi_dict = self.load_poi()
-
-        # add zone_id to node_dict if use_zone_id is True
-        if self.use_zone_id and "zone_id" not in self.pkg_settings["node_fields"]:
-            self.pkg_settings["node_fields"].append("zone_id")
-
-        # network_dict = read_network(self.input_dir, self.pkg_settings.get("set_cpu_cores"), verbose=self.verbose)
-        # self.node_dict = network_dict.get('node_dict')
-        # self.poi_dict = network_dict.get('poi_dict')
-
-        # generate node_zone_pair {node_id: zone_id} for later use
-        # the zone_id based on node.csv in field zone_id
-        if self.node_dict:
-            self.__pair_node_zone_id = {
-                node_id: self.node_dict[node_id]._zone_id
-                for node_id in self.node_dict
-                if self.node_dict[node_id]._zone_id != -1
-            }
-
-        return network_dict or {"node_dict": self.node_dict, "poi_dict": self.poi_dict} if return_value else None
+        return {"node_dict": self.node_dict, "poi_dict": self.poi_dict} if return_value else None
 
     def net2zone(self,
                  node_dict: dict[int, Node] = {},
@@ -380,6 +384,15 @@ class GRID2DEMAND:
                                   verbose=self.verbose)
         self.__pair_zone_id_name = {Zone.id: Zone.name for Zone in self.zone_dict.values()}
         self.is_geometry = True
+
+        # save zone to zone.csv
+        zone_df = pd.DataFrame(self.zone_dict.values())
+        path_output = path2linux(os.path.join(self.output_dir, "zone.csv"))
+        zone_df.to_csv(path_output, index=False)
+
+        if self.verbose:
+            print(f"  : net2zone saved zone.csv to {self.output_dir}")
+
         return self.zone_dict if return_value else None
 
     def taz2zone(self, zone_file: str = "", return_value: bool = False) -> dict[str, Zone]:
@@ -406,12 +419,16 @@ class GRID2DEMAND:
             raise Exception(f"Error: Failed to read {self.zone_file}.") from e
 
         # update geometry or centroid
+        # sourcery skip: merge-nested-ifs
         if set(self.pkg_settings.get("zone_geometry_fields")).issubset(set(zone_columns)):
-            self.is_geometry = True
+            # check geometry fields is valid from zone_df
+            if not any(zone_df["geometry"].isnull()):
+                self.is_geometry = True
 
-        elif set(self.pkg_settings.get("zone_centroid_fields")).issubset(set(zone_columns)):
+        if set(self.pkg_settings.get("zone_centroid_fields")).issubset(set(zone_columns)):
             self.is_centroid = True
-        else:
+
+        if not self.is_geometry and not self.is_centroid:
             raise Exception(f"Error: {self.zone_file} does not contain valid zone fields.")
 
         if self.verbose:
@@ -434,17 +451,7 @@ class GRID2DEMAND:
             print(f"Error: {self.zone_file} does not contain valid zone fields.")
             return {}
 
-        # if self.path_zone:
-        #     self.zone_dict = read_zone_by_geometry(self.path_zone, self.pkg_settings.get("set_cpu_cores"))
-        #     self.__pair_zone_id_name = {
-        #         Zone.id: Zone.name for Zone in self.zone_dict.values()}
-
-        # print("  : zone.csv does not exist in your input directory. \
-        #       \n    Please check your input directory. \
-        #       \n    Or you can use net2zone() to generate grid-based zones from node_dict.")
-        # return None
-
-        return self.zone_dict if return_value else None
+        return self.zone_dict if return_value else {}
 
     def sync_geometry_between_zone_and_node_poi(self,
                                                 zone_dict: dict = "",
@@ -782,65 +789,65 @@ class GRID2DEMAND:
                                                        verbose=self.verbose)
         self.df_demand = pd.DataFrame(list(self.zone_od_demand_matrix.values()))
 
-        # if use_zone_id is True, generate demand dataframe based on zone_id from node.csv
-        if self.use_zone_id:
-
-            # generate comb {(o_node_id, d_node_id)}
-            # pair_node_zone_id: node_id and zone_id from node.csv, they are unique pairs
-            # comb: all possible combinations of node_id pairs
-            # comb: can be seen as all possible zone_id pairs from node.csv
-            node_zone_lst = list(self.__pair_node_zone_id.keys())
-
-            # create all possible combinations of node_id pairs
-            comb = [(i, j) for i in node_zone_lst for j in node_zone_lst]
-
-            # generate demand_lst to store demand dataframe
-            demand_lst = []
-
-            # create demand dictionary
-            for pair in comb:
-                o_node_id, d_node_id = pair
-                o_zone_id = self.node_dict[o_node_id].zone_id  # zone_id from generated zone
-                d_zone_id = self.node_dict[d_node_id].zone_id  # zone_id from generated zone
-
-                o_zone_name = self.__pair_zone_id_name.get(o_zone_id, "")  # zone_name from generated zone
-                d_zone_name = self.__pair_zone_id_name.get(d_zone_id, "")  # zone_name from generated zone
-
-                if o_zone_name and d_zone_name and o_zone_name != d_zone_name:
-                    try:
-                        dist_km = self.zone_od_dist_matrix[(o_zone_name, d_zone_name)].get('dist_km')
-                        volume = self.zone_od_demand_matrix[(o_zone_name, d_zone_name)].get('volume')
-
-                        demand_lst.append(
-                            {
-                                # "o_node_id": o_node_id,
-                                "o_zone_id": self.__pair_node_zone_id[o_node_id],
-                                "o_zone_name": self.__pair_node_zone_id[o_node_id],
-
-                                # "d_node_id": d_node_id,
-                                "d_zone_id": self.__pair_node_zone_id[d_node_id],
-                                "d_zone_name": self.__pair_node_zone_id[d_node_id],
-                                "dist_km": dist_km,
-                                "volume": volume,
-                                "geometry": shapely.LineString([self.node_dict[o_node_id].geometry,
-                                                                self.node_dict[d_node_id].geometry])
-
-                            }
-                        )
-
-                    except KeyError:
-                        dist_km = 0
-                        volume = 0
-
-                        if self.verbose:
-                            print(f"  : Error: zone_od_dist_matrix does not contain {o_zone_name, d_zone_name}.")
-            if demand_lst:
-                self.df_demand_based_zone_id = pd.DataFrame(demand_lst)
-            else:
-                self.df_demand_based_zone_id = pd.DataFrame(columns=["o_zone_id", "o_zone_name",
-                                                                     "d_zone_id", "d_zone_name",
-                                                                     "dist_km", "volume", "geometry"])
-            return self.df_demand_based_zone_id if return_value else None
+#         # if use_zone_id is True, generate demand dataframe based on zone_id from node.csv
+#         if self.use_zone_id:
+#
+#             # generate comb {(o_node_id, d_node_id)}
+#             # pair_node_zone_id: node_id and zone_id from node.csv, they are unique pairs
+#             # comb: all possible combinations of node_id pairs
+#             # comb: can be seen as all possible zone_id pairs from node.csv
+#             node_zone_lst = list(self.__pair_node_zone_id.keys())
+#
+#             # create all possible combinations of node_id pairs
+#             comb = [(i, j) for i in node_zone_lst for j in node_zone_lst]
+#
+#             # generate demand_lst to store demand dataframe
+#             demand_lst = []
+#
+#             # create demand dictionary
+#             for pair in comb:
+#                 o_node_id, d_node_id = pair
+#                 o_zone_id = self.node_dict[o_node_id].zone_id  # zone_id from generated zone
+#                 d_zone_id = self.node_dict[d_node_id].zone_id  # zone_id from generated zone
+#
+#                 o_zone_name = self.__pair_zone_id_name.get(o_zone_id, "")  # zone_name from generated zone
+#                 d_zone_name = self.__pair_zone_id_name.get(d_zone_id, "")  # zone_name from generated zone
+#
+#                 if o_zone_name and d_zone_name and o_zone_name != d_zone_name:
+#                     try:
+#                         dist_km = self.zone_od_dist_matrix[(o_zone_name, d_zone_name)].get('dist_km')
+#                         volume = self.zone_od_demand_matrix[(o_zone_name, d_zone_name)].get('volume')
+#
+#                         demand_lst.append(
+#                             {
+#                                 # "o_node_id": o_node_id,
+#                                 "o_zone_id": self.__pair_node_zone_id[o_node_id],
+#                                 "o_zone_name": self.__pair_node_zone_id[o_node_id],
+#
+#                                 # "d_node_id": d_node_id,
+#                                 "d_zone_id": self.__pair_node_zone_id[d_node_id],
+#                                 "d_zone_name": self.__pair_node_zone_id[d_node_id],
+#                                 "dist_km": dist_km,
+#                                 "volume": volume,
+#                                 "geometry": shapely.LineString([self.node_dict[o_node_id].geometry,
+#                                                                 self.node_dict[d_node_id].geometry])
+#
+#                             }
+#                         )
+#
+#                     except KeyError:
+#                         dist_km = 0
+#                         volume = 0
+#
+#                         if self.verbose:
+#                             print(f"  : Error: zone_od_dist_matrix does not contain {o_zone_name, d_zone_name}.")
+#             if demand_lst:
+#                 self.df_demand_based_zone_id = pd.DataFrame(demand_lst)
+#             else:
+#                 self.df_demand_based_zone_id = pd.DataFrame(columns=["o_zone_id", "o_zone_name",
+#                                                                      "d_zone_id", "d_zone_name",
+#                                                                      "dist_km", "volume", "geometry"])
+#             return self.df_demand_based_zone_id if return_value else None
 
         print("  : Successfully generated OD demands.")
         return self.df_demand if return_value else None
@@ -873,11 +880,12 @@ class GRID2DEMAND:
     def save_results_to_csv(self, output_dir: str = "",
                             demand: bool = True,
                             *,  # enforce keyword-only arguments
-                            zone: bool = False,
+                            zone: bool = True,
                             node: bool = True,  # save updated node
                             poi: bool = True,  # save updated poi
                             zone_od_dist_table: bool = False,
                             zone_od_dist_matrix: bool = False,
+                            is_demand_with_geometry: bool = False,
                             overwrite_file: bool = True) -> None:
 
         # update output_dir if specified
@@ -885,159 +893,50 @@ class GRID2DEMAND:
             self.output_dir = path2linux(output_dir)
 
         if demand:
-            # specify output path
-            if overwrite_file:
-                path_output = path2linux(os.path.join(self.output_dir, "demand.csv"))
-            else:
-                path_output = generate_unique_filename(path2linux(os.path.join(self.output_dir, "demand.csv")))
-
-            # check if df_demand exists
-            if not hasattr(self, "df_demand"):
-                print("  : Could not save demand file: df_demand does not exist. Please run run_gravity_model() first.")
-            else:
-                if self.use_zone_id:
-                    df_demand_non_zero = self.df_demand_based_zone_id[self.df_demand_based_zone_id["volume"] > 0]
-                    df_demand_non_zero.to_csv(path_output, index=False)
-                    print(f"  : Successfully saved demand.csv to {self.output_dir}")
-
-                df_demand_non_zero = self.df_demand[self.df_demand["volume"] > 0]
-                df_demand_non_zero.to_csv(path_output, index=False)
-                print(f"  : Successfully saved demand.csv to {self.output_dir}")
+            self.save_demand(overwrite_file=overwrite_file, is_demand_with_geometry=is_demand_with_geometry)
 
         if zone:
-            # specify output path
-            if overwrite_file:
-                path_output = path2linux(os.path.join(self.output_dir, "zone.csv"))
-            else:
-                path_output = generate_unique_filename(path2linux(os.path.join(self.output_dir, "zone.csv")))
-
-            # check if zone_dict exists
-            if not hasattr(self, "zone_dict"):
-                print("  : Could not save zone file: zone_dict does not exist. \
-                    Please run sync_geometry_between_zone_and_node_poi() first.")
-            else:
-                zone_df = pd.DataFrame(self.zone_dict.values())
-                zone_df.to_csv(path_output, index=False)
-                print(f"  : Successfully saved zone.csv to {self.output_dir}")
+            self.save_zone(overwrite_file=overwrite_file)
 
         if node:
-            # specify output path
-            if overwrite_file:
-                path_output = path2linux(os.path.join(self.output_dir, "node.csv"))
-            else:
-                path_output = generate_unique_filename(path2linux(os.path.join(self.output_dir, "node.csv")))
-
-            if not hasattr(self, "node_dict"):
-                print("  : Could not save updated node file: node_dict does not exist. Please run load_node() first.")
-            else:
-                node_df = pd.DataFrame(self.node_dict.values())
-
-                # update node data if centroid is used, ignore zone_id if original zone_id is empty
-                if self.is_centroid:
-                    for i in range(len(node_df)):
-                        original_zone_id = node_df.loc[i, "_zone_id"]
-                        if original_zone_id == -1:
-                            node_df.loc[i, "zone_id"] = None
-
-                # change column name from id to node_id
-                node_df.rename(columns={"id": "node_id"}, inplace=True)
-                node_df.to_csv(path_output, index=False)
-                print(f"  : Successfully saved updated node to node.csv to {self.output_dir}")
+            self.save_node(overwrite_file=overwrite_file)
 
         if poi:
-            # specify output path
-            if overwrite_file:
-                path_output = path2linux(os.path.join(self.output_dir, "poi.csv"))
-            else:
-                path_output = generate_unique_filename(path2linux(os.path.join(self.output_dir, "poi.csv")))
-
-            # check if poi_dict exists
-            if not hasattr(self, "poi_dict"):
-                print("  : Could not save updated poi file: poi_dict does not exist. Please run load_poi() first.")
-            else:
-                poi_df = pd.DataFrame(self.poi_dict.values())
-
-                # rename column name from id to poi_id
-                poi_df.rename(columns={"id": "poi_id"}, inplace=True)
-                poi_df.to_csv(path_output, index=False)
-                print(f"  : Successfully saved updated poi to poi.csv to {self.output_dir}")
+            self.save_poi(overwrite_file=overwrite_file)
 
         if zone_od_dist_table:
-            # specify output path
-            if overwrite_file:
-                path_output = path2linux(os.path.join(self.output_dir, "zone_od_dist_table.csv"))
-            else:
-                path_output = generate_unique_filename(
-                    path2linux(os.path.join(self.output_dir, "zone_od_dist_table.csv")))
-
-            # check if zone_od_dist_matrix exists
-            if not hasattr(self, "zone_od_dist_matrix"):
-                print("  : zone_od_dist_matrix does not exist. Please run calc_zone_od_distance_matrix() first.")
-            else:
-                zone_od_dist_table_df = pd.DataFrame(self.zone_od_dist_matrix.values())
-                zone_od_dist_table_df = zone_od_dist_table_df[["o_zone_id", "o_zone_name", "d_zone_id",
-                                                               "d_zone_name", "dist_km", "geometry"]]
-                zone_od_dist_table_df.to_csv(path_output, index=False)
-                print(f"  : Successfully saved zone_od_dist_table.csv to {self.output_dir}")
+            self.save_zone_od_dist_table(overwrite_file=overwrite_file)
 
         if zone_od_dist_matrix:
-            # specify output path
-            if overwrite_file:
-                path_output = path2linux(os.path.join(self.output_dir, "zone_od_dist_matrix.csv"))
-            else:
-                path_output = generate_unique_filename(
-                    path2linux(os.path.join(self.output_dir, "zone_od_dist_matrix.csv")))
-
-            # check if zone_od_dist_matrix exists
-            if not hasattr(self, "zone_od_dist_matrix"):
-                print(
-                    "  : zone_od_dist_matrix does not exist. Please run calc_zone_od_distance_matrix() first.")
-            else:
-                zone_od_dist_table_df = pd.DataFrame(self.zone_od_dist_matrix.values())
-                zone_od_dist_table_df = zone_od_dist_table_df[["o_zone_id", "o_zone_name", "d_zone_id",
-                                                               "d_zone_name", "dist_km", "geometry"]]
-
-                zone_od_dist_matrix_df = zone_od_dist_table_df.pivot(index='o_zone_name',
-                                                                     columns='d_zone_name',
-                                                                     values='dist_km')
-
-                zone_od_dist_matrix_df.to_csv(path_output)
-                print(f"  : Successfully saved zone_od_dist_matrix.csv to {self.output_dir}")
-
-        # if node_within_zone:
-        #     if not hasattr(self, "node_dict_within_zone"):
-        #         print("Error: node_dict_within_zone does not exist. Please run net2zone() first.")
-        #         return
-        #     if overwrite_file:
-        #         path_output = path2linux(os.path.join(self.output_dir, "node_within_zone.csv"))
-        #     else:
-        #         path_output = generate_unique_filename(path2linux(os.path.join(self.output_dir, "node_within_zone.csv")))
-        #     node_within_zone_df = pd.DataFrame(self.node_dict_within_zone.values())
-        #     node_within_zone_df.to_csv(path_output, index=False)
-        #     print(f"  : Successfully saved node_within_zone.csv to {self.output_dir}")
+            self.save_zone_od_dist_matrix(overwrite_file=overwrite_file)
 
         return None
 
     # @property
-    def save_demand(self, overwrite_file: bool = True) -> None:
+    def save_demand(self, overwrite_file: bool = True,
+                    is_demand_with_geometry: bool = False) -> None:
 
-        if not hasattr(self, "df_demand"):
-            print("  : df_demand does not exist. Please run run_gravity_model() first.")
-            return
         if overwrite_file:
             path_output = path2linux(os.path.join(self.output_dir, "demand.csv"))
         else:
             path_output = generate_unique_filename(path2linux(os.path.join(self.output_dir, "demand.csv")))
 
-        if self.use_zone_id:
-            df_demand_non_zero = self.df_demand_based_zone_id[self.df_demand_based_zone_id["volume"] > 0]
+        # check if df_demand exists
+        if not hasattr(self, "df_demand"):
+            print("  : Could not save demand file: df_demand does not exist. Please run run_gravity_model() first.")
+        else:
+
+            df_demand_non_zero = self.df_demand[self.df_demand["volume"] > 0]
+
+            if is_demand_with_geometry:
+                col_name = ["o_zone_id", "d_zone_id", "dist_km", "volume", "geometry"]
+            else:
+                col_name = ["o_zone_id", "d_zone_id", "dist_km", "volume"]
+
+            df_demand_non_zero = df_demand_non_zero[col_name]
+
             df_demand_non_zero.to_csv(path_output, index=False)
             print(f"  : Successfully saved demand.csv to {self.output_dir}")
-            return None
-
-        df_demand_non_zero = self.df_demand[self.df_demand["volume"] > 0]
-        df_demand_non_zero.to_csv(path_output, index=False)
-        print(f"  : Successfully saved demand.csv to {self.output_dir}")
         return None
 
     # @property
@@ -1057,17 +956,24 @@ class GRID2DEMAND:
     # @property
     def save_zone(self, overwrite_file: bool = True) -> None:
 
-        if not hasattr(self, "zone_dict"):
-            print("  : zone_dict does not exist. Please run sync_geometry_between_zone_and_node_poi() first.")
-            return
-
         if overwrite_file:
             path_output = path2linux(os.path.join(self.output_dir, "zone.csv"))
         else:
             path_output = generate_unique_filename(path2linux(os.path.join(self.output_dir, "zone.csv")))
-        zone_df = pd.DataFrame(self.zone_dict.values())
-        zone_df.to_csv(path_output, index=False)
-        print(f"  : Successfully saved zone.csv to {self.output_dir}")
+
+        # check if zone_dict exists
+        if not hasattr(self, "zone_dict"):
+            print("  : Could not save zone file: zone_dict does not exist. \
+                Please run sync_geometry_between_zone_and_node_poi() first.")
+        else:
+            zone_df = pd.DataFrame(self.zone_dict.values())
+
+            # change column name from id to node_id
+            zone_df.rename(columns={"id": "zone_id"}, inplace=True)
+
+            zone_df.to_csv(path_output, index=False)
+            print(f"  : Successfully saved zone.csv to {self.output_dir}")
+        return None
 
     # @property
     def save_node(self, overwrite_file: bool = True) -> None:
@@ -1090,72 +996,78 @@ class GRID2DEMAND:
                 if original_zone_id == -1:
                     node_df.loc[i, "zone_id"] = None
 
+        if self.use_zone_id:
+            node_df["zone_id"] = ""
+            node_is_zone_df = pd.DataFrame(self._node_is_zone.values())
+            node_is_zone_df["zone_id"] = node_is_zone_df["_zone_id"]
+
+            node_df = pd.concat([node_df, node_is_zone_df], ignore_index=True)
+
+        node_df.rename(columns={"id": "node_id"}, inplace=True)
         node_df.to_csv(path_output, index=False)
-        print(f"  : Successfully saved node.csv to {self.output_dir}")
+        print(f"  : Successfully saved updated node to node.csv to {self.output_dir}")
         return None
 
     # @property
     def save_poi(self, overwrite_file: bool = True) -> None:
-        if not hasattr(self, "poi_dict"):
-            print("  : poi_dict does not exist. Please run sync_geometry_between_zone_and_node_poi() first.")
-            return None
 
         if overwrite_file:
             path_output = path2linux(os.path.join(self.output_dir, "poi.csv"))
         else:
             path_output = generate_unique_filename(path2linux(os.path.join(self.output_dir, "poi.csv")))
 
-        poi_df = pd.DataFrame(self.poi_dict.values())
-        poi_df.to_csv(path_output, index=False)
-        print(f"  : Successfully saved poi.csv to {self.output_dir}")
+        # check if poi_dict exists
+        if not hasattr(self, "poi_dict"):
+            print("  : Could not save updated poi file: poi_dict does not exist. Please run load_poi() first.")
+        else:
+            poi_df = pd.DataFrame(self.poi_dict.values())
+
+            # rename column name from id to poi_id
+            poi_df.rename(columns={"id": "poi_id"}, inplace=True)
+            poi_df.to_csv(path_output, index=False)
+            print(f"  : Successfully saved updated poi to poi.csv to {self.output_dir}")
         return None
 
     # @property
     def save_zone_od_dist_table(self, overwrite_file: bool = True) -> None:
 
-        if not hasattr(self, "zone_od_dist_matrix"):
-            print("  : zone_od_dist_matrix does not exist. Please run calc_zone_od_distance_matrix() first.")
-            return
-
         if overwrite_file:
             path_output = path2linux(os.path.join(self.output_dir, "zone_od_dist_table.csv"))
         else:
             path_output = generate_unique_filename(path2linux(os.path.join(self.output_dir, "zone_od_dist_table.csv")))
-        zone_od_dist_table_df = pd.DataFrame(self.zone_od_dist_matrix.values())
-        zone_od_dist_table_df = zone_od_dist_table_df[
-            ["o_zone_id", "o_zone_name", "d_zone_id", "d_zone_name", "dist_km", "geometry"]]
-        zone_od_dist_table_df.to_csv(path_output, index=False)
-        print(f"  : Successfully saved zone_od_dist_table.csv to {self.output_dir}")
+
+        # check if zone_od_dist_matrix exists
+        if not hasattr(self, "zone_od_dist_matrix"):
+            print("  : zone_od_dist_matrix does not exist. Please run calc_zone_od_distance_matrix() first.")
+        else:
+            zone_od_dist_table_df = pd.DataFrame(self.zone_od_dist_matrix.values())
+            zone_od_dist_table_df = zone_od_dist_table_df[["o_zone_id", "d_zone_id",
+                                                            "dist_km", "geometry"]]
+            zone_od_dist_table_df.to_csv(path_output, index=False)
+            print(f"  : Successfully saved zone_od_dist_table.csv to {self.output_dir}")
+        return None
 
     # @property
     def save_zone_od_dist_matrix(self, overwrite_file: bool = True) -> None:
-
-        if not hasattr(self, "zone_od_dist_matrix"):
-            print("  : zone_od_dist_matrix does not exist. Please run calc_zone_od_distance_matrix() first.")
-            return
 
         if overwrite_file:
             path_output = path2linux(os.path.join(self.output_dir, "zone_od_dist_matrix.csv"))
         else:
             path_output = generate_unique_filename(path2linux(os.path.join(self.output_dir, "zone_od_dist_matrix.csv")))
 
-        zone_od_dist_table_df = pd.DataFrame(self.zone_od_dist_matrix.values())
-        zone_od_dist_table_df = zone_od_dist_table_df[
-            ["o_zone_id", "o_zone_name", "d_zone_id", "d_zone_name", "dist_km", "geometry"]]
+        # check if zone_od_dist_matrix exists
+        if not hasattr(self, "zone_od_dist_matrix"):
+            print(
+                "  : zone_od_dist_matrix does not exist. Please run calc_zone_od_distance_matrix() first.")
+        else:
+            zone_od_dist_table_df = pd.DataFrame(self.zone_od_dist_matrix.values())
+            zone_od_dist_table_df = zone_od_dist_table_df[["o_zone_id", "o_zone_name", "d_zone_id",
+                                                            "d_zone_name", "dist_km", "geometry"]]
 
-        zone_od_dist_matrix_df = zone_od_dist_table_df.pivot(index='o_zone_name',
-                                                             columns='d_zone_name',
-                                                             values='dist_km')
+            zone_od_dist_matrix_df = zone_od_dist_table_df.pivot(index='o_zone_name',
+                                                                    columns='d_zone_name',
+                                                                    values='dist_km')
 
-        zone_od_dist_matrix_df.to_csv(path_output)
-        print(f"  : Successfully saved zone_od_dist_matrix.csv to {self.output_dir}")
-
-    # @property
-    # def save_node_within_zone(self):
-    #     if not hasattr(self, "node_dict_within_zone"):
-    #         print("Error: node_dict_within_zone does not exist. Please run net2zone() first.")
-    #         return
-    #     path_output = generate_unique_filename(path2linux(os.path.join(self.output_dir, "node_within_zone.csv")))
-    #     node_within_zone_df = pd.DataFrame(self.node_dict_within_zone.values())
-    #     node_within_zone_df.to_csv(path_output, index=False)
-    #     print(f"  : Successfully saved node_within_zone.csv to {self.output_dir}")
+            zone_od_dist_matrix_df.to_csv(path_output)
+            print(f"  : Successfully saved zone_od_dist_matrix.csv to {self.output_dir}")
+        return None

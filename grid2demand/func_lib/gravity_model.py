@@ -7,7 +7,6 @@
 
 import numpy as np
 from grid2demand.utils_lib.pkg_settings import pkg_settings
-import pandas as pd
 
 
 def calc_zone_production_attraction(node_dict: dict, zone_dict: dict, verbose: bool = False) -> dict:

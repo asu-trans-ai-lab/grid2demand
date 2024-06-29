@@ -19,7 +19,7 @@ except ImportError:
 if __name__ == "__main__":
 
     # Step 0: Specify input directory
-    input_dir = "./datasets/dubai"
+    input_dir = "./datasets/Avondale_AZ"
 
     # Initialize a GRID2DEMAND object
     net = gd.GRID2DEMAND(input_dir, use_zone_id=True)
@@ -29,10 +29,10 @@ if __name__ == "__main__":
 
     # Step 2: Generate zone dictionary from node dictionary
     #   by specifying number of x blocks and y blocks
-    zone_dict = net.net2zone(num_x_blocks=10, num_y_blocks=10)
+    zone_dict = net.taz2zone()
 
     # Step 3: Run gravity model to generate agent-based demand
     net.run_gravity_model()
 
     # Step 4: Output demand, agent, zone, zone_od_dist_table, zone_od_dist_matrix files
-    net.save_results_to_csv(output_dir="", demand=True, zone=True)
+    net.save_results_to_csv()

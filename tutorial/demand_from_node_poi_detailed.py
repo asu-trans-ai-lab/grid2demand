@@ -23,13 +23,13 @@ if __name__ == "__main__":
     input_dir = "./datasets/dubai"
 
     # Initialize a GRID2DEMAND object
-    net = gd.GRID2DEMAND()
+    net = gd.GRID2DEMAND(input_dir=input_dir)
 
     # NOTE: You can also view and edit the package setting by using gd.pkg_settings
     print(net.pkg_settings)
 
     # Step 1: Load node and poi data from input directory
-    net.load_network(input_dir=input_dir)
+    net.load_network()
 
     # NOTE: you can view loaded node and poi data by using the following attributes
     # net.node_dict
@@ -76,4 +76,4 @@ if __name__ == "__main__":
     net.gen_agent_based_demand()
 
     # Step 9: Output demand, agent, zone, zone_od_dist_table, zone_od_dist_matrix files
-    net.save_results_to_csv(output_dir="./")
+    net.save_results_to_csv()

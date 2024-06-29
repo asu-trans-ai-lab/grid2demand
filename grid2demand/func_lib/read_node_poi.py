@@ -38,12 +38,6 @@ def _create_node_from_dataframe(df_node: pd.DataFrame) -> dict[int, Node]:
             # check activity location tab
             activity_type = df_node.loc[i, 'activity_type']
             is_boundary = df_node.loc[i, 'is_boundary']
-            if activity_type in ["residential", "poi"]:
-                activity_location_tab = activity_type
-            elif is_boundary == 1:
-                activity_location_tab = "boundary"
-            else:
-                activity_location_tab = ''
 
             # check whether zone_id field in node.csv or not
             # if zone_id field exists and is not empty, assign it to __zone_id
@@ -60,7 +54,6 @@ def _create_node_from_dataframe(df_node: pd.DataFrame) -> dict[int, Node]:
             node = Node(
                 id=df_node.loc[i, 'node_id'],
                 activity_type=activity_type,
-                activity_location_tab=activity_location_tab,
                 ctrl_type=df_node.loc[i, 'ctrl_type'],
                 x_coord=df_node.loc[i, 'x_coord'],
                 y_coord=df_node.loc[i, 'y_coord'],
@@ -98,8 +91,10 @@ def _create_poi_from_dataframe(df_poi: pd.DataFrame) -> dict[int, POI]:
                 id=df_poi.loc[i, 'poi_id'],
                 x_coord=centroid.x,
                 y_coord=centroid.y,
-                area=[area, area * 10.7639104],  # square meter and square feet
-                poi_type=df_poi.loc[i, 'building'] or "",
+                area=area,  # square feet: area * 10.7639104
+                building=df_poi.loc[i, 'building'] or "",
+                amenity=df_poi.loc[i, 'amenity'] or "",
+                centroid=df_poi.loc[i, 'centroid'],
                 geometry=df_poi.loc[i, "geometry"]
             )
             poi_dict[df_poi.loc[i, 'poi_id']] = poi
@@ -127,13 +122,13 @@ def _create_zone_from_dataframe_by_geometry(df_zone: pd.DataFrame) -> dict[int, 
 
             zone_geometry_shapely = shapely.from_wkt(zone_geometry)
             centroid_wkt = zone_geometry_shapely.centroid.wkt
-            centroid_x = zone_geometry_shapely.centroid.x
-            centroid_y = zone_geometry_shapely.centroid.y
+            x_coord = zone_geometry_shapely.centroid.x
+            y_coord = zone_geometry_shapely.centroid.y
             zone = Zone(
                 id=zone_id,
                 name=zone_id,
-                centroid_x=centroid_x,
-                centroid_y=centroid_y,
+                x_coord=x_coord,
+                y_coord=y_coord,
                 centroid=centroid_wkt,
                 x_max=zone_geometry_shapely.bounds[2],
                 x_min=zone_geometry_shapely.bounds[0],
@@ -169,17 +164,17 @@ def _create_zone_from_dataframe_by_centroid(df_zone: pd.DataFrame) -> dict[int, 
     for i in range(len(df_zone)):
         try:
             zone_id = df_zone.loc[i, 'zone_id']
-            centroid_x = df_zone.loc[i, 'x_coord']
-            centroid_y = df_zone.loc[i, 'y_coord']
+            x_coord = df_zone.loc[i, 'x_coord']
+            y_coord = df_zone.loc[i, 'y_coord']
 
-            zone_centroid_shapely = shapely.Point(centroid_x, centroid_y)
+            zone_centroid_shapely = shapely.Point(x_coord, y_coord)
             centroid_wkt = zone_centroid_shapely.wkt
 
             zone = Zone(
                 id=zone_id,
                 name=zone_id,
-                centroid_x=centroid_x,
-                centroid_y=centroid_y,
+                x_coord=x_coord,
+                y_coord=y_coord,
                 centroid=centroid_wkt,
                 node_id_list=[],
                 poi_id_list=[],

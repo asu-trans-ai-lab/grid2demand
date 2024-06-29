@@ -62,12 +62,10 @@ import grid2demand as gd
 if __name__ == "__main__":
 
     # Specify input directory
-    path_node = "your-path-to-node.csv"
-    path_poi = "your-path-to-poi.csv"
-    path_zone = "your-path-to-zone.csv"  # zone_id, geometry are required columns
+    input_dir = "your-data-folder"
 
     # Initialize a GRID2DEMAND object
-    net = gd.GRID2DEMAND(zone_file = path_zone, node_file = path_node, poi_file = path_poi)
+    net = gd.GRID2DEMAND(input_dir=input_dir)
 
     # load network: node and poi
     net.load_network()
@@ -91,12 +89,10 @@ import grid2demand as gd
 if __name__ == "__main__":
 
     # Specify input directory
-    path_node = "your-path-to-node.csv"
-    path_poi = "your-path-to-poi.csv"
-    path_zone = "your-path-to-zone.csv"  # zone_id, x_coord, y_coord are required columns
+    input_dir = "your-data-folder"
 
     # Initialize a GRID2DEMAND object
-    net = gd.GRID2DEMAND(zone_file = path_zone, node_file = path_node, poi_file = path_poi)
+    net = gd.GRID2DEMAND(input_dir=input_dir)
 
     # load network: node and poi
     net.load_network()
@@ -120,21 +116,21 @@ import grid2demand as gd
 if __name__ == "__main__":
 
     # Specify input directory
-    path_node = "your-path-to-node.csv"  # make sure you have zone_id field in node.csv
-    path_poi = "your-path-to-poi.csv"
+    input_dir = "your-data-folder"
+    # make sure you have zone_id field in node.csv
 
     # Initialize a GRID2DEMAND object
-    net = gd.GRID2DEMAND(node_file = path_node, poi_file = path_poi, use_zone_id=True)
+    net = gd.GRID2DEMAND(input_dir=input_dir, use_zone_id=True)
 
     # load network: node and poi
     net.load_network()
 
     # Generate zone dictionary from node dictionary by specifying number of x blocks and y blocks
     net.net2zone(num_x_blocks=10, num_y_blocks=10)
-    # net.net2zone(cell_width=10, cell_height=10, unit="km")
+    # net.taz2zone()
 
     # Calculate demand by running gravity model
-    net.run_gravity_model(zone_prod_attr, zone_od_distance_matrix)
+    net.run_gravity_model()
 
     # Save demand, zone, updated node, updated poi to csv
     net.save_results_to_csv(overwrite_file=True)
@@ -161,6 +157,5 @@ For more information about the ways you can contribute to grid2demand, visit [ou
 ## Citing grid2demand
 
 If you use grid2demand in your research please use the following BibTeX entry:
-
 
 Xiangyong Luo, Dustin Carlino, and Xuesong Simon Zhou. (2023). [xyluo25/grid2demand](https://github.com/xyluo25/grid2demand/): Zenodo. https://doi.org/10.5281/zenodo.11212556

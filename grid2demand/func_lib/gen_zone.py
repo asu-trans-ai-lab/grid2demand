@@ -23,6 +23,7 @@ from pyufunc import (calc_distance_on_unit_sphere,
                      func_running_time,
                      find_closest_point)
 from tqdm import tqdm
+from tqdm.contrib.concurrent import process_map
 import copy
 
 
@@ -55,7 +56,7 @@ def _get_lng_lat_min_max(node_dict: dict[int, Node]) -> list:
     return [coord_x_min - 0.000001, coord_x_max + 0.000001, coord_y_min - 0.000001, coord_y_max + 0.000001]
 
 
-def _sync_node_with_zones(args: tuple) -> tuple:
+def _sync_node_with_zones_geometry(args: tuple) -> tuple:
     node_id, node, zone_dict = args
     for zone_name in zone_dict:
         if isinstance(node.geometry, str):
@@ -72,7 +73,7 @@ def _sync_node_with_zones(args: tuple) -> tuple:
     return node_id, node, None
 
 
-def _sync_poi_with_zones(args: tuple) -> tuple:
+def _sync_poi_with_zones_geometry(args: tuple) -> tuple:
     poi_id, poi, zone_dict = args
     for zone_name in zone_dict:
         if isinstance(poi.geometry, str):
@@ -87,6 +88,14 @@ def _sync_poi_with_zones(args: tuple) -> tuple:
             return poi_id, poi, zone_name
 
     return poi_id, poi, None
+
+
+def _sync_node_with_zones_centroid(args: tuple) -> tuple:
+    pass
+
+
+def _sync_poi_with_zones_centroid(args: tuple) -> tuple:
+    pass
 
 
 def _distance_calculation(args: tuple) -> tuple:
@@ -145,7 +154,7 @@ def net2zone(node_dict: dict[int, Node],
     Examples:
         >>> zone_dict = net2zone(node_dict, num_x_blocks=10, num_y_blocks=10)
         >>> zone_dict['A1']
-        Zone(id=0, name='A1', centroid_x=0.05, centroid_y=0.95, centroid='POINT (0.05 0.95)', x_min=0.0, x_max=0.1,
+        Zone(id=0, name='A1', x_coord=0.05, y_coord=0.95, centroid='POINT (0.05 0.95)', x_min=0.0, x_max=0.1,
         y_min=0.9, y_max=1.0, geometry='POLYGON ((0.05 0.9, 0.1 0.9, 0.1 1, 0.05 1, 0.05 0.9))')
 
     """
@@ -261,8 +270,8 @@ def net2zone(node_dict: dict[int, Node],
             zone_dict[f"{row_alpha}{i}"] = Zone(
                 id=zone_id_flag,
                 name=f"{row_alpha}{i}",
-                centroid_x=cell_polygon.centroid.x,
-                centroid_y=cell_polygon.centroid.y,
+                x_coord=cell_polygon.centroid.x,
+                y_coord=cell_polygon.centroid.y,
                 centroid=cell_polygon.centroid,
                 x_min=x_min,
                 x_max=x_max,
@@ -286,25 +295,25 @@ def net2zone(node_dict: dict[int, Node],
             zone_id_flag += 1
 
     # generate outside boundary centroids
-    upper_points = [shapely.geometry.Point(zone_dict[zone_name].centroid_x,
-                                           zone_dict[zone_name].centroid_y + y_block_height
+    upper_points = [shapely.geometry.Point(zone_dict[zone_name].x_coord,
+                                           zone_dict[zone_name].y_coord + y_block_height
                                            ) for zone_name in zone_upper_row]
-    lower_points = [shapely.geometry.Point(zone_dict[zone_name].centroid_x,
-                                           zone_dict[zone_name].centroid_y - y_block_height
+    lower_points = [shapely.geometry.Point(zone_dict[zone_name].x_coord,
+                                           zone_dict[zone_name].y_coord - y_block_height
                                            ) for zone_name in zone_lower_row]
-    left_points = [shapely.geometry.Point(zone_dict[zone_name].centroid_x - x_block_width,
-                                          zone_dict[zone_name].centroid_y
+    left_points = [shapely.geometry.Point(zone_dict[zone_name].x_coord - x_block_width,
+                                          zone_dict[zone_name].y_coord
                                           ) for zone_name in zone_left_col]
-    right_points = [shapely.geometry.Point(zone_dict[zone_name].centroid_x + x_block_width,
-                                           zone_dict[zone_name].centroid_y
+    right_points = [shapely.geometry.Point(zone_dict[zone_name].x_coord + x_block_width,
+                                           zone_dict[zone_name].y_coord
                                            ) for zone_name in zone_right_col]
     points_lst = upper_points + lower_points + left_points + right_points
     for i in range(len(points_lst)):
         zone_dict[f"gate{i}"] = Zone(
             id=zone_id_flag,
             name=f"gate{i}",
-            centroid_x=points_lst[i].x,
-            centroid_y=points_lst[i].y,
+            x_coord=points_lst[i].x,
+            y_coord=points_lst[i].y,
             centroid=points_lst[i],
             geometry=points_lst[i]
         )
@@ -342,7 +351,8 @@ def sync_zone_geometry_and_node(zone_dict: dict, node_dict: dict, cpu_cores: int
                  for node_id, node in node_cp.items()]
 
     with Pool(processes=cpu_cores) as pool:
-        results = pool.map(_sync_node_with_zones, args_list)
+        results = pool.map(_sync_node_with_zones_geometry, args_list)
+    # results = process_map(_sync_node_with_zones_geometry, args_list)
 
     # Gather results
     for node_id, node, zone_name in results:
@@ -379,13 +389,13 @@ def sync_zone_centroid_and_node(zone_dict: dict, node_dict: dict, verbose: bool 
 
     zone_point_id = {
         shapely.geometry.Point(
-            zone_cp[zone_id].centroid_x, zone_cp[zone_id].centroid_y
+            zone_cp[zone_id].x_coord, zone_cp[zone_id].y_coord
         ): zone_id
         for zone_id in zone_cp
     }
 
     multipoint_zone = shapely.geometry.MultiPoint(
-        [shapely.geometry.Point(zone_cp[i].centroid_x, zone_cp[i].centroid_y) for i in zone_cp])
+        [shapely.geometry.Point(zone_cp[i].x_coord, zone_cp[i].y_coord) for i in zone_cp])
 
     flag = 0
 
@@ -430,7 +440,9 @@ def sync_zone_geometry_and_poi(zone_dict: dict, poi_dict: dict, cpu_cores: int =
 
     with Pool(processes=cpu_cores) as pool:
         # Distribute work to the pool
-        results = pool.map(_sync_poi_with_zones, args_list)
+        results = pool.map(_sync_poi_with_zones_geometry, args_list)
+
+    # results = process_map(_sync_poi_with_zones_geometry, args_list)
 
     # Gather results
     for poi_id, poi, zone_name in results:
@@ -460,13 +472,13 @@ def sync_zone_centroid_and_poi(zone_dict: dict, poi_dict: dict, verbose: bool = 
 
     zone_point_id = {
         shapely.geometry.Point(
-            zone_cp[zone_id].centroid_x, zone_cp[zone_id].centroid_y
+            zone_cp[zone_id].x_coord, zone_cp[zone_id].y_coord
         ): zone_id
         for zone_id in zone_cp
     }
 
     multipoint_zone = shapely.geometry.MultiPoint(
-        [shapely.geometry.Point(zone_cp[i].centroid_x, zone_cp[i].centroid_y) for i in zone_cp])
+        [shapely.geometry.Point(zone_cp[i].x_coord, zone_cp[i].y_coord) for i in zone_cp])
 
     for poi_id, poi in tqdm(poi_cp.items()):
         poi_point = shapely.geometry.Point(poi.x_coord, poi.y_coord)
