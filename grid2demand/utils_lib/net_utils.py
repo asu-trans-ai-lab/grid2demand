@@ -35,7 +35,7 @@ class Node:
     attraction: float = 0
     is_boundary: int = 0
     ctrl_type: int = -1
-    zone_id: int = -1
+    zone_id: int | None = None
     poi_id: int = -1
     activity_type: str = ''
     geometry: str = ''

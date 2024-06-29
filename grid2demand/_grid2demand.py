@@ -926,16 +926,16 @@ class GRID2DEMAND:
             print("  : Could not save demand file: df_demand does not exist. Please run run_gravity_model() first.")
         else:
 
-            df_demand_non_zero = self.df_demand[self.df_demand["volume"] > 0]
+            # df_demand_non_zero = self.df_demand[self.df_demand["volume"] > 0]
 
             if is_demand_with_geometry:
                 col_name = ["o_zone_id", "d_zone_id", "dist_km", "volume", "geometry"]
             else:
                 col_name = ["o_zone_id", "d_zone_id", "dist_km", "volume"]
 
-            df_demand_non_zero = df_demand_non_zero[col_name]
+            df_demand_res = self.df_demand[col_name]
 
-            df_demand_non_zero.to_csv(path_output, index=False)
+            df_demand_res.to_csv(path_output, index=False)
             print(f"  : Successfully saved demand.csv to {self.output_dir}")
         return None
 
