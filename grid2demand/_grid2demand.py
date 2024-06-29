@@ -434,19 +434,18 @@ class GRID2DEMAND:
         if self.verbose:
             print("  : Generating zone dictionary...")
 
-        # generate zone by geometry: zone_id, geometry
-        if self.is_geometry:
-            self.zone_dict = read_zone_by_geometry(self.zone_file, self.pkg_settings.get("set_cpu_cores"))
-            self.__pair_zone_id_name = {
-                Zone.id: Zone.name for Zone in self.zone_dict.values()}
-
         # generate zone by centroid: zone_id, x_coord, y_coord
-        elif self.is_centroid:
+        if self.is_centroid:
             self.zone_dict = read_zone_by_centroid(
                 self.zone_file, self.pkg_settings.get("set_cpu_cores"))
             self.__pair_zone_id_name = {
                 Zone.id: Zone.name for Zone in self.zone_dict.values()}
 
+        # generate zone by geometry: zone_id, geometry
+        elif self.is_geometry:
+            self.zone_dict = read_zone_by_geometry(self.zone_file, self.pkg_settings.get("set_cpu_cores"))
+            self.__pair_zone_id_name = {
+                Zone.id: Zone.name for Zone in self.zone_dict.values()}
         else:
             print(f"Error: {self.zone_file} does not contain valid zone fields.")
             return {}

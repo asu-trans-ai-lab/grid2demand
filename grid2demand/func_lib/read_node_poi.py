@@ -167,6 +167,12 @@ def _create_zone_from_dataframe_by_centroid(df_zone: pd.DataFrame) -> dict[int, 
             x_coord = df_zone.loc[i, 'x_coord']
             y_coord = df_zone.loc[i, 'y_coord']
 
+            # load zone geometry
+            try:
+                zone_geometry = df_zone.loc[i, 'geometry']
+            except Exception:
+                zone_geometry = ""
+
             zone_centroid_shapely = shapely.Point(x_coord, y_coord)
             centroid_wkt = zone_centroid_shapely.wkt
 
@@ -182,6 +188,7 @@ def _create_zone_from_dataframe_by_centroid(df_zone: pd.DataFrame) -> dict[int, 
                 attraction=0,
                 production_fixed=0,
                 attraction_fixed=0,
+                geometry=zone_geometry
             )
 
             zone_dict[zone_id] = zone
