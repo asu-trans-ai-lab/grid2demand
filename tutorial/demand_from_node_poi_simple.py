@@ -27,7 +27,7 @@ if __name__ == "__main__":
     # Step 1: Load node and poi data from input directory
     net.load_network()
 
-    # Step 2: Generate zone dictionary from node dictionary
+    # Step 2: Generate zone from node
     net.net2zone(num_x_blocks=10, num_y_blocks=10)
 
     # Step 3: Run gravity model to generate agent-based demand
