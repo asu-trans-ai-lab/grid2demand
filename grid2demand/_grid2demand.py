@@ -538,36 +538,6 @@ class GRID2DEMAND:
                     print("Could not synchronize zone with poi.\n")
                     print(f"The error occurred: {e}")
 
-        # # if not specified, use self.zone_dict, self.node_dict, self.poi_dict as input
-        # if not all([zone_dict, node_dict, poi_dict]):
-        #     zone_dict = self.zone_dict
-        #     node_dict = self.node_dict
-        #     poi_dict = self.poi_dict
-
-        # # synchronize zone with node
-        # try:
-        #     zone_node_dict = sync_zone_geometry_and_node(zone_dict, node_dict, self.pkg_settings.get("set_cpu_cores"), verbose=self.verbose)
-        #     zone_dict_add_node = zone_node_dict.get('zone_dict')
-        #     self.node_dict = zone_node_dict.get('node_dict')
-        # except Exception as e:
-        #     raise Exception(
-        #         f"Error in running {self.sync_geometry_between_zone_and_node_poi.__name__}: \
-        #           not valid zone_dict or node_dict"
-        #     ) from e
-
-        # # synchronize zone with poi
-        # try:
-        #     zone_poi_dict = sync_zone_geometry_and_poi(zone_dict_add_node,
-        #                                                poi_dict,
-        #                                                self.pkg_settings.get("set_cpu_cores"))
-        #     self.zone_dict = zone_poi_dict.get('zone_dict')
-        #     self.poi_dict = zone_poi_dict.get('poi_dict')
-        # except Exception as e:
-        #     raise Exception(
-        #         f"Error in running {self.sync_geometry_between_zone_and_node_poi.__name__}: \
-        #           not valid zone_dict or poi_dict"
-        #     ) from e
-
         self.is_sync_geometry = True
         return {"zone_dict": self.zone_dict,
                 "node_dict": self.node_dict,
@@ -989,11 +959,11 @@ class GRID2DEMAND:
         node_df = pd.DataFrame(self.node_dict.values())
 
         # update node data if centroid is used, ignore zone_id if original zone_id is empty
-        if self.is_centroid:
-            for i in range(len(node_df)):
-                original_zone_id = node_df.loc[i, "_zone_id"]
-                if original_zone_id == -1:
-                    node_df.loc[i, "zone_id"] = None
+        # if self.is_centroid:
+        #     for i in range(len(node_df)):
+        #         original_zone_id = node_df.loc[i, "_zone_id"]
+        #         if original_zone_id == -1:
+        #             node_df.loc[i, "zone_id"] = None
 
         if self.use_zone_id:
             node_df["zone_id"] = ""

@@ -80,7 +80,7 @@ def run_gravity_model(zone_dict: dict,
                                                                   zone_dict[zone_name_pair[1]].attraction *
                                                                   zone_od_friction_matrix_dict[zone_name_pair] /
                                                                   zone_od_friction_attraction_dict[zone_name_pair[0]])
-        except ZeroDivisionError:
+        except Exception:
             zone_od_dist_matrix[zone_name_pair]["volume"] = 0
 
     # Generate demand.csv

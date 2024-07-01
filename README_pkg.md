@@ -107,7 +107,7 @@ if __name__ == "__main__":
     net.save_results_to_csv(overwrite_file=True)
 ```
 
-# Generate Demand with node.csv (if zone_id field exist, generated zone boundary cover zone_id that are not empty) and poi.csv
+# Generate Demand with node.csv and poi.csv: if zone_id field exist in node.csv, generated zone.csv from node.csv)
 
 ```python
 from __future__ import absolute_import

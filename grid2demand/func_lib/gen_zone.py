@@ -485,10 +485,10 @@ def sync_zone_centroid_and_poi(zone_dict: dict, poi_dict: dict, verbose: bool = 
         closest_zone_point = find_closest_point(poi_point, multipoint_zone)[0]
         zone_id = zone_point_id[closest_zone_point]
         poi.zone_id = zone_id
-        zone_cp[zone_id].node_id_list.append(poi_id)
+        zone_cp[zone_id].poi_id_list.append(poi_id)
 
     if verbose:
-        print("  : Successfully synchronized zone and node geometry")
+        print("  : Successfully synchronized zone and poi geometry")
 
     return {"zone_dict": zone_cp, "poi_dict": poi_cp}
 

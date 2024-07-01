@@ -23,7 +23,7 @@ if __name__ == "__main__":
     input_dir = r"C:\Users\xyluo25\anaconda3_workspace\001_GitHub\grid2demand\datasets\Sioux_Falls"
 
     # Initialize a GRID2DEMAND object
-    net = gd.GRID2DEMAND(input_dir=input_dir)
+    net = gd.GRID2DEMAND(input_dir=input_dir, verbose=True)
 
     # Step 1: Load node and poi data from input directory
     net.load_network()
