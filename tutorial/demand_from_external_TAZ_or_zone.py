@@ -19,11 +19,10 @@ except ImportError:
 if __name__ == "__main__":
 
     # Step 0: Specify input directory
-    # input_dir = "./datasets/DC_Downtown"
-    input_dir = r"C:\Users\xyluo25\anaconda3_workspace\001_GitHub\grid2demand\datasets\Sioux_Falls"
+    input_dir = r"datasets\demand_from_TAZ_centroid\Tuscon_zone"
 
     # Initialize a GRID2DEMAND object
-    net = gd.GRID2DEMAND(input_dir=input_dir, verbose=True)
+    net = gd.GRID2DEMAND(input_dir=input_dir, verbose=False)
 
     # Step 1: Load node and poi data from input directory
     net.load_network()

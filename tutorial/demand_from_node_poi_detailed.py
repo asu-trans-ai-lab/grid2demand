@@ -20,7 +20,7 @@ except ImportError:
 if __name__ == "__main__":
 
     # Step 0: Specify input directory
-    input_dir = "./datasets/dubai"
+    input_dir = r"datasets\demand_from_grid\dubai"
 
     # Initialize a GRID2DEMAND object
     net = gd.GRID2DEMAND(input_dir=input_dir)
@@ -38,8 +38,6 @@ if __name__ == "__main__":
     # Step 2: Generate zone
     #   by specifying number of x blocks and y blocks
     net.net2zone(num_x_blocks=10, num_y_blocks=10)
-
-    # or
     # net.net2zone(net.node_dict, num_x_blocks=10, num_y_blocks=10)
 
     # or generate zone based on grid size with 10 km width and 10 km height for each zone
