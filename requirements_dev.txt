@@ -1,6 +1,4 @@
-numpy>=1.26.4
-osm2gmns>=0.7.5
-pandas>=2.2.1
+pandas>=2.2.0
 pytest>=8.0.2
 pyufunc>=0.2.1
 setuptools>=68.2.2
