@@ -74,4 +74,4 @@ if __name__ == "__main__":
     net.gen_agent_based_demand()
 
     # Step 9: Output demand, agent, zone, zone_od_dist_table, zone_od_dist_matrix files
-    net.save_results_to_csv()
+    net.save_results_to_csv(node=False, poi=False)
