@@ -1,4 +1,4 @@
-pandas>=2.2.1
+pandas>=2.0.0
 pyufunc>=0.2.1
-Shapely>=2.0.3
+Shapely>=2.0.0
 tqdm
