@@ -258,6 +258,9 @@ class GRID2DEMAND:
             dict[str, dict]: network_dict {node_dict: dict[int, Node], poi_dict: dict[int, POI]}
         """
 
+        if self.verbose:
+            print("  :Loading network data...")
+
         # update input_dir, node_file, poi_file if specified
         if input_dir:
             self.input_dir = path2linux(input_dir)
@@ -898,6 +901,25 @@ class GRID2DEMAND:
             node_df = pd.concat([node_df, node_is_zone_df], ignore_index=True)
 
         node_df.rename(columns={"id": "node_id"}, inplace=True)
+
+        # July 8, 2024
+        # requirement from Dr. Zhou
+        # if activity in "residential", "boundary", keep zone id
+        # for other activities nodes, set not showing zone id
+
+        # if not activity_pype, select one node as zone node, and remove duplicate zone id
+
+#         activity_type_list = node_df["activity_type"].unique().tolist()
+#
+#         if "boundary" in activity_type_list or "residential" in activity_type_list:
+#             for i in range(len(node_df)):
+#                 if node_df.loc[i, "activity_type"] not in ["boundary", "residential"]:
+#                     node_df.loc[i, "zone_id"] = None
+#         else:
+#
+#             # find unique zone id in the node dataframe
+        node_df.loc[node_df["zone_id"].duplicated(), "zone_id"] = None
+
         node_df.to_csv(path_output, index=False)
         print(f"  : Successfully saved updated node to node.csv to {self.output_dir}")
         return None

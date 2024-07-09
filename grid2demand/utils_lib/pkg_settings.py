@@ -19,7 +19,7 @@ pkg_settings = {
     "zone_centroid_fields": ["zone_id", "x_coord", "y_coord"],
 
     # if input data is too large, you can split the input data into chunks and process them separately
-    "data_chunk_size": 10000,
+    "data_chunk_size": 1000,
 
     # run the program in parallel mode, if cpu_cores > 1
     "set_cpu_cores": os.cpu_count(),
