@@ -8,9 +8,13 @@ Grid2demand is an open-source quick demand generation tool based on the trip gen
 
 You can get access to the introduction video with the link: [https://www.youtube.com/watch?v=EfjCERQQGTs&amp;t=1021s](https://www.youtube.com/watch?v=EfjCERQQGTs&t=1021s)
 
+You can find base-knowledge tutorial with the link: [Base Knowledge such as transportation 4 stages planning](https://github.com/asu-trans-ai-lab/grid2demand/tree/main/docs)
+
+You can find the tutorial code witht the link: [How To Use Grid2demand](https://github.com/asu-trans-ai-lab/grid2demand/tree/main/tutorial)
+
 ## Quick Start
 
-Users can refer to the [code template and test data set](https://github.com/asu-trans-ai-lab/grid2demand) to have a quick start.
+Users can refer to the [code template and test data set](https://github.com/xyluo25/grid2demand/tree/main) to have a quick start.
 
 ## Installation
 
@@ -18,9 +22,9 @@ Users can refer to the [code template and test data set](https://github.com/asu-
 pip install grid2demand
 ```
 
-If you meet installation issues, please refer to the [user guide](https://github.com/asu-trans-ai-lab/grid2demand) for solutions.
+If you meet installation issues, please reach out to our [developers](mainto:luoxiangyong01@gmail.com) for solutions.
 
-## Simple Example
+## Demand Generation
 
 ### Generate Demand with node.csv and poi.csv
 
@@ -53,7 +57,7 @@ if __name__ == "__main__":
     net.save_results_to_csv()
 ```
 
-# Generate Demand with node.csv, poi.csv and zone.csv (geometry filed in zone.csv)
+# Generate Demand with node.csv, poi.csv and zone.csv (zone_id, geometry or x_coord, y_coord fields in zone.csv)
 
 ```python
 from __future__ import absolute_import
@@ -80,34 +84,7 @@ if __name__ == "__main__":
     net.save_results_to_csv(overwrite_file=True)
 ```
 
-# Generate Demand with node.csv, poi.csv and zone.csv (x_coord, y_coord fields represent zone centroids)
-
-```python
-from __future__ import absolute_import
-import grid2demand as gd
-
-if __name__ == "__main__":
-
-    # Specify input directory
-    input_dir = "your-data-folder"
-
-    # Initialize a GRID2DEMAND object
-    net = gd.GRID2DEMAND(input_dir=input_dir)
-
-    # load network: node and poi
-    net.load_network()
-
-    # Generate zone
-    net.taz2zone()
-
-    # Calculate demand by running gravity model
-    net.run_gravity_model()
-
-    # Save demand, zone, updated node, updated poi to csv
-    net.save_results_to_csv(overwrite_file=True)
-```
-
-# Generate Demand with node.csv and poi.csv: if zone_id field exist in node.csv, generated zone.csv from node.csv)
+# # Generate Demand with node.csv and poi.csv (zone_id exist in node.csv)
 
 ```python
 from __future__ import absolute_import
@@ -154,7 +131,7 @@ Writing code isn't the only way to contribute to grid2demand. You can also:
 
 For more information about the ways you can contribute to grid2demand, visit [our GitHub](https://github.com/asu-trans-ai-lab/grid2demand). If you' re unsure where to start or how your skills fit in, reach out! You can ask by opening a new issue or leaving a comment on a relevant issue that is already open on GitHub.
 
-## Citing grid2demand
+## Citing Grid2demand
 
 If you use grid2demand in your research please use the following BibTeX entry:
 
