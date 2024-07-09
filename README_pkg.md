@@ -22,7 +22,7 @@ Users can refer to the [code template and test data set](https://github.com/xylu
 pip install grid2demand
 ```
 
-If you meet installation issues, please reach out to our [developers](mainto:luoxiangyong01@gmail.com) for solutions.
+If you meet installation issues, please reach out to our [developers](mailto:luoxiangyong01@gmail.com) for solutions.
 
 ## Demand Generation
 
