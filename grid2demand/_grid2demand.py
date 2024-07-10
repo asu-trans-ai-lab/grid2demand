@@ -905,23 +905,21 @@ class GRID2DEMAND:
 
         node_df.rename(columns={"id": "node_id"}, inplace=True)
 
-        # July 8, 2024
-        # requirement from Dr. Zhou
-        # if activity in "residential", "boundary", keep zone id
-        # for other activities nodes, set not showing zone id
+        if self.pkg_settings["node_export_activity"]:
 
-        # if not activity_pype, select one node as zone node, and remove duplicate zone id
+            # if activity in "residential", "boundary", keep zone id
+            # for other activities nodes, set not showing zone id
+            # if not activity_type, select one node as zone node, and remove duplicate zone id
 
-        activity_type_list = node_df["activity_type"].unique().tolist()
+            activity_type_list = node_df["activity_type"].unique().tolist()
 
-        if "boundary" in activity_type_list or "residential" in activity_type_list:
-            for i in range(len(node_df)):
-                if node_df.loc[i, "activity_type"] not in ["boundary", "residential"]:
-                    node_df.loc[i, "zone_id"] = None
-        else:
-
-            # find unique zone id in the node dataframe
-            node_df.loc[node_df["zone_id"].duplicated(), "zone_id"] = None
+            if "boundary" in activity_type_list or "residential" in activity_type_list:
+                for i in range(len(node_df)):
+                    if node_df.loc[i, "activity_type"] not in ["boundary", "residential"]:
+                        node_df.loc[i, "zone_id"] = None
+            else:
+                # find unique zone id in the node dataframe
+                node_df.loc[node_df["zone_id"].duplicated(), "zone_id"] = None
 
         # at zone_id as int type
         node_df["zone_id"] = node_df["zone_id"].astype(int)
