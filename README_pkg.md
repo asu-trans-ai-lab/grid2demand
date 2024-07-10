@@ -29,7 +29,6 @@ If you meet installation issues, please reach out to our [developers](mailto:luo
 [!IMPORTANT]
 node.csv and poi.csv should follow the [GMNS](https://github.com/zephyr-data-specs/GMNS) standard and you can generate node.csv and poi.csv using [osm2gmns](https://osm2gmns.readthedocs.io/en/latest/quick-start.html).
 
-
 ### Generate Demand with node.csv and poi.csv
 
 1. Create zone from node.csv (the boundary of nodes), this will generate grid cells (num_x_blocks, num_y_blocks, or x length and y length in km for each grid cell)
