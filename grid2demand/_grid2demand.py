@@ -832,6 +832,9 @@ class GRID2DEMAND:
 
             df_demand_res = self.df_demand[col_name]
 
+            # fill name with 0
+            df_demand_res.fillna(0, inplace=True)
+
             df_demand_res.to_csv(path_output, index=False)
             print(f"  : Successfully saved demand.csv to {self.output_dir}")
         return None
@@ -909,16 +912,19 @@ class GRID2DEMAND:
 
         # if not activity_pype, select one node as zone node, and remove duplicate zone id
 
-#         activity_type_list = node_df["activity_type"].unique().tolist()
-#
-#         if "boundary" in activity_type_list or "residential" in activity_type_list:
-#             for i in range(len(node_df)):
-#                 if node_df.loc[i, "activity_type"] not in ["boundary", "residential"]:
-#                     node_df.loc[i, "zone_id"] = None
-#         else:
-#
-#             # find unique zone id in the node dataframe
-        node_df.loc[node_df["zone_id"].duplicated(), "zone_id"] = None
+        activity_type_list = node_df["activity_type"].unique().tolist()
+
+        if "boundary" in activity_type_list or "residential" in activity_type_list:
+            for i in range(len(node_df)):
+                if node_df.loc[i, "activity_type"] not in ["boundary", "residential"]:
+                    node_df.loc[i, "zone_id"] = None
+        else:
+
+            # find unique zone id in the node dataframe
+            node_df.loc[node_df["zone_id"].duplicated(), "zone_id"] = None
+
+        # at zone_id as int type
+        node_df["zone_id"] = node_df["zone_id"].astype(int)
 
         node_df.to_csv(path_output, index=False)
         print(f"  : Successfully saved updated node to node.csv to {self.output_dir}")

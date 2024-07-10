@@ -19,7 +19,7 @@ except ImportError:
 if __name__ == "__main__":
 
     # Step 0: Specify input directory
-    input_dir = r"C:\Users\roche\Anaconda_workspace\001_Github\grid2demand\datasets\demand_from_TAZ\SF"
+    input_dir = r"C:\Users\xyluo25\anaconda3_workspace\001_GitHub\grid2demand\datasets\demand_from_TAZ\SF"
 
     # Initialize a GRID2DEMAND object
     net = gd.GRID2DEMAND(input_dir=input_dir, verbose=True)
@@ -34,7 +34,7 @@ if __name__ == "__main__":
     net.run_gravity_model()
 
     # Step 4: Output demand, agent, zone, zone_od_dist_table, zone_od_dist_matrix files
-    net.save_results_to_csv(node=True, poi=False, zone=True, overwrite_file=False)
+    net.save_results_to_csv(node=True, poi=False, zone=False, overwrite_file=False)
 
     def generate_path_flow(input_dir: str = "",
                            load_demand: bool = True,
@@ -80,7 +80,7 @@ if __name__ == "__main__":
 
         return None
 
-    input_dir_flow = r"C:\Users\roche\Anaconda_workspace\001_Github\grid2demand\datasets\demand_from_TAZ\SF_demo"
+    input_dir_flow = r"C:\Users\xyluo25\anaconda3_workspace\001_GitHub\grid2demand\datasets\demand_from_TAZ\SF_demo"
     generate_path_flow(input_dir=input_dir_flow,
                        load_demand=True,
                        length_unit='meter',
