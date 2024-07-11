@@ -1,0 +1,58 @@
+[build-system]
+requires = ["setuptools", "wheel", "twine"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "grid2demand"
+version = "0.5.8"
+description = "A tool for generating zone-to-zone travel demand based on grid cells or TAZs and gravity model"
+authors = [
+    {name = "Xiangyong Luo", email = "luoxiangyong01@gmail.com"},
+    {name = "Xuesong Simon Zhou", email = "xzhou74@asu.edu"},
+]
+maintainers = [
+    {name = "Xiangyong Luo", email = "luoxiangyong01@gmail.com"},
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+]
+
+readme = {file = 'README_pkg.md', content-type='text/markdown'}
+license = {file = 'LICENSE'}
+# license = {text = "Apache License"}
+
+requires-python = ">=3.10"
+keywords = ["demand", "gravity model", "travel demand", "zone-to-zone demand", "grid cells", "TAZs"]
+
+dynamic = ["dependencies"]
+
+[project.urls]
+"Homepage" = 'https://github.com/asu-trans-ai-lab/grid2demand'
+# Documentation = 'https://github.com/xyluo25/grid2demand'
+# Bug_Tracker = 'https://github.com/xyluo25/grid2demand/issues'
+# Repository = "https://github.com/xyluo25/grid2demand"
+# Download = "https://www.pepy.tech/projects/pyufunc"
+
+#         # 'Publication': '',
+#         # 'Citation': '',
+#         # 'Acknowledgement': '',
+#         # 'FAQs': '',
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+# optional-dependencies = {file = ["requirements_dev.txt"]}
+
+[tool.setuptools]
+py-modules = []
+package-data = {'grid2demand' = ['*.txt', '*.xls', '*.xlsx', '*.csv'], "test_data" = ['*.xls']}
+
+# [tool.setuptools.packages.find]
+# where = ["grid2demand"]
+
+# [tool.setuptools.package-data]
+# grid2demand = ['*.txt', '*.xls', '*.xlsx', '*.csv']
