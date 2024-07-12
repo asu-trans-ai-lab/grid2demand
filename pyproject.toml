@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "grid2demand"
-version = "0.5.8"
+version = "0.5.9"
 description = "A tool for generating zone-to-zone travel demand based on grid cells or TAZs and gravity model"
 authors = [
     {name = "Xiangyong Luo", email = "luoxiangyong01@gmail.com"},
@@ -23,7 +23,7 @@ classifiers = [
 ]
 
 readme = {file = 'README_pkg.md', content-type='text/markdown'}
-license = {file = 'LICENSE'}
+license = {file = 'LICENSE', content-type='text/plain'}
 # license = {text = "Apache License"}
 
 requires-python = ">=3.10"

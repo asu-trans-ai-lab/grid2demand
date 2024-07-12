@@ -19,7 +19,7 @@ except ImportError:
 if __name__ == "__main__":
 
     # Step 0: Specify input directory
-    input_dir = r"C:\Users\xyluo25\anaconda3_workspace\001_GitHub\grid2demand\datasets\demand_from_TAZ\SF"
+    input_dir = r"C:\Users\xyluo25\anaconda3_workspace\001_GitHub\grid2demand\datasets\demand_from_TAZ\SF_demo"
 
     # Initialize a GRID2DEMAND object
     net = gd.GRID2DEMAND(input_dir=input_dir, verbose=True)

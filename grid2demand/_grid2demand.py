@@ -922,7 +922,11 @@ class GRID2DEMAND:
                 node_df.loc[node_df["zone_id"].duplicated(), "zone_id"] = None
 
         # at zone_id as int type
-        node_df["zone_id"] = node_df["zone_id"].astype(int)
+        # Custom function to handle NA and inf values
+        # def safe_convert_to_int(value):
+        #     return value if pd.isna(value) or np.isinf(value) else int(value)
+
+        # node_df["zone_id"] = node_df["zone_id"].apply(safe_convert_to_int)
 
         node_df.to_csv(path_output, index=False)
         print(f"  : Successfully saved updated node to node.csv to {self.output_dir}")
