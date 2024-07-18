@@ -780,6 +780,7 @@ class GRID2DEMAND:
                             zone: bool = True,
                             node: bool = True,  # save updated node
                             poi: bool = True,  # save updated poi
+                            agent: bool = False,  # save agent-based demand
                             zone_od_dist_table: bool = False,
                             zone_od_dist_matrix: bool = False,
                             is_demand_with_geometry: bool = False,
@@ -806,6 +807,9 @@ class GRID2DEMAND:
 
         if zone_od_dist_matrix:
             self.save_zone_od_dist_matrix(overwrite_file=overwrite_file)
+
+        if agent:
+            self.save_agent(overwrite_file=overwrite_file)
 
         return None
 
@@ -843,8 +847,11 @@ class GRID2DEMAND:
     def save_agent(self, overwrite_file: bool = True) -> None:
 
         if not hasattr(self, "df_agent"):
-            print("  : df_agent does not exist. Please run gen_agent_based_demand() first.")
-            return
+            try:
+                self.gen_agent_based_demand()
+            except Exception:
+                print("  : Could not save agent file: df_agent does not exist. Please run gen_agent_based_demand() first.")
+                return
 
         if overwrite_file:
             path_output = path2linux(os.path.join(self.output_dir, "agent.csv"))
