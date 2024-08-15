@@ -13,7 +13,7 @@ pkg_settings = {
 
     # specify required fields for node.csv and poi.csv and zone.csv (optional)
     "node_fields": ["node_id", "x_coord", "y_coord",
-                    "activity_type", "is_boundary", "ctrl_type", "poi_id"],
+                    "activity_type", "is_boundary", "ctrl_type", "poi_id"],  # zone_id
     "poi_fields": ["poi_id", "building", "amenity", "centroid", "area", "geometry"],
     "zone_geometry_fields": ["zone_id", "geometry"],
     "zone_centroid_fields": ["zone_id", "x_coord", "y_coord"],
@@ -63,3 +63,5 @@ pkg_settings = {
                               'yes'               : {1: 1.15}
                               }
 }
+
+# save files ids to ingeter
