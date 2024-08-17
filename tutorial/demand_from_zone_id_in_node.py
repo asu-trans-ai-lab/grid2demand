@@ -19,7 +19,7 @@ except ImportError:
 if __name__ == "__main__":
 
     # Step 0: Specify input directory
-    input_dir = r"../datasets/demand_from_ zone_id_in_node/SF_demo"
+    input_dir = r"../datasets/demand_from_zone_id_in_node/SF_demo"
 
     # Initialize a GRID2DEMAND object
     net = gd.GRID2DEMAND(input_dir, use_zone_id=True)
