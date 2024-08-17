@@ -10,6 +10,8 @@ import pandas as pd
 import shapely
 import os
 from multiprocessing import Pool
+from tqdm.contrib.concurrent import process_map
+from tqdm import tqdm
 
 from grid2demand.utils_lib.net_utils import Node, POI, Zone
 from grid2demand.utils_lib.pkg_settings import pkg_settings
@@ -36,8 +38,8 @@ def _create_node_from_dataframe(df_node: pd.DataFrame) -> dict[int, Node]:
     for i in range(len(df_node)):
         try:
             # check activity location tab
-            activity_type = df_node.loc[i, 'activity_type']
-            is_boundary = df_node.loc[i, 'is_boundary']
+            # activity_type = df_node.loc[i, 'activity_type']
+            # is_boundary = df_node.loc[i, 'is_boundary']
 
             # check whether zone_id field in node.csv or not
             # if zone_id field exists and is not empty, assign it to __zone_id
@@ -53,12 +55,12 @@ def _create_node_from_dataframe(df_node: pd.DataFrame) -> dict[int, Node]:
 
             node = Node(
                 id=df_node.loc[i, 'node_id'],
-                activity_type=activity_type,
-                ctrl_type=df_node.loc[i, 'ctrl_type'],
+                # activity_type=activity_type,
+                # ctrl_type=df_node.loc[i, 'ctrl_type'],
                 x_coord=df_node.loc[i, 'x_coord'],
                 y_coord=df_node.loc[i, 'y_coord'],
-                poi_id=df_node.loc[i, 'poi_id'],
-                is_boundary=is_boundary,
+                # poi_id=df_node.loc[i, 'poi_id'],
+                # is_boundary=is_boundary,
                 geometry=shapely.Point(df_node.loc[i, 'x_coord'], df_node.loc[i, 'y_coord']),
                 _zone_id=_zone_id
             )
@@ -247,7 +249,13 @@ def read_node(node_file: str = "", cpu_cores: int = 1, verbose: bool = False) ->
         print(f"  : Reading node.csv with specified columns: {node_required_cols} \
                     \n    and chunksize {chunk_size} for iterations...")
 
-    df_node_chunk = pd.read_csv(node_file, usecols=node_required_cols, chunksize=chunk_size)
+    try:
+        # Get total rows in poi.csv and calculate total chunks
+        total_rows = sum(1 for _ in open(node_file)) - 1  # Exclude header row
+        total_chunks = total_rows // chunk_size + 1
+        df_node_chunk = pd.read_csv(node_file, usecols=node_required_cols, chunksize=chunk_size)
+    except Exception as e:
+        raise Exception(f"Error: Unable to read node.csv file for: {e}")
 
     if verbose:
         print(f"  : Parallel creating Nodes using Pool with {cpu_cores} CPUs. Please wait...")
@@ -255,7 +263,10 @@ def read_node(node_file: str = "", cpu_cores: int = 1, verbose: bool = False) ->
 
     # Parallel processing using Pool
     with Pool(cpu_cores) as pool:
-        results = pool.map(_create_node_from_dataframe, df_node_chunk)
+        # results = pool.map(_create_node_from_dataframe, df_node_chunk)
+        results = list(tqdm(pool.imap(_create_node_from_dataframe, df_node_chunk), total=total_chunks))
+
+    # results = process_map(_create_node_from_dataframe, df_node_chunk, max_workers=cpu_cores)
 
     for node_dict in results:
         node_dict_final.update(node_dict)
@@ -306,6 +317,10 @@ def read_poi(poi_file: str = "", cpu_cores: int = 1, verbose: bool = False) -> d
         print(f"  : Reading poi.csv with specified columns: {poi_required_cols} \
                     \n    and chunksize {chunk_size} for iterations...")
     try:
+        # Get total rows in poi.csv and calculate total chunks
+        total_rows = sum(1 for _ in open(poi_file)) - 1  # Exclude header row
+        total_chunks = total_rows // chunk_size + 1
+
         df_poi_chunk = pd.read_csv(poi_file, usecols=poi_required_cols, chunksize=chunk_size, encoding='utf-8')
     except Exception:
         df_poi_chunk = pd.read_csv(poi_file, usecols=poi_required_cols, chunksize=chunk_size, encoding='latin-1')
@@ -313,10 +328,14 @@ def read_poi(poi_file: str = "", cpu_cores: int = 1, verbose: bool = False) -> d
     # Parallel processing using Pool
     if verbose:
         print(f"  : Parallel creating POIs using Pool with {cpu_cores} CPUs. Please wait...")
+
     poi_dict_final = {}
 
     with Pool(cpu_cores) as pool:
-        results = pool.map(_create_poi_from_dataframe, df_poi_chunk)
+        # results = pool.map(_create_poi_from_dataframe, df_poi_chunk)
+        results = list(tqdm(pool.imap(_create_poi_from_dataframe, df_poi_chunk), total=total_chunks))
+
+    # results = process_map(_create_poi_from_dataframe, df_poi_chunk, max_workers=cpu_cores)
 
     for poi_dict in results:
         poi_dict_final.update(poi_dict)

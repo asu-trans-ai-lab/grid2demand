@@ -219,7 +219,7 @@ class GRID2DEMAND:
             _zone_df = _zone_df.sort_values(by=["zone_id"])
             self.zone_file = path2linux(os.path.join(self.input_dir, "zone.csv"))
             _zone_df.to_csv(self.zone_file, index=False)
-            print(f"  : zone.csv is generated (use_zone_id=True) based on node.csv in {self.input_dir}.")
+            print(f"  : zone.csv is generated (use_zone_id=True) based on node.csv in {self.input_dir}.\n")
 
         return self.node_dict
 
@@ -724,7 +724,7 @@ class GRID2DEMAND:
             raise FileNotFoundError(f"Error: File {trip_rate_file} does not exist.")
 
         if trip_purpose not in [1, 2, 3]:
-            raise ValueError('Error: trip_purpose must be 1, 2 or 3, ' +
+            raise ValueError('Error: trip_purpose must be 1, 2 or 3, '
                              'represent home-based work, home-based others, non home-based.')
 
         # synchronize geometry between zone and node/poi

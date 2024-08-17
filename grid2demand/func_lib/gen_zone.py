@@ -23,7 +23,7 @@ from pyufunc import (calc_distance_on_unit_sphere,
                      func_running_time,
                      find_closest_point)
 from tqdm import tqdm
-from tqdm.contrib.concurrent import process_map
+# from tqdm.contrib.concurrent import process_map
 import copy
 
 
@@ -56,7 +56,7 @@ def _get_lng_lat_min_max(node_dict: dict[int, Node]) -> list:
     return [coord_x_min - 0.000001, coord_x_max + 0.000001, coord_y_min - 0.000001, coord_y_max + 0.000001]
 
 
-def _sync_node_with_zones_geometry(args: tuple) -> tuple:
+def _sync_zones_geometry_with_node(args: tuple) -> tuple:
     node_id, node, zone_dict = args
     for zone_name in zone_dict:
         if isinstance(node.geometry, str):
@@ -73,7 +73,7 @@ def _sync_node_with_zones_geometry(args: tuple) -> tuple:
     return node_id, node, None
 
 
-def _sync_poi_with_zones_geometry(args: tuple) -> tuple:
+def _sync_zones_geometry_with_poi(args: tuple) -> tuple:
     poi_id, poi, zone_dict = args
     for zone_name in zone_dict:
         if isinstance(poi.geometry, str):
@@ -90,12 +90,20 @@ def _sync_poi_with_zones_geometry(args: tuple) -> tuple:
     return poi_id, poi, None
 
 
-def _sync_node_with_zones_centroid(args: tuple) -> tuple:
-    pass
+def _sync_zones_centroid_with_node(args: tuple) -> tuple:
+    node_id, node, multipoint_zone, zone_point_id = args
+    node_point = shapely.geometry.Point(node.x_coord, node.y_coord)
+    closest_zone_point = find_closest_point(node_point, multipoint_zone)[0]
+    zone_id = zone_point_id[closest_zone_point]
+    return node_id, zone_id
 
 
-def _sync_poi_with_zones_centroid(args: tuple) -> tuple:
-    pass
+def _sync_zones_centroid_with_poi(args: tuple) -> tuple:
+    poi_id, poi, multipoint_zone, zone_point_id = args
+    poi_point = shapely.geometry.Point(poi.x_coord, poi.y_coord)
+    closest_zone_point = find_closest_point(poi_point, multipoint_zone)[0]
+    zone_id = zone_point_id[closest_zone_point]
+    return poi_id, zone_id
 
 
 def _distance_calculation(args: tuple) -> tuple:
@@ -351,8 +359,8 @@ def sync_zone_geometry_and_node(zone_dict: dict, node_dict: dict, cpu_cores: int
                  for node_id, node in node_cp.items()]
 
     with Pool(processes=cpu_cores) as pool:
-        results = pool.map(_sync_node_with_zones_geometry, args_list)
-    # results = process_map(_sync_node_with_zones_geometry, args_list)
+        results = pool.map(_sync_zones_geometry_with_node, args_list)
+    # results = process_map(_sync_zones_geometry_with_node, args_list, workers=cpu_cores)
 
     # Gather results
     for node_id, node, zone_name in results:
@@ -384,9 +392,12 @@ def sync_zone_centroid_and_node(zone_dict: dict, node_dict: dict, verbose: bool 
     #     ): node_id
     #     for node_id in node_dict
     # }
+
+    # Deepcopy the dictionary
     zone_cp = copy.deepcopy(zone_dict)
     node_cp = copy.deepcopy(node_dict)
 
+    # Create zone_point_id dictionary
     zone_point_id = {
         shapely.geometry.Point(
             zone_cp[zone_id].x_coord, zone_cp[zone_id].y_coord
@@ -394,20 +405,32 @@ def sync_zone_centroid_and_node(zone_dict: dict, node_dict: dict, verbose: bool 
         for zone_id in zone_cp
     }
 
+    # create multipoint object for zone centroids
     multipoint_zone = shapely.geometry.MultiPoint(
         [shapely.geometry.Point(zone_cp[i].x_coord, zone_cp[i].y_coord) for i in zone_cp])
 
-    flag = 0
+    # Prepare data for multiprocessing
+    args = [(node_id, node, multipoint_zone, zone_point_id) for node_id, node in node_cp.items()]
 
-    for node_id, node in tqdm(node_cp.items()):
-        if flag + 1 % 1000 == 0:
-            print(f"Processing node {flag + 1}/{len(node_cp)}")
+    cpu_cores = pkg_settings["set_cpu_cores"]
 
-        node_point = shapely.geometry.Point(node.x_coord, node.y_coord)
-        closest_zone_point = find_closest_point(node_point, multipoint_zone)[0]
-        zone_id = zone_point_id[closest_zone_point]
-        node.zone_id = zone_id
+    with Pool(cpu_cores) as pool:
+        results = list(tqdm(pool.imap(_sync_zones_centroid_with_node, args), total=len(node_cp)))
+
+    # Update zone_cp with the results
+    for node_id, zone_id in results:
+        node_cp[node_id].zone_id = zone_id
         zone_cp[zone_id].node_id_list.append(node_id)
+
+    # flag = 0
+    # for node_id, node in tqdm(node_cp.items()):
+    #     if flag + 1 % 1000 == 0:
+    #         print(f"Processing node {flag + 1}/{len(node_cp)}")
+    #     node_point = shapely.geometry.Point(node.x_coord, node.y_coord)
+    #     closest_zone_point = find_closest_point(node_point, multipoint_zone)[0]
+    #     zone_id = zone_point_id[closest_zone_point]
+    #     node.zone_id = zone_id
+    #     zone_cp[zone_id].node_id_list.append(node_id)
 
     if verbose:
         print("  : Successfully synchronized zone and node geometry")
@@ -440,9 +463,9 @@ def sync_zone_geometry_and_poi(zone_dict: dict, poi_dict: dict, cpu_cores: int =
 
     with Pool(processes=cpu_cores) as pool:
         # Distribute work to the pool
-        results = pool.map(_sync_poi_with_zones_geometry, args_list)
+        results = pool.map(_sync_zones_geometry_with_poi, args_list)
 
-    # results = process_map(_sync_poi_with_zones_geometry, args_list)
+    # results = process_map(_sync_zones_geometry_with_poi, args_list)
 
     # Gather results
     for poi_id, poi, zone_name in results:
@@ -480,12 +503,24 @@ def sync_zone_centroid_and_poi(zone_dict: dict, poi_dict: dict, verbose: bool = 
     multipoint_zone = shapely.geometry.MultiPoint(
         [shapely.geometry.Point(zone_cp[i].x_coord, zone_cp[i].y_coord) for i in zone_cp])
 
-    for poi_id, poi in tqdm(poi_cp.items()):
-        poi_point = shapely.geometry.Point(poi.x_coord, poi.y_coord)
-        closest_zone_point = find_closest_point(poi_point, multipoint_zone)[0]
-        zone_id = zone_point_id[closest_zone_point]
-        poi.zone_id = zone_id
-        zone_cp[zone_id].poi_id_list.append(poi_id)
+    # Prepare data for multiprocessing
+    args = [(node_id, node, multipoint_zone, zone_point_id) for node_id, node in poi_cp.items()]
+    cpu_cores = pkg_settings["set_cpu_cores"]
+
+    with Pool(cpu_cores) as pool:
+        results = list(tqdm(pool.imap(_sync_zones_centroid_with_node, args), total=len(poi_cp)))
+
+    # Update zone_cp with the results
+    for node_id, zone_id in results:
+        poi_cp[node_id].zone_id = zone_id
+        zone_cp[zone_id].poi_id_list.append(node_id)
+
+    # for poi_id, poi in tqdm(poi_cp.items()):
+    #     poi_point = shapely.geometry.Point(poi.x_coord, poi.y_coord)
+    #     closest_zone_point = find_closest_point(poi_point, multipoint_zone)[0]
+    #     zone_id = zone_point_id[closest_zone_point]
+    #     poi.zone_id = zone_id
+    #     zone_cp[zone_id].poi_id_list.append(poi_id)
 
     if verbose:
         print("  : Successfully synchronized zone and poi geometry")
