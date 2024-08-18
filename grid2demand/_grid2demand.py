@@ -46,7 +46,8 @@ class GRID2DEMAND:
                  zone_file: str = "",
                  output_dir: str = "",
                  use_zone_id: bool = False,
-                 verbose: bool = False) -> None:
+                 verbose: bool = False,
+                 **kwargs) -> None:
         """initialize GRID2DEMAND object
 
         Args:
@@ -686,6 +687,7 @@ class GRID2DEMAND:
 
         # calculate zone production and attraction based on node production and attraction
         self.zone_dict = calc_zone_production_attraction(self.node_dict,
+                                                         self.poi_dict,
                                                          self.zone_dict,
                                                          verbose=self.verbose)
         self.is_zone_prod_attr = True

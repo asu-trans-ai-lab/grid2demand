@@ -144,6 +144,9 @@ def gen_node_prod_attr(node_dict: dict,
                     if "attraction_rate" in key:
                         node.attraction = poi_trip_rate[key] * \
                             poi_dict[node.poi_id].area / 1000
+        elif node._zone_id != -1:
+            node.production = boundary_production
+            node.attraction = boundary_attraction
         else:
             node.production = 50
             node.attraction = 50

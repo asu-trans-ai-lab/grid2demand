@@ -6,10 +6,13 @@
 ##############################################################
 
 from __future__ import absolute_import
-import pandas as pd
-import shapely
+
 import os
 from multiprocessing import Pool
+
+import pandas as pd
+import shapely
+from pyproj import Transformer
 from tqdm.contrib.concurrent import process_map
 from tqdm import tqdm
 
@@ -86,9 +89,33 @@ def _create_poi_from_dataframe(df_poi: pd.DataFrame) -> dict[int, POI]:
     for i in range(len(df_poi)):
         try:
             centroid = shapely.from_wkt(df_poi.loc[i, 'centroid'])
+
+            # check if area is empty or not
             area = df_poi.loc[i, 'area']
-            if area > 90000:
+            if pd.isna(area) or not area:
+                geometry_shapely = shapely.from_wkt(df_poi.loc[i, 'geometry'])
+
+                # Set up a Transformer to convert from WGS 84 to UTM zone 18N (EPSG:32618)
+                transformer = Transformer.from_crs(
+                    "EPSG:4326", "EPSG:32618", always_xy=True)
+
+                # Transform the polygon's coordinates to UTM
+                transformed_coords = [transformer.transform(x, y) for x, y in geometry_shapely.exterior.coords]
+                transformed_polygon = shapely.Polygon(transformed_coords)
+
+                # square meters
+                area_sqm = transformed_polygon.area
+
+                # square feet
+                # area = area_sqm * 10.7639104
+
+                area = area_sqm
+
+            elif area > 90000:
                 area = 0
+            else:
+                pass
+
             poi = POI(
                 id=df_poi.loc[i, 'poi_id'],
                 x_coord=centroid.x,

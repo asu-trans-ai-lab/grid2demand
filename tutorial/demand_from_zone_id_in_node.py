@@ -19,7 +19,7 @@ except ImportError:
 if __name__ == "__main__":
 
     # Step 0: Specify input directory
-    input_dir = r"../datasets/demand_from_zone_id_in_node/SF_demo"
+    input_dir = r"../grid2demand/datasets/demand_from_zone_id_in_node/ASU/auto"
 
     # Initialize a GRID2DEMAND object
     net = gd.GRID2DEMAND(input_dir, use_zone_id=True)
@@ -35,7 +35,7 @@ if __name__ == "__main__":
     net.run_gravity_model()
 
     # Step 4: Output demand, agent, zone, zone_od_dist_table, zone_od_dist_matrix files
-    net.save_results_to_csv(zone=True, node=False, poi=False, overwrite_file=False)
+    net.save_results_to_csv(zone=True, node=True, poi=True, overwrite_file=False)
 
     def generate_path_flow(input_dir: str = "",
                            load_demand: bool = True,
