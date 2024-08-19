@@ -56,3 +56,30 @@ package-data = {'grid2demand' = ['*.txt', '*.xls', '*.xlsx', '*.csv'], "test_dat
 
 # [tool.setuptools.package-data]
 # grid2demand = ['*.txt', '*.xls', '*.xlsx', '*.csv']
+
+[tool.cibuildwheel]
+build = "*"
+skip = "cp3{6,7,8,9}-*"
+
+
+[tool.scikit-build]
+wheel.packages = ["grid2demand"]
+wheel.install-dir = "grid2demand"
+wheel.expand-macos-universal-tags = true
+
+cmake.version = ">=3.25"
+cmake.args = ["-DBUILD_OSM2GMNS_EXE=OFF"]
+cmake.build-type = "Release"
+cmake.verbose = true
+
+sdist.include = [
+    "docs",
+    "python"
+]
+
+sdist.exclude = [
+  ".github",
+  ".gitattributes",
+  ".gitignore",
+  "build"
+]
