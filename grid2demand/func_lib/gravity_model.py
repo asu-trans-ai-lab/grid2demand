@@ -28,7 +28,6 @@ def calc_zone_production_attraction(node_dict: dict, poi_dict: dict, zone_dict: 
             for poi_id in zone_dict[zone_name].poi_id_list:
                 try:
                     poi_trip_rate = poi_dict[poi_id].trip_rate
-                    print(f"poi_{poi_id}: ", poi_dict[poi_id].area)
                     for key in poi_trip_rate:
                         if "production_rate" in key:
                             zone_dict[zone_name].production += poi_trip_rate[key] * \

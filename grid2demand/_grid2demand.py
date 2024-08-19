@@ -47,6 +47,7 @@ class GRID2DEMAND:
                  output_dir: str = "",
                  use_zone_id: bool = False,
                  verbose: bool = False,
+                 mode_type: str = "auto",
                  **kwargs) -> None:
         """initialize GRID2DEMAND object
 
@@ -71,6 +72,7 @@ class GRID2DEMAND:
         self.output_dir = path2linux(output_dir) if output_dir else self.input_dir
         self.verbose = verbose
         self.use_zone_id = use_zone_id
+        self.mode_type = mode_type
 
         # load default package settings,
         # user can modify the settings before running the model
@@ -748,7 +750,7 @@ class GRID2DEMAND:
                                                        verbose=self.verbose)
         self.df_demand = pd.DataFrame(list(self.zone_od_demand_matrix.values()))
 
-        print("  :Successfully generated OD demands.")
+        print("  : Successfully generated OD demands.")
         return self.df_demand if return_value else None
 
     def gen_agent_based_demand(self,
@@ -836,7 +838,10 @@ class GRID2DEMAND:
             else:
                 col_name = ["o_zone_id", "d_zone_id", "dist_km", "volume"]
 
-            df_demand_res = self.df_demand[col_name]
+            # Re-generate demand based on mode type
+            self.df_demand["volume"] = self.df_demand["volume"] * pkg_settings["mode_type"].get(self.mode_type, 1)
+
+            df_demand_res = self.df_demand[col_name].copy()
 
             # fill name with 0
             df_demand_res.fillna(0, inplace=True)

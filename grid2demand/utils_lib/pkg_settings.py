@@ -7,6 +7,10 @@
 import os
 
 pkg_settings = {
+
+    # specify the mode type: "auto", "bike", "walk"
+    "mode_type": {"auto": 1, "bike": 0.4, "walk": 0.05},
+
     # specify required files for grid2demand, and optional files for grid2demand
     "required_files": ["node.csv", "poi.csv"],
     "optional_files": ["zone.csv"],

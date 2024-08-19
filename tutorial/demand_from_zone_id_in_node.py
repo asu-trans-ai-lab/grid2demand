@@ -21,8 +21,8 @@ if __name__ == "__main__":
     # Step 0: Specify input directory
     input_dir = r"../grid2demand/datasets/demand_from_zone_id_in_node/ASU/auto"
 
-    # Initialize a GRID2DEMAND object
-    net = gd.GRID2DEMAND(input_dir, use_zone_id=True)
+    # Initialize a GRID2DEMAND object, and specify the mode_type as "auto" in default
+    net = gd.GRID2DEMAND(input_dir, use_zone_id=True, mode_type="auto")
 
     # Step 1: Load node and poi data from input directory
     net.load_network()
@@ -36,55 +36,3 @@ if __name__ == "__main__":
 
     # Step 4: Output demand, agent, zone, zone_od_dist_table, zone_od_dist_matrix files
     net.save_results_to_csv(zone=True, node=True, poi=True, overwrite_file=False)
-
-    def generate_path_flow(input_dir: str = "",
-                           load_demand: bool = True,
-                           length_unit: str = 'meter',
-                           speed_unit: str = 'kph',
-                           col_gen_num: int = 10,
-                           col_update_num: int = 10) -> None:
-
-        # check if settings.yml and setting.csv exist
-        # if not exist, download from GitHub repository
-
-        import path4gmns as pg
-        import pyufunc as pf
-
-        path_settings_yaml = "settings.yml"
-        path_settings_csv = "settings.csv"
-
-        if not os.path.exists(path_settings_yaml):
-            print("Downloading settings.yml from GitHub repository...")
-            pf.github_file_downloader(repo_url=r"https://github.com/jdlph/Path4GMNS/blob/master/data/Sioux_Falls/settings.yml",
-                                      output_dir=input_dir,
-                                      flatten=True)
-
-        if not os.path.exists(path_settings_csv):
-            print("Downloading settings.csv from GitHub repository...")
-            pf.github_file_downloader(repo_url=r"https://github.com/jdlph/Path4GMNS/blob/master/data/Sioux_Falls/settings.csv",
-                                      output_dir=input_dir,
-                                      flatten=True)
-
-        print("  :Using path4gmns to perform column generation...\n")
-        # path4gmns: path flow
-        network = pg.read_network(input_dir=input_dir,
-                                  load_demand=load_demand,
-                                  length_unit=length_unit,
-                                  speed_unit=speed_unit)
-
-        pg.perform_column_generation(col_gen_num, col_update_num, network)
-
-        # if you do not want to include geometry info in the output file,
-        # use pg.output_columns(network, False)
-        pg.output_columns(network, output_dir=input_dir)
-        pg.output_link_performance(network, output_dir=input_dir)
-
-        return None
-
-    input_dir_flow = r"../datasets/demand_from_ zone_id_in_node/SF_demo"
-    generate_path_flow(input_dir=input_dir_flow,
-                       load_demand=True,
-                       length_unit='meter',
-                       speed_unit='kph',
-                       col_gen_num=10,
-                       col_update_num=10)

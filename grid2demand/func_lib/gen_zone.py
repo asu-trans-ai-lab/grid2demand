@@ -508,7 +508,7 @@ def sync_zone_centroid_and_poi(zone_dict: dict, poi_dict: dict, verbose: bool = 
     cpu_cores = pkg_settings["set_cpu_cores"]
 
     with Pool(cpu_cores) as pool:
-        results = list(tqdm(pool.imap(_sync_zones_centroid_with_node, args), total=len(poi_cp)))
+        results = list(tqdm(pool.imap(_sync_zones_centroid_with_poi, args), total=len(poi_cp)))
 
     # Update zone_cp with the results
     for node_id, zone_id in results:
