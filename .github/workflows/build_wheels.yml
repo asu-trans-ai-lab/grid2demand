@@ -52,12 +52,12 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           repository-url: https://test.pypi.org/legacy/
-          username: __token__
+          user: __token__
           password: ${{ secrets.TEST_PYPI_API_TOKEN }}
 
       # - name: Upload package to PyPI
       #   if: github.ref == 'refs/heads/main'
       #   uses: pypa/gh-action-pypi-publish@release/v1
       #   with:
-      #     username: __token__
+      #     user: __token__
       #     password: ${{ secrets.PYPI_API_TOKEN }}
