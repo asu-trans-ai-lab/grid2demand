@@ -9,14 +9,15 @@ jobs:
     strategy:
       matrix:
         # macos-13 is an intel runner, macos-14 is apple silicon
-        os: [ubuntu-latest, windows-latest, windows-2019, macos-13] # macos-14
+        os: [ubuntu-latest, windows-latest, windows-2019, macos-13, macos-14] # macos-14
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Build wheels
         run: |
-          pip install build
+          pip install build grid2demand 
+          pip install utdf2gmns exceltomysal exceltosqlserver exceltopostgresql vissim2geojson
           python -m build --wheel --outdir wheelhouse
         # uses: pypa/cibuildwheel@v2.20.0
         # env:
