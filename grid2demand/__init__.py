@@ -1,3 +1,13 @@
+'''
+# -*- coding:utf-8 -*-
+##############################################################
+# Created Date: Monday, September 4th 2023
+# Contact Info: luoxiangyong01@gmail.com
+# Author/Copyright: Mr. Xiangyong Luo
+##############################################################
+'''
+
+
 import sys
 
 from .func_lib.read_node_poi import (read_node,
@@ -21,6 +31,15 @@ from ._grid2demand import GRID2DEMAND
 
 
 def check_python_version() -> tuple:
+    """Check if the Python version is greater than 3.10
+
+    Raises:
+        EnvironmentError: grid2demand, supports Python 3.10 or higher
+
+    Returns:
+        tuple: Python version tuple
+    """
+
     # Split the version string and convert to tuple of integers
     version_tuple = tuple(map(int, sys.version.split()[0].split('.')))
 

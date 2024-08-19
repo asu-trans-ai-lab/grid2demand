@@ -6,29 +6,26 @@
 ##############################################################
 
 from __future__ import absolute_import
-import contextlib
 import itertools
+import copy
+from multiprocessing import Pool
+
 import pandas as pd
 import shapely
 import numpy as np
-from multiprocessing import Pool, cpu_count
-
 import shapely.geometry
-
-from grid2demand.utils_lib.net_utils import Zone, Node
-from grid2demand.utils_lib.pkg_settings import pkg_settings
-
+from tqdm import tqdm
 from pyufunc import (calc_distance_on_unit_sphere,
                      cvt_int_to_alpha,
                      func_running_time,
                      find_closest_point)
-from tqdm import tqdm
+
+from grid2demand.utils_lib.net_utils import Zone, Node
+from grid2demand.utils_lib.pkg_settings import pkg_settings
 # from tqdm.contrib.concurrent import process_map
-import copy
 
 
 # supporting functions
-
 def _get_lng_lat_min_max(node_dict: dict[int, Node]) -> list:
     """Get the boundary of the study area
 

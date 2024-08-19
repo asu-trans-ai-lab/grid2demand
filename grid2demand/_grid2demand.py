@@ -1,14 +1,21 @@
+"""
 # -*- coding:utf-8 -*-
 ##############################################################
 # Created Date: Thursday, September 28th 2023
 # Contact Info: luoxiangyong01@gmail.com
 # Author/Copyright: Mr. Xiangyong Luo
 ##############################################################
+"""
 
 import os
-import pandas as pd
 import contextlib
+
+import pandas as pd
 import shapely
+from pyufunc import (path2linux,
+                     get_filenames_by_ext,
+                     generate_unique_filename)
+
 from grid2demand.utils_lib.pkg_settings import pkg_settings
 from grid2demand.utils_lib.net_utils import (Node,
                                              POI,
@@ -30,10 +37,6 @@ from grid2demand.func_lib.trip_rate_production_attraction import (gen_poi_trip_r
 from grid2demand.func_lib.gravity_model import (run_gravity_model,
                                                 calc_zone_production_attraction)
 from grid2demand.func_lib.gen_agent_demand import gen_agent_based_demand
-
-from pyufunc import (path2linux,
-                     get_filenames_by_ext,
-                     generate_unique_filename)
 
 
 class GRID2DEMAND:
@@ -61,6 +64,8 @@ class GRID2DEMAND:
             output_dir (str, optional): output directory. Defaults to "".
             use_zone_id (bool, optional): whether to use zone_id. Defaults to False.
             verbose (bool, optional): whether to print verbose information. Defaults to False.
+            mode_type (str): the mode type. Defaults to "auto". Options: ["auto", "bike", "walk"]
+            kwargs: additional keyword arguments
         """
 
         # initialize input parameters
@@ -75,6 +80,7 @@ class GRID2DEMAND:
         self.verbose = verbose
         self.use_zone_id = use_zone_id
         self.mode_type = mode_type
+        self.kwargs = kwargs
 
         # load default package settings,
         # user can modify the settings before running the model
@@ -381,6 +387,22 @@ class GRID2DEMAND:
         return self.zone_dict if return_value else None
 
     def taz2zone(self, zone_file: str = "", return_value: bool = False) -> dict[str, Zone]:
+        """generate zone dictionary from zone.csv (TAZs)
+
+        Args:
+            zone_file (str): external zone.csv. Defaults to "".
+            return_value (bool): whether or not to return generated zone. Defaults to False.
+
+        Raises:
+            FileNotFoundError: Error: File {zone_file} does not exist.
+            Exception: Error: Failed to read {zone_file}.
+            Exception: Error: {zone_file} does not contain valid zone fields.
+            Exception: Error: {zone_file} does not contain valid geometry fields.
+            Exception: Error: {zone_file} contains both point and polygon geometry fields.
+
+        Returns:
+            dict[str, Zone]: zone_dict {zone_name: Zone}
+        """
 
         if self.verbose:
             print("  : Note: taz2zone will generate zones from zone.csv (TAZs). \
@@ -791,6 +813,22 @@ class GRID2DEMAND:
                             zone_od_dist_matrix: bool = False,
                             is_demand_with_geometry: bool = False,
                             overwrite_file: bool = True) -> None:
+        """save results to csv files
+
+        Args:
+            output_dir (str): the output dir to save files. Defaults to "", represent current folder.
+            demand (bool): whether to save demand file. Defaults to True.
+            node (bool): whether to save node file. Defaults to True.
+            poi (bool): whether to save poi file. Defaults to True.
+            agent (bool): whether to save agent file. Defaults to False.
+            zone_od_dist_table (bool): whether to save zone od distance table. Defaults to False.
+            zone_od_dist_matrix (bool): whether to save zone od distance matrix. Defaults to False.
+            is_demand_with_geometry (bool): whether include geometry in demand file. Defaults to False.
+            overwrite_file (bool): whether to overwrite existing files. Defaults to True.
+
+        Returns:
+            None: None
+        """
 
         # update output_dir if specified
         if output_dir:
@@ -822,6 +860,7 @@ class GRID2DEMAND:
     # @property
     def save_demand(self, overwrite_file: bool = True,
                     is_demand_with_geometry: bool = False) -> None:
+        """Generate demand.csv file"""
 
         if overwrite_file:
             path_output = path2linux(os.path.join(self.output_dir, "demand.csv"))
@@ -854,12 +893,14 @@ class GRID2DEMAND:
 
     # @property
     def save_agent(self, overwrite_file: bool = True) -> None:
+        """Generate agent.csv file"""
 
         if not hasattr(self, "df_agent"):
             try:
                 self.gen_agent_based_demand()
             except Exception:
-                print("  : Could not save agent file: df_agent does not exist. Please run gen_agent_based_demand() first.")
+                print("  : Could not save agent file: df_agent does not exist."
+                      " Please run gen_agent_based_demand() first.")
                 return
 
         if overwrite_file:
@@ -868,9 +909,11 @@ class GRID2DEMAND:
             path_output = generate_unique_filename(path2linux(os.path.join(self.output_dir, "agent.csv")))
         self.df_agent.to_csv(path_output, index=False)
         print(f"  : Successfully saved agent.csv to {self.output_dir}")
+        return None
 
     # @property
     def save_zone(self, overwrite_file: bool = True) -> None:
+        """Generate zone.csv file"""
 
         if overwrite_file:
             path_output = path2linux(os.path.join(self.output_dir, "zone.csv"))
@@ -893,6 +936,7 @@ class GRID2DEMAND:
 
     # @property
     def save_node(self, overwrite_file: bool = True) -> None:
+        """Generate node.csv file"""
 
         if not hasattr(self, "node_dict"):
             print("  : node_dict does not exist. Please run sync_geometry_between_zone_and_node_poi() first.")
@@ -950,6 +994,7 @@ class GRID2DEMAND:
 
     # @property
     def save_poi(self, overwrite_file: bool = True) -> None:
+        """Generate poi.csv file"""
 
         if overwrite_file:
             path_output = path2linux(os.path.join(self.output_dir, "poi.csv"))
@@ -970,6 +1015,7 @@ class GRID2DEMAND:
 
     # @property
     def save_zone_od_dist_table(self, overwrite_file: bool = True) -> None:
+        """Generate zone_od_dist_table.csv file"""
 
         if overwrite_file:
             path_output = path2linux(os.path.join(self.output_dir, "zone_od_dist_table.csv"))
@@ -989,6 +1035,7 @@ class GRID2DEMAND:
 
     # @property
     def save_zone_od_dist_matrix(self, overwrite_file: bool = True) -> None:
+        """Generate zone_od_dist_matrix.csv file"""
 
         if overwrite_file:
             path_output = path2linux(os.path.join(self.output_dir, "zone_od_dist_matrix.csv"))
