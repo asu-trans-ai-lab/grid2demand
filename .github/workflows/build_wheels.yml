@@ -40,11 +40,11 @@ jobs:
           brew install ninja libomp
 
       - uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python[2:] }}
         # with:
-        #   python-version: 3.11
-        # if: ${{ matrix.python }} == 'cp311' && runner.os == 'macOS' && runner.arch == 'ARM64'
+        #   python-version: ${{ matrix.python[2:] }}
+        with:
+          python-version: 3.11
+        if: ${{ matrix.python }} == 'cp311' && runner.os == 'macOS' && runner.arch == 'ARM64'
 
       - name: Check if C extensions are present
         id: check_c_extensions
