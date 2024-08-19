@@ -40,10 +40,10 @@ jobs:
 
     - name: Analysing the code with pylint
       run: |
-        pylint  $(git ls-files '*.py') --output=lint.txt || true
+        pylint  $(git ls-files '*.py') --output=${{ matrix.python-version }}_lint.txt || true
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: lint.txt
-        path: lint.txt
+        name: ${{ matrix.python-version }}_lint.txt
+        path: ${{ matrix.python-version }}_lint.txt
