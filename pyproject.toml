@@ -59,7 +59,7 @@ package-data = {'grid2demand' = ['*.txt', '*.xls', '*.xlsx', '*.csv'], "test_dat
 
 [tool.cibuildwheel]
 build = "*"
-skip = "cp3{6,7,8,9}-*"
+# skip = "cp3{6,7,8,9}-*"
 
 
 [tool.scikit-build]
