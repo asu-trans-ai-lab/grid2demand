@@ -46,14 +46,14 @@ jobs:
           python-version: 3.11
         if: ${{ matrix.python }} == 'cp311' && runner.os == 'macOS' && runner.arch == 'ARM64'
 
-      - name: Check if C extensions are present
-        id: check_c_extensions
-        run: |
-          if {grep -q "\[tool.cibuildwheel\]" pyproject.toml;}; then
-            echo "build-with-cibuildwheel=true" >> $GITHUB_ENV
-          else
-            echo "build-with-cibuildwheel=false" >> $GITHUB_ENV
-          fi
+      # - name: Check if C extensions are present
+      #   id: check_c_extensions
+      #   run: |
+      #     if grep -q "\[tool.cibuildwheel\]" pyproject.toml; then
+      #       echo "build-with-cibuildwheel=true" >> $GITHUB_ENV
+      #     else
+      #       echo "build-with-cibuildwheel=false" >> $GITHUB_ENV
+      #     fi
 
       - name: Build wheels with cibuildwheel for manylinux_x86_64
         if: matrix.buildplat[1] == 'manylinux_x86_64'
