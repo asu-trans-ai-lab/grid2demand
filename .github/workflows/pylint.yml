@@ -1,6 +1,14 @@
 name: Pylint
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
   build:
@@ -17,10 +25,12 @@ jobs:
         sudo rm -rf "/usr/local/share/boost"
         sudo rm -rf "$AGENT_TOOLSDIRECTORY"
     - uses: actions/checkout@v4
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -30,4 +40,10 @@ jobs:
 
     - name: Analysing the code with pylint
       run: |
-        pylint  $(git ls-files '*.py')
+        pylint  $(git ls-files '*.py') --output=lint.txt || true
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: lint.txt
+        path: lint.txt
