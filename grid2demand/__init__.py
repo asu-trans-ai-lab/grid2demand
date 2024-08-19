@@ -1,3 +1,4 @@
+import sys
 
 from .func_lib.read_node_poi import (read_node,
                                      read_poi,
@@ -17,8 +18,6 @@ from .func_lib.gravity_model import (run_gravity_model,
 from .func_lib.gen_agent_demand import gen_agent_based_demand
 from .utils_lib.pkg_settings import pkg_settings
 from ._grid2demand import GRID2DEMAND
-
-import sys
 
 
 def check_python_version() -> tuple:

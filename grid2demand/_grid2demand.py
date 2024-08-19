@@ -37,6 +37,8 @@ from pyufunc import (path2linux,
 
 
 class GRID2DEMAND:
+    """A tool for generating zone-to-zone travel demand based on grid zones or TAZs
+    """
 
     def __init__(self,
                  input_dir: str = os.getcwd(),
