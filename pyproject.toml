@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools", "wheel", "twine"]
+requires = ["setuptools", "wheel", "twine", "scikit-build", "cmake", "cibuildwheel"]
 build-backend = "setuptools.build_meta"
 
 [project]

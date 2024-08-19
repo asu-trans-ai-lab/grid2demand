@@ -86,6 +86,8 @@ jobs:
         uses: pypa/cibuildwheel@v2.19
         env:
           CIBW_BUILD: ${{ matrix.python }}-${{ matrix.buildplat[1] }}
+          CIBW_BEFORE_BUILD_WINDOWS: "pip install delvewheel"
+          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "delvewheel repair -w {dest_dir} {wheel}"
           CIBW_BUILD_VERBOSITY: 1
         with:
           output-dir: wheelhouse
@@ -102,6 +104,7 @@ jobs:
           name: ${{ matrix.buildplat[1] }}-${{ matrix.python }}
           path: wheelhouse/
           # path: ./wheelhouse/*.whl
+
 
   build_sdist:
     name: Build source distribution
