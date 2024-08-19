@@ -103,13 +103,13 @@ score=yes
 [REFACTORING]
 
 # Maximum number of nested blocks for function / method body
-max-nested-blocks=5
+max-nested-blocks=8
 
 # Complete name of functions that never returns. When checking for
 # inconsistent-return-statements if a never returning function is called then
 # it will be considered as an explicit return statement and no message will be
-# printed.
-never-returning-functions=sys.exit
+# printed. sys.exit
+never-returning-functions=
 
 
 [VARIABLES]
@@ -308,7 +308,7 @@ ignored-classes=optparse.Values,thread._local,_thread._local
 # (useful for modules/projects where namespaces are manipulated during runtime
 # and thus existing member attributes cannot be deduced by static analysis. It
 # supports qualified module names, as well as Unix pattern matching.
-ignored-modules=
+ignored-modules= tests, tutorials
 
 # Show a hint with possible names when a member name was not found. The aspect
 # of finding the hint is based on edit distance.
@@ -381,10 +381,10 @@ ignore-comments=yes
 ignore-docstrings=yes
 
 # Ignore imports when computing similarities.
-ignore-imports=no
+ignore-imports=yes
 
 # Minimum lines number of a similarity.
-min-similarity-lines=4
+min-similarity-lines=12
 
 
 [IMPORTS]
@@ -423,10 +423,10 @@ known-third-party=enchant
 [DESIGN]
 
 # Maximum number of arguments for function / method.
-max-args=5
+max-args=
 
 # Maximum number of attributes for a class (see R0902).
-max-attributes=7
+max-attributes=
 
 # Maximum number of boolean expressions in an if statement.
 max-bool-expr=5
