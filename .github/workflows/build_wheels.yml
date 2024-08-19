@@ -41,6 +41,6 @@ jobs:
         with:
           name: wheels-${{ matrix.os }}-${{ strategy.job-index }}
           path: |
-            dist/*.tar.gz
-            ./wheelhouse/*.whl
+            - dist/*.tar.gz
+            - ./wheelhouse/*.whl
 
