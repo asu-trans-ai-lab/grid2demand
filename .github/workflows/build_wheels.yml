@@ -17,7 +17,7 @@ jobs:
       - name: Build wheels
         run: |
           pip install build grid2demand 
-          pip install utdf2gmns exceltomysal exceltosqlserver exceltopostgresql vissim2geojson
+          pip install utdf2gmns exceltomysql exceltosqlserver exceltopostgresql vissim2geojson
           python -m build --wheel --outdir wheelhouse
         # uses: pypa/cibuildwheel@v2.20.0
         # env:
