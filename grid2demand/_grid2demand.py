@@ -51,8 +51,8 @@ class GRID2DEMAND:
                  zone_file: str = "",
                  output_dir: str = "",
                  use_zone_id: bool = False,
-                 verbose: bool = False,
                  mode_type: str = "auto",
+                 verbose: bool = False,
                  **kwargs) -> None:
         """initialize GRID2DEMAND object
 
@@ -81,6 +81,10 @@ class GRID2DEMAND:
         self.use_zone_id = use_zone_id
         self.mode_type = mode_type
         self.kwargs = kwargs
+
+        # check mode type is valid
+        if self.mode_type not in ["auto", "bike", "walk"]:
+            raise ValueError("Error: mode_type must be auto, bike or walk.")
 
         # load default package settings,
         # user can modify the settings before running the model
