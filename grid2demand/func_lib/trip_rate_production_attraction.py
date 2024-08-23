@@ -105,6 +105,7 @@ def gen_node_prod_attr(node_dict: dict,
                        boundary_production: float = 1000.0,
                        boundary_attraction: float = 1000.0,
                        verbose: bool = False) -> dict:
+    # sourcery skip: merge-duplicate-blocks, remove-redundant-if
     """Generate production and attraction for each node.
 
     Args:

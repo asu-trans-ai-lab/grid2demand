@@ -215,12 +215,12 @@ class GRID2DEMAND:
             self._node_is_zone = {}  # store node
 
             for node_id in self.node_dict:
-                if self.node_dict[node_id]._zone_id != -1:
-                    _val_list.append([self.node_dict[node_id]._zone_id,
-                                      self.node_dict[node_id].x_coord,
-                                      self.node_dict[node_id].y_coord,
-                                      shapely.Point(self.node_dict[node_id].x_coord,
-                                                    self.node_dict[node_id].y_coord)])
+                if self.node_dict[node_id]["_zone_id"] != -1:
+                    _val_list.append([self.node_dict[node_id]["_zone_id"],
+                                      self.node_dict[node_id]["x_coord"],
+                                      self.node_dict[node_id]["y_coord"],
+                                      shapely.Point(self.node_dict[node_id]["x_coord"],
+                                                    self.node_dict[node_id]["y_coord"])])
 
                     _node_and_zone_id.append(node_id)
 

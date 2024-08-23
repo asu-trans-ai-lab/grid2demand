@@ -6,7 +6,7 @@
 ##############################################################
 
 
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, field, asdict, fields
 
 
 @dataclass
@@ -33,17 +33,32 @@ class Node:
     y_coord: float = -1
     production: float = 0
     attraction: float = 0
-    is_boundary: int = 0
-    ctrl_type: int = -1
+    # is_boundary: int = 0
+    # ctrl_type: int = -1
     zone_id: int | None = None
-    poi_id: int = -1
-    activity_type: str = ''
+    # poi_id: int = -1
+    # activity_type: str = ''
     geometry: str = ''
     _zone_id: int = -1
 
-    @property
+    def __getitem__(self, key):
+        if hasattr(self, key):
+            return getattr(self, key)
+        else:
+            raise KeyError(f"Key {key} not found in {self.__class__.__name__}")
+
+    def __setitem__(self, key, value):
+        if hasattr(self, key):
+            setattr(self, key, value)
+        else:
+            raise KeyError(f"Key {key} not found in {self.__class__.__name__}")
+
     def as_dict(self):
         return asdict(self)
+
+    # @property
+    # def as_dict(self):
+    #     return asdict(self)
 
 
 @dataclass
@@ -73,9 +88,24 @@ class POI:
     geometry: str = ''
     zone_id: int = -1
 
-    @property
+    def __getitem__(self, key):
+        if hasattr(self, key):
+            return getattr(self, key)
+        else:
+            raise KeyError(f"Key {key} not found in {self.__class__.__name__}")
+
+    def __setitem__(self, key, value):
+        if hasattr(self, key):
+            setattr(self, key, value)
+        else:
+            raise KeyError(f"Key {key} not found in {self.__class__.__name__}")
+
     def as_dict(self):
         return asdict(self)
+
+    # @property
+    # def as_dict(self):
+    #     return asdict(self)
 
 
 @dataclass
@@ -118,9 +148,24 @@ class Zone:
     attraction_fixed: float = 0
     geometry: str = ''
 
-    @property
+    def __getitem__(self, key):
+        if hasattr(self, key):
+            return getattr(self, key)
+        else:
+            raise KeyError(f"Key {key} not found in {self.__class__.__name__}")
+
+    def __setitem__(self, key, value):
+        if hasattr(self, key):
+            setattr(self, key, value)
+        else:
+            raise KeyError(f"Key {key} not found in {self.__class__.__name__}")
+
     def as_dict(self):
         return asdict(self)
+
+    # @property
+    # def as_dict(self):
+    #     return asdict(self)
 
 
 @dataclass
@@ -167,6 +212,17 @@ class Agent:
     geometry: str = ''
     departure_time: int = 0  # unit is second
 
-    @property
+    def __getitem__(self, key):
+        if hasattr(self, key):
+            return getattr(self, key)
+        else:
+            raise KeyError(f"Key {key} not found in {self.__class__.__name__}")
+
+    def __setitem__(self, key, value):
+        if hasattr(self, key):
+            setattr(self, key, value)
+        else:
+            raise KeyError(f"Key {key} not found in {self.__class__.__name__}")
+
     def as_dict(self):
         return asdict(self)

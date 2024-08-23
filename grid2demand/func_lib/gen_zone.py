@@ -54,16 +54,19 @@ def _get_lng_lat_min_max(node_dict: dict[int, Node]) -> list:
 
 
 def _sync_zones_geometry_with_node(args: tuple) -> tuple:
+    # node is dictionary here, pool.imap or process_map will not work for dataclass object
+
     node_id, node, zone_dict = args
     for zone_name in zone_dict:
-        if isinstance(node.geometry, str):
-            node.geometry = shapely.from_wkt(node.geometry)
+        if isinstance(node["geometry"], str):
+            node["geometry"] = shapely.from_wkt(node["geometry"])
+
         if isinstance(zone_dict[zone_name].geometry, str):
             zone_dict[zone_name].geometry = shapely.from_wkt(
                 zone_dict[zone_name].geometry)
 
-        if shapely.within(node.geometry, zone_dict[zone_name].geometry):
-            node.zone_id = zone_dict[zone_name].id
+        if shapely.within(node["geometry"], zone_dict[zone_name].geometry):
+            node["zone_id"] = zone_dict[zone_name].id
             zone_dict[zone_name].node_id_list.append(node_id)
             return node_id, node, zone_name
 
@@ -71,16 +74,20 @@ def _sync_zones_geometry_with_node(args: tuple) -> tuple:
 
 
 def _sync_zones_geometry_with_poi(args: tuple) -> tuple:
+
+    # poi is dictionary here
+    # pool.imap or process_map will not work for dataclass object
+
     poi_id, poi, zone_dict = args
     for zone_name in zone_dict:
-        if isinstance(poi.geometry, str):
-            poi.geometry = shapely.from_wkt(poi.geometry)
+        if isinstance(poi["geometry"], str):
+            poi["geometry"] = shapely.from_wkt(poi["geometry"])
         if isinstance(zone_dict[zone_name].geometry, str):
             zone_dict[zone_name].geometry = shapely.from_wkt(
                 zone_dict[zone_name].geometry)
 
-        if shapely.within(poi.geometry, zone_dict[zone_name].geometry):
-            poi.zone_id = zone_dict[zone_name].id
+        if shapely.within(poi["geometry"], zone_dict[zone_name].geometry):
+            poi["zone_id"] = zone_dict[zone_name].id
             zone_dict[zone_name].poi_id_list.append(poi_id)
             return poi_id, poi, zone_name
 
@@ -88,16 +95,21 @@ def _sync_zones_geometry_with_poi(args: tuple) -> tuple:
 
 
 def _sync_zones_centroid_with_node(args: tuple) -> tuple:
+    # node is dictionary here
     node_id, node, multipoint_zone, zone_point_id = args
-    node_point = shapely.geometry.Point(node.x_coord, node.y_coord)
+    node_point = shapely.geometry.Point(node["x_coord"], node["y_coord"])
     closest_zone_point = find_closest_point(node_point, multipoint_zone)[0]
     zone_id = zone_point_id[closest_zone_point]
     return node_id, zone_id
 
 
 def _sync_zones_centroid_with_poi(args: tuple) -> tuple:
+
+    # poi is dictionary here
+    # pool.imap or process_map will not work for dataclass object
+
     poi_id, poi, multipoint_zone, zone_point_id = args
-    poi_point = shapely.geometry.Point(poi.x_coord, poi.y_coord)
+    poi_point = shapely.geometry.Point(poi["x_coord"], poi["y_coord"])
     closest_zone_point = find_closest_point(poi_point, multipoint_zone)[0]
     zone_id = zone_point_id[closest_zone_point]
     return poi_id, zone_id
@@ -352,11 +364,13 @@ def sync_zone_geometry_and_node(zone_dict: dict, node_dict: dict, cpu_cores: int
     node_cp = copy.deepcopy(node_dict)
 
     # Prepare arguments for the pool
-    args_list = [(node_id, node, zone_cp)
+    args_list = [(node_id, node.as_dict(), zone_cp)
                  for node_id, node in node_cp.items()]
 
     with Pool(processes=cpu_cores) as pool:
         results = pool.map(_sync_zones_geometry_with_node, args_list)
+        pool.close()
+        pool.join()
     # results = process_map(_sync_zones_geometry_with_node, args_list, workers=cpu_cores)
 
     # Gather results
@@ -407,12 +421,14 @@ def sync_zone_centroid_and_node(zone_dict: dict, node_dict: dict, verbose: bool 
         [shapely.geometry.Point(zone_cp[i].x_coord, zone_cp[i].y_coord) for i in zone_cp])
 
     # Prepare data for multiprocessing
-    args = [(node_id, node, multipoint_zone, zone_point_id) for node_id, node in node_cp.items()]
+    args = [(node_id, node.as_dict(), multipoint_zone, zone_point_id) for node_id, node in node_cp.items()]
 
     cpu_cores = pkg_settings["set_cpu_cores"]
 
     with Pool(cpu_cores) as pool:
         results = list(tqdm(pool.imap(_sync_zones_centroid_with_node, args), total=len(node_cp)))
+        pool.close()
+        pool.join()
 
     # Update zone_cp with the results
     for node_id, zone_id in results:
@@ -456,11 +472,13 @@ def sync_zone_geometry_and_poi(zone_dict: dict, poi_dict: dict, cpu_cores: int =
     poi_cp = copy.deepcopy(poi_dict)
 
     # Prepare arguments for the pool
-    args_list = [(poi_id, poi, zone_cp) for poi_id, poi in poi_cp.items()]
+    args_list = [(poi_id, poi.as_dict(), zone_cp) for poi_id, poi in poi_cp.items()]
 
     with Pool(processes=cpu_cores) as pool:
         # Distribute work to the pool
         results = pool.map(_sync_zones_geometry_with_poi, args_list)
+        pool.close()
+        pool.join()
 
     # results = process_map(_sync_zones_geometry_with_poi, args_list)
 
@@ -501,16 +519,18 @@ def sync_zone_centroid_and_poi(zone_dict: dict, poi_dict: dict, verbose: bool = 
         [shapely.geometry.Point(zone_cp[i].x_coord, zone_cp[i].y_coord) for i in zone_cp])
 
     # Prepare data for multiprocessing
-    args = [(node_id, node, multipoint_zone, zone_point_id) for node_id, node in poi_cp.items()]
+    args = [(poi_id, poi.as_dict(), multipoint_zone, zone_point_id) for poi_id, poi in poi_cp.items()]
     cpu_cores = pkg_settings["set_cpu_cores"]
 
     with Pool(cpu_cores) as pool:
         results = list(tqdm(pool.imap(_sync_zones_centroid_with_poi, args), total=len(poi_cp)))
+        pool.close()
+        pool.join()
 
     # Update zone_cp with the results
-    for node_id, zone_id in results:
-        poi_cp[node_id].zone_id = zone_id
-        zone_cp[zone_id].poi_id_list.append(node_id)
+    for poi_id, zone_id in results:
+        poi_cp[poi_id].zone_id = zone_id
+        zone_cp[zone_id].poi_id_list.append(poi_id)
 
     # for poi_id, poi in tqdm(poi_cp.items()):
     #     poi_point = shapely.geometry.Point(poi.x_coord, poi.y_coord)
@@ -553,6 +573,8 @@ def calc_zone_od_matrix(zone_dict: dict, cpu_cores: int = 1, verbose: bool = Fal
     with Pool(processes=cpu_cores) as pool:
         # Distribute work to the pool
         results = pool.map(_distance_calculation, args_list)
+        pool.close()
+        pool.join()
 
     # Gather results
     dist_dict = dict(results)
