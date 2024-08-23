@@ -54,7 +54,7 @@ jobs:
           repository-url: https://test.pypi.org/legacy/
           user: __token__
           password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-          skip_existing: true
+          skip-existing: true
 
       # - name: Upload package to PyPI
       #   if: github.ref == 'refs/heads/main'
@@ -62,4 +62,4 @@ jobs:
       #   with:
       #     user: __token__
       #     password: ${{ secrets.PYPI_API_TOKEN }}
-      #     skip_existing: true
+      #     skip-existing: true
