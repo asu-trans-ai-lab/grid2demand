@@ -103,9 +103,10 @@ class POI:
     def as_dict(self):
         return asdict(self)
 
-    # @property
-    # def as_dict(self):
-    #     return asdict(self)
+    def to_networkx(self) -> tuple:
+        # convert to networkx node
+        # networkx.add_nodes_from([(id, attr_dict), ])
+        return (self.id, self.as_dict())
 
 
 @dataclass
