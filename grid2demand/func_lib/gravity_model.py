@@ -29,8 +29,8 @@ def calc_zone_production_attraction(node_dict: dict, poi_dict: dict, zone_dict: 
         if zone_dict[zone_name].node_id_list:
             for node_id in zone_dict[zone_name].node_id_list:
                 try:
-                    zone_dict[zone_name].production += node_dict[node_id].production
-                    zone_dict[zone_name].attraction += node_dict[node_id].attraction
+                    zone_dict[zone_name]["production"] += node_dict[node_id]["production"]
+                    zone_dict[zone_name]["attraction"] += node_dict[node_id]["attraction"]
                 except KeyError:
                     continue
 
@@ -39,14 +39,14 @@ def calc_zone_production_attraction(node_dict: dict, poi_dict: dict, zone_dict: 
         if zone_dict[zone_name].poi_id_list:
             for poi_id in zone_dict[zone_name].poi_id_list:
                 try:
-                    poi_trip_rate = poi_dict[poi_id].trip_rate
+                    poi_trip_rate = poi_dict[poi_id]["trip_rate"]
                     for key in poi_trip_rate:
                         if "production_rate" in key:
-                            zone_dict[zone_name].production += poi_trip_rate[key] * \
-                                poi_dict[poi_id].area / 1000
+                            zone_dict[zone_name]["production"] += poi_trip_rate[key] * \
+                                poi_dict[poi_id]["area"] / 1000
                         if "attraction_rate" in key:
-                            zone_dict[zone_name].attraction += poi_trip_rate[key] * \
-                                poi_dict[poi_id].area / 1000
+                            zone_dict[zone_name]["attraction"] += poi_trip_rate[key] * \
+                                poi_dict[poi_id]["area"] / 1000
 
                     # zone_dict[zone_name].production += poi_dict[poi_id].production
                     # zone_dict[zone_name].attraction += poi_dict[poi_id].attraction

@@ -50,7 +50,7 @@ def gen_poi_trip_rate(poi_dict: dict,
 
     if default_flag:
         for poi_id in poi_dict:
-            building = poi_dict[poi_id].building
+            building = poi_dict[poi_id]["building"]
 
             # if poi_type in default setting, use the default trip rate
             # else use 0.1 as the trip rate for production
@@ -71,7 +71,7 @@ def gen_poi_trip_rate(poi_dict: dict,
                 attraction_notes = 0
 
             # update poi_trip_rate in the poi_dict
-            poi_dict[poi_id].trip_rate = {"building": building, "unit_of_measure": '1,000 Sq. Ft. GFA',
+            poi_dict[poi_id]["trip_rate"] = {"building": building, "unit_of_measure": '1,000 Sq. Ft. GFA',
                                           "trip_purpose": trip_purpose,
                                           f"production_rate{trip_purpose}": production_rate,
                                           f"attraction_rate{trip_purpose}": attraction_rate,
@@ -88,7 +88,7 @@ def gen_poi_trip_rate(poi_dict: dict,
     }
 
     for poi_id in poi_dict:
-        building = poi_dict[poi_id].building
+        building = poi_dict[poi_id]["building"]
         if building in df_trip_rate_dict:
             poi_dict[poi_id].trip_rate = df_trip_rate_dict[building].to_dict()
 
@@ -129,28 +129,28 @@ def gen_node_prod_attr(node_dict: dict,
     """
 
     for node in node_dict.values():
-        if node.activity_type == "residential":
-            node.production = residential_production
-            node.attraction = residential_attraction
-        elif node.activity_type == "boundary":
-            node.production = boundary_production
-            node.attraction = boundary_attraction
-        elif node.activity_type == "poi":
-            if node.poi_id in poi_dict:
-                poi_trip_rate = poi_dict[node.poi_id].trip_rate
+        if node["activity_type"] == "residential":
+            node["production"] = residential_production
+            node["attraction"] = residential_attraction
+        elif node["activity_type"] == "boundary":
+            node["production"] = boundary_production
+            node["attraction"] = boundary_attraction
+        elif node["activity_type"] == "poi":
+            if node["poi_id"] in poi_dict:
+                poi_trip_rate = poi_dict[node["poi_id"]]["trip_rate"]
                 for key in poi_trip_rate:
                     if "production_rate" in key:
-                        node.production = poi_trip_rate[key] * \
-                            poi_dict[node.poi_id].area / 1000
+                        node["production"] = poi_trip_rate[key] * \
+                            poi_dict[node["poi_id"]].area / 1000
                     if "attraction_rate" in key:
-                        node.attraction = poi_trip_rate[key] * \
-                            poi_dict[node.poi_id].area / 1000
-        elif node._zone_id != -1:
-            node.production = boundary_production
-            node.attraction = boundary_attraction
+                        node["attraction"] = poi_trip_rate[key] * \
+                            poi_dict[node["poi_id"]].area / 1000
+        elif node["_zone_id"] != -1:
+            node["production"] = boundary_production
+            node["attraction"] = boundary_attraction
         else:
-            node.production = 50
-            node.attraction = 50
+            node["production"] = 50
+            node["attraction"] = 50
     if verbose:
         print("  : Successfully generated production and attraction for each node based on poi trip rate.")
 

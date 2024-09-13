@@ -22,7 +22,7 @@ from pyufunc import (calc_distance_on_unit_sphere,
 
 from grid2demand.utils_lib.net_utils import Zone, Node
 from grid2demand.utils_lib.pkg_settings import pkg_settings
-# from tqdm.contrib.concurrent import process_map
+from tqdm.contrib.concurrent import process_map
 
 
 # supporting functions
@@ -368,7 +368,7 @@ def sync_zone_geometry_and_node(zone_dict: dict, node_dict: dict, cpu_cores: int
                  for node_id, node in node_cp.items()]
 
     with Pool(processes=cpu_cores) as pool:
-        results = pool.map(_sync_zones_geometry_with_node, args_list)
+        results = list(tqdm(pool.map(_sync_zones_geometry_with_node, args_list), total=len(args_list)))
         pool.close()
         pool.join()
     # results = process_map(_sync_zones_geometry_with_node, args_list, workers=cpu_cores)
@@ -476,7 +476,7 @@ def sync_zone_geometry_and_poi(zone_dict: dict, poi_dict: dict, cpu_cores: int =
 
     with Pool(processes=cpu_cores) as pool:
         # Distribute work to the pool
-        results = pool.map(_sync_zones_geometry_with_poi, args_list)
+        results = list(tqdm(pool.map(_sync_zones_geometry_with_poi, args_list), total=len(args_list)))
         pool.close()
         pool.join()
 
@@ -572,7 +572,7 @@ def calc_zone_od_matrix(zone_dict: dict, cpu_cores: int = 1, verbose: bool = Fal
 
     with Pool(processes=cpu_cores) as pool:
         # Distribute work to the pool
-        results = pool.map(_distance_calculation, args_list)
+        results = list(tqdm(pool.imap(_distance_calculation, args_list), total=len(args_list)))
         pool.close()
         pool.join()
 
