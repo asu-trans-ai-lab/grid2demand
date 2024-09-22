@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "grid2demand"
-version = "0.6.2"
+version = "0.6.3"
 description = "A tool for generating zone-to-zone travel demand based on grid cells or TAZs and gravity model"
 authors = [
     {name = "Xiangyong Luo", email = "luoxiangyong01@gmail.com"},
@@ -33,7 +33,7 @@ dynamic = ["dependencies"]
 
 [project.urls]
 "Homepage" = 'https://github.com/asu-trans-ai-lab/grid2demand'
-# Documentation = 'https://github.com/xyluo25/grid2demand'
+Documentation = 'https://github.com/xyluo25/grid2demand'
 # Bug_Tracker = 'https://github.com/xyluo25/grid2demand/issues'
 # Repository = "https://github.com/xyluo25/grid2demand"
 # Download = "https://www.pepy.tech/projects/pyufunc"
