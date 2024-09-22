@@ -504,8 +504,10 @@ def read_poi(poi_file: str = "", cpu_cores: int = 1, verbose: bool = False) -> d
         try:
             results = list(tqdm(pool.imap(_create_poi_from_dataframe, df_poi_chunk), total=total_chunks))
         except Exception:
-            results = pool.map(_create_poi_from_dataframe, df_poi_chunk)
-            # raise Exception("Error: Unable to create POIs from dataframe.")
+            try:
+                results = pool.map(_create_poi_from_dataframe, df_poi_chunk)
+            except Exception as e:
+                raise Exception(f"Error: {e}")
         pool.close()
         pool.join()
 
