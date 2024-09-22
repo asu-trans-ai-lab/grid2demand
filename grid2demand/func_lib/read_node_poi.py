@@ -487,6 +487,10 @@ def read_poi(poi_file: str = "", cpu_cores: int = 1, verbose: bool = False) -> d
 
         df_poi_chunk = pd.read_csv(poi_file, usecols=poi_required_cols, chunksize=chunk_size, encoding='utf-8')
     except Exception:
+        # Get total rows in poi.csv and calculate total chunks
+        total_rows = sum(1 for _ in open(poi_file)) - 1  # Exclude header row
+        total_chunks = total_rows // chunk_size + 1
+
         df_poi_chunk = pd.read_csv(poi_file, usecols=poi_required_cols, chunksize=chunk_size, encoding='latin-1')
 
     # Parallel processing using Pool
