@@ -195,7 +195,10 @@ def _create_poi_from_dataframe(df_poi: pd.DataFrame) -> dict[int, POI]:
             # )
             poi_dict[poi_id] = asdict(poi)
         except Exception as e:
-            print(f"  : Unable to create poi: {poi_id}, error: {e}")
+            try:
+                print(f"  : Unable to create poi: {poi_id}, error: {e}")
+            except Exception:
+                print(f"  : Unable to create poi: error: {e}")
     return poi_dict
 
 
@@ -486,11 +489,8 @@ def read_poi(poi_file: str = "", cpu_cores: int = 1, verbose: bool = False) -> d
         total_chunks = total_rows // chunk_size + 1
 
         df_poi_chunk = pd.read_csv(poi_file, usecols=poi_required_cols, chunksize=chunk_size, encoding='utf-8')
-    except Exception:
-        # Get total rows in poi.csv and calculate total chunks
-        total_rows = sum(1 for _ in open(poi_file)) - 1  # Exclude header row
-        total_chunks = total_rows // chunk_size + 1
 
+    except Exception:
         df_poi_chunk = pd.read_csv(poi_file, usecols=poi_required_cols, chunksize=chunk_size, encoding='latin-1')
 
     # Parallel processing using Pool
@@ -501,7 +501,11 @@ def read_poi(poi_file: str = "", cpu_cores: int = 1, verbose: bool = False) -> d
 
     with Pool(cpu_cores) as pool:
         # results = pool.map(_create_poi_from_dataframe, df_poi_chunk)
-        results = list(tqdm(pool.imap(_create_poi_from_dataframe, df_poi_chunk), total=total_chunks))
+        try:
+            results = list(tqdm(pool.imap(_create_poi_from_dataframe, df_poi_chunk), total=total_chunks))
+        except Exception:
+            results = pool.map(_create_poi_from_dataframe, df_poi_chunk)
+            # raise Exception("Error: Unable to create POIs from dataframe.")
         pool.close()
         pool.join()
 

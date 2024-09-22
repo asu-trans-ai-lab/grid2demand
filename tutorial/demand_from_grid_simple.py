@@ -22,7 +22,7 @@ if __name__ == "__main__":
     input_dir = r"datasets\demand_from_grid\dubai"
 
     # Initialize a GRID2DEMAND object
-    net = gd.GRID2DEMAND(input_dir=input_dir)
+    net = gd.GRID2DEMAND(input_dir=input_dir, verbose=True)
 
     # Step 1: Load node and poi data from input directory
     net.load_network()
