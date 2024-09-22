@@ -16,10 +16,10 @@ jobs:
 
       - name: Build wheels
         run: |
-          pip install build grid2demand 
+          pip install build grid2demand
           pip install utdf2gmns exceltomysql exceltosqlserver exceltopostgresql vissim2geojson
           python -m build --wheel --outdir dist
-        
+
       - name: build-sdist
         run: |
           pipx run build --sdist
@@ -48,13 +48,13 @@ jobs:
           path: dist
           merge-multiple: true
 
-      - name: Upload package to TestPyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          repository-url: https://test.pypi.org/legacy/
-          user: __token__
-          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-          skip-existing: true
+      # - name: Upload package to TestPyPI
+      #   uses: pypa/gh-action-pypi-publish@release/v1
+      #   with:
+      #     repository-url: https://test.pypi.org/legacy/
+      #     user: __token__
+      #     password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+      #     skip-existing: true
 
       # - name: Upload package to PyPI
       #   if: github.ref == 'refs/heads/main'
