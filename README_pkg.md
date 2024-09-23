@@ -4,13 +4,17 @@ GRID2DEMAND: A tool for generating zone-to-zone travel demand based on grid cell
 
 ## Introduction
 
-Grid2demand is an open-source quick demand generation tool based on the trip generation and trip distribution methods of the standard 4-step travel model for teaching transportation planning and applications. By taking advantage of OSM2GMNS tool to obtain route-able transportation network from OpenStreetMap, Grid2demand aims to further utilize Point of Interest (POI) data to construct trip demand matrix aligned with standard travel models.
+Grid2demand is an open-source quick demand generation tool based on the trip generation and trip distribution methods of the standard 4-step travel model. By taking advantage of OSM2GMNS tool to obtain route-able transportation network from OpenStreetMap, Grid2demand aims to further utilize Point of Interest (POI) data to construct trip demand matrix aligned with standard travel models.
 
 You can get access to the introduction video with the link: [https://www.youtube.com/watch?v=EfjCERQQGTs&amp;t=1021s](https://www.youtube.com/watch?v=EfjCERQQGTs&t=1021s)
 
+You can find base-knowledge tutorial with the link: [Base Knowledge such as transportation 4 stages planning](https://github.com/asu-trans-ai-lab/grid2demand/tree/main/docs)
+
+You can find the tutorial code witht the link: [How To Use Grid2demand](https://github.com/asu-trans-ai-lab/grid2demand/tree/main/tutorial)
+
 ## Quick Start
 
-Users can refer to the [code template and test data set](https://github.com/asu-trans-ai-lab/grid2demand) to have a quick start.
+Users can refer to the [code template and test data set](https://github.com/xyluo25/grid2demand/tree/main) to have a quick start.
 
 ## Installation
 
@@ -18,9 +22,12 @@ Users can refer to the [code template and test data set](https://github.com/asu-
 pip install grid2demand
 ```
 
-If you meet installation issues, please refer to the [user guide](https://github.com/asu-trans-ai-lab/grid2demand) for solutions.
+If you meet installation issues, please reach out to our [developers](mailto:luoxiangyong01@gmail.com) for solutions.
 
-## Simple Example
+## Demand Generation
+
+[!IMPORTANT]
+node.csv and poi.csv should follow the [GMNS](https://github.com/zephyr-data-specs/GMNS) standard and you can generate node.csv and poi.csv using [osm2gmns](https://osm2gmns.readthedocs.io/en/latest/quick-start.html).
 
 ### Generate Demand with node.csv and poi.csv
 
@@ -53,7 +60,7 @@ if __name__ == "__main__":
     net.save_results_to_csv()
 ```
 
-# Generate Demand with node.csv, poi.csv and zone.csv (geometry filed in zone.csv)
+# Generate Demand with node.csv, poi.csv and zone.csv (zone_id, geometry or x_coord, y_coord fields in zone.csv)
 
 ```python
 from __future__ import absolute_import
@@ -62,12 +69,10 @@ import grid2demand as gd
 if __name__ == "__main__":
 
     # Specify input directory
-    path_node = "your-path-to-node.csv"
-    path_poi = "your-path-to-poi.csv"
-    path_zone = "your-path-to-zone.csv"  # zone_id, geometry are required columns
+    input_dir = "your-data-folder"
 
     # Initialize a GRID2DEMAND object
-    net = gd.GRID2DEMAND(zone_file = path_zone, node_file = path_node, poi_file = path_poi)
+    net = gd.GRID2DEMAND(input_dir=input_dir)
 
     # load network: node and poi
     net.load_network()
@@ -82,7 +87,7 @@ if __name__ == "__main__":
     net.save_results_to_csv(overwrite_file=True)
 ```
 
-# Generate Demand with node.csv, poi.csv and zone.csv (x_coord, y_coord fields represent zone centroids)
+# # Generate Demand with node.csv and poi.csv (zone_id exist in node.csv)
 
 ```python
 from __future__ import absolute_import
@@ -91,50 +96,21 @@ import grid2demand as gd
 if __name__ == "__main__":
 
     # Specify input directory
-    path_node = "your-path-to-node.csv"
-    path_poi = "your-path-to-poi.csv"
-    path_zone = "your-path-to-zone.csv"  # zone_id, x_coord, y_coord are required columns
+    input_dir = "your-data-folder"
+    # make sure you have zone_id field in node.csv
 
     # Initialize a GRID2DEMAND object
-    net = gd.GRID2DEMAND(zone_file = path_zone, node_file = path_node, poi_file = path_poi)
-
-    # load network: node and poi
-    net.load_network()
-
-    # Generate zone
-    net.taz2zone()
-
-    # Calculate demand by running gravity model
-    net.run_gravity_model()
-
-    # Save demand, zone, updated node, updated poi to csv
-    net.save_results_to_csv(overwrite_file=True)
-```
-
-# Generate Demand with node.csv (if zone_id field exist, generated zone boundary cover zone_id that are not empty) and poi.csv
-
-```python
-from __future__ import absolute_import
-import grid2demand as gd
-
-if __name__ == "__main__":
-
-    # Specify input directory
-    path_node = "your-path-to-node.csv"  # make sure you have zone_id field in node.csv
-    path_poi = "your-path-to-poi.csv"
-
-    # Initialize a GRID2DEMAND object
-    net = gd.GRID2DEMAND(node_file = path_node, poi_file = path_poi, use_zone_id=True)
+    net = gd.GRID2DEMAND(input_dir=input_dir, use_zone_id=True)
 
     # load network: node and poi
     net.load_network()
 
     # Generate zone dictionary from node dictionary by specifying number of x blocks and y blocks
     net.net2zone(num_x_blocks=10, num_y_blocks=10)
-    # net.net2zone(cell_width=10, cell_height=10, unit="km")
+    # net.taz2zone()
 
     # Calculate demand by running gravity model
-    net.run_gravity_model(zone_prod_attr, zone_od_distance_matrix)
+    net.run_gravity_model()
 
     # Save demand, zone, updated node, updated poi to csv
     net.save_results_to_csv(overwrite_file=True)
@@ -158,9 +134,8 @@ Writing code isn't the only way to contribute to grid2demand. You can also:
 
 For more information about the ways you can contribute to grid2demand, visit [our GitHub](https://github.com/asu-trans-ai-lab/grid2demand). If you' re unsure where to start or how your skills fit in, reach out! You can ask by opening a new issue or leaving a comment on a relevant issue that is already open on GitHub.
 
-## Citing grid2demand
+## Citing Grid2demand
 
 If you use grid2demand in your research please use the following BibTeX entry:
-
 
 Xiangyong Luo, Dustin Carlino, and Xuesong Simon Zhou. (2023). [xyluo25/grid2demand](https://github.com/xyluo25/grid2demand/): Zenodo. https://doi.org/10.5281/zenodo.11212556

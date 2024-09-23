@@ -1,13 +1,16 @@
+'''
 # -*- coding:utf-8 -*-
 ##############################################################
 # Created Date: Thursday, September 28th 2023
 # Contact Info: luoxiangyong01@gmail.com
 # Author/Copyright: Mr. Xiangyong Luo
 ##############################################################
+'''
 
-import pandas as pd
 from random import choice, uniform
 import math
+
+import pandas as pd
 from pyufunc import gmns_geo
 
 
@@ -16,6 +19,19 @@ def gen_agent_based_demand(node_dict: dict, zone_dict: dict,
                            df_demand: pd.DataFrame = "",
                            agent_type: str = "v",
                            verbose: bool = False) -> pd.DataFrame:
+    """Generate agent-based demand data
+
+    Args:
+        node_dict (dict): dictionary of node objects
+        zone_dict (dict): dictionary of zone objects
+        path_demand (str): user provided demand data. Defaults to "".
+        df_demand (pd.DataFrame): user provided demand dataframe. Defaults to "".
+        agent_type (str): specify the agent type. Defaults to "v".
+        verbose (bool): whether to print out processing message. Defaults to False.
+
+    Returns:
+        pd.DataFrame: _description_
+    """
     # either path_demand or df_demand must be provided
 
     # if path_demand is provided, read demand data from path_demand

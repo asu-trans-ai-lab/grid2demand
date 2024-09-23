@@ -1,0 +1,3 @@
+global-exclude *.pyc *.o *.pypirc
+
+recursive-include grid2demand *.csv *.txt *.xlsx *.xls

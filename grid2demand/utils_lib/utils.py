@@ -6,12 +6,146 @@
 ##############################################################
 
 
-import shapely
 import copy
-import numpy as np
 import os
 import datetime
 import itertools
+from dataclasses import dataclass, field, fields, make_dataclass, MISSING, is_dataclass, asdict
+from typing import Any, List, Tuple, Type, Dict
+import shapely
+import numpy as np
+
+
+def create_dataclass_from_dict(name: str, data: Dict[str, Any]) -> Type:
+    """
+    Creates a dataclass with attributes and values based on the given dictionary.
+    The dataclass will also support dictionary-like access via __getitem__ and __setitem__.
+
+    Args:
+        name (str): The name of the dataclass to create.
+        data (Dict[str, Any]): A dictionary where keys are attribute names and values are attribute values.
+
+    Returns:
+        Type: A dataclass with fields and values corresponding to the dictionary.
+    """
+    # Define a method for __getitem__ for dictionary-like access
+
+    def __getitem__(self, key):
+        if hasattr(self, key):
+            return getattr(self, key)
+        else:
+            raise KeyError(f"Key {key} not found in {self.__class__.__name__}")
+
+    # Define a method for __setitem__ for dictionary-like assignment
+    def __setitem__(self, key, value):
+        if hasattr(self, key):
+            setattr(self, key, value)
+        else:
+            raise KeyError(f"Key {key} not found in {self.__class__.__name__}")
+
+    # Define a method to convert the dataclass to a dictionary
+    def as_dict(self):
+        return asdict(self)
+
+    # Extract fields and their types from the dictionary
+    dataclass_fields = []
+    for key, value in data.items():
+        if isinstance(value, (list, dict, set)):  # For mutable types
+            dataclass_fields.append(
+                (key, type(value), field(default_factory=lambda v=value: v)))
+        else:  # For immutable types
+            dataclass_fields.append((key, type(value), field(default=value)))
+
+    # Create the dataclass dynamically
+    DataClass = make_dataclass(
+        cls_name=name,
+        fields=dataclass_fields,
+        bases=(),
+        namespace={'__getitem__': __getitem__,
+                   '__setitem__': __setitem__,
+                   'as_dict': as_dict}
+    )
+
+    # Instantiate the dataclass with the values from the dictionary
+    return DataClass(**data)
+
+
+def extend_dataclass(
+    base_dataclass: Type[Any],
+    additional_attributes: List[Tuple[str, Type[Any], Any]]
+) -> Type[Any]:
+    """Creates a new dataclass by extending the base_dataclass with additional_attributes.
+
+    Args:
+        base_dataclass (dataclass): The base dataclass to extend.
+        additional_attributes (list): A list of tuples in the form (name, type, default_value).
+            or (name, default_value) to add to the base dataclass.
+
+    Example:
+        >>> from dataclasses import dataclass
+        >>> from typing import List
+        >>> from pyufunc import extend_dataclass
+        >>> @dataclass
+        ... class BaseDataclass:
+        ...     name: str = 'base'
+
+        >>> ExtendedDataclass = extend_dataclass(
+        ...     base_dataclass=BaseDataclass,
+        ...     additional_attributes=[('new_attr', List[int], [1, 2, 3])])
+        >>> ExtendedDataclass
+
+
+
+    Returns:
+        dataclass: A new dataclass that includes fields from base_dataclass and additional_attributes.
+    """
+
+    # check inputs
+    if not is_dataclass(base_dataclass):
+        raise ValueError('base_dataclass must be a dataclass')
+
+    for attr in additional_attributes:
+        if len(attr) not in {2, 3}:
+            raise ValueError('additional_attributes must be a list of tuples'
+                             ' in the form (name, default_value) or (name, type, default_value)')
+
+    # deepcopy the base dataclass
+    base_dataclass_ = copy.deepcopy(base_dataclass)
+    # base_dataclass_ = base_dataclass
+
+    # Extract existing fields from the base dataclass
+    base_fields = []
+    for f in fields(base_dataclass_):
+        if f.default is not MISSING:
+            base_fields.append((f.name, f.type, f.default))
+        elif f.default_factory is not MISSING:
+            base_fields.append((f.name, f.type, field(
+                default_factory=f.default_factory)))
+        else:
+            base_fields.append((f.name, f.type))
+
+    # check if additional attributes:
+    # if len == 2, adding Any as data type in the middle if the tuple
+    # if len == 3, keep the original tuple
+    additional_attributes = [
+        val if len(val) == 3 else (val[0], Any, val[1])
+        for val in additional_attributes
+    ]
+
+    # Combine base fields with additional attributes
+    all_fields = base_fields + additional_attributes
+
+    new_dataclass = make_dataclass(
+        cls_name=f'{base_dataclass_.__name__}',
+        fields=all_fields,
+        bases=(base_dataclass,),
+    )
+
+    # Register the new dataclass in the global scope to allow pickling
+    globals()[new_dataclass.__name__] = new_dataclass
+
+    # new_dataclass.__module__ = base_dataclass_.__module__
+    return new_dataclass
 
 
 def calc_distance_on_unit_sphere(pt1: shapely.Point, pt2: shapely.Point, unit='km', precision=None):

@@ -8,7 +8,9 @@
 
 import setuptools
 
-with open("README_pkg.md", "r", encoding="utf-8") as fh:
+# setuptools.setup()
+
+with open("./README_pkg.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 try:
@@ -20,7 +22,7 @@ except Exception:
 
 setuptools.setup(
     name="grid2demand",  # Replace with your own username
-    version="0.4.7",
+    version="0.6.4",
     author="Xiangyong Luo, Dr.Xuesong(Simon) Zhou",
     author_email="luoxiangyong01@gmail.com, xzhou74@asu.edu",
     description="A tool for generating zone-to-zone travel demand based on grid cells or TAZs and gravity model",
@@ -42,7 +44,7 @@ setuptools.setup(
                   "test_data": ['*.xls']},
     project_urls={
         'Homepage': 'https://github.com/asu-trans-ai-lab/grid2demand',
-        'Documentation': 'https://github.com/asu-trans-ai-lab/grid2demand',
+        'Documentation': 'https://github.com/xyluo25/grid2demand',
         # 'Bug Tracker': '',
         # 'Source Code': '',
         # 'Download': '',

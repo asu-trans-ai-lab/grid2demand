@@ -7,17 +7,49 @@
 
 import numpy as np
 from grid2demand.utils_lib.pkg_settings import pkg_settings
-import pandas as pd
 
 
-def calc_zone_production_attraction(node_dict: dict, zone_dict: dict, verbose: bool = False) -> dict:
+def calc_zone_production_attraction(node_dict: dict, poi_dict: dict, zone_dict: dict, verbose: bool = False) -> dict:
+    """Calculate zone production and attraction based on node and poi production and attraction
+
+    Args:
+        node_dict (dict): dictionary of node objects
+        poi_dict (dict): dictionary of poi objects
+        zone_dict (dict): dictionary of zone objects
+        verbose (bool): whether to print out processing message. Defaults to False.
+
+    Returns:
+        dict: dictionary of zone objects with updated production and attraction
+    """
+
     # calculate zone production and attraction based on node production and attraction
     for zone_name in zone_dict:
+
+        # calculate zone production and attraction based on node production and attraction
         if zone_dict[zone_name].node_id_list:
             for node_id in zone_dict[zone_name].node_id_list:
                 try:
-                    zone_dict[zone_name].production += node_dict[node_id].production
-                    zone_dict[zone_name].attraction += node_dict[node_id].attraction
+                    zone_dict[zone_name]["production"] += node_dict[node_id]["production"]
+                    zone_dict[zone_name]["attraction"] += node_dict[node_id]["attraction"]
+                except KeyError:
+                    continue
+
+    # calculate zone production and attraction based on poi
+    for zone_name in zone_dict:
+        if zone_dict[zone_name].poi_id_list:
+            for poi_id in zone_dict[zone_name].poi_id_list:
+                try:
+                    poi_trip_rate = poi_dict[poi_id]["trip_rate"]
+                    for key in poi_trip_rate:
+                        if "production_rate" in key:
+                            zone_dict[zone_name]["production"] += poi_trip_rate[key] * \
+                                poi_dict[poi_id]["area"] / 1000
+                        if "attraction_rate" in key:
+                            zone_dict[zone_name]["attraction"] += poi_trip_rate[key] * \
+                                poi_dict[poi_id]["area"] / 1000
+
+                    # zone_dict[zone_name].production += poi_dict[poi_id].production
+                    # zone_dict[zone_name].attraction += poi_dict[poi_id].attraction
                 except KeyError:
                     continue
 
@@ -30,6 +62,17 @@ def calc_zone_production_attraction(node_dict: dict, zone_dict: dict, verbose: b
 def calc_zone_od_friction_attraction(zone_od_friction_matrix_dict: dict,
                                      zone_dict: dict,
                                      verbose: bool = False) -> dict:
+    """Calculate zone od friction attraction
+
+    Args:
+        zone_od_friction_matrix_dict (dict): zone od friction matrix
+        zone_dict (dict): dictionary of zone objects
+        verbose (bool): whether to print out processing message. Defaults to False.
+
+    Returns:
+        dict: dictionary of zone od friction attraction
+    """
+
     zone_od_friction_attraction_dict = {}
     for zone_name, friction_val in zone_od_friction_matrix_dict.items():
         if zone_name[0] not in zone_od_friction_attraction_dict:
@@ -50,6 +93,21 @@ def run_gravity_model(zone_dict: dict,
                       beta: float = -0.02,
                       gamma: float = -0.123,
                       verbose: bool = False) -> dict:
+    """Run gravity model to generate demand.csv
+
+    Args:
+        zone_dict (dict): dictionary of zone objects
+        zone_od_dist_matrix (dict): dictionary of zone od distance matrix
+        trip_purpose (int): specify trip purpose. Defaults to 1.
+        alpha (float): parameter for gravity model. Defaults to 28507.
+        beta (float): parameter for gravity model. Defaults to -0.02.
+        gamma (float): parameter for gravity model. Defaults to -0.123.
+        verbose (bool): whether to print out processing message. Defaults to False.
+
+    Returns:
+        dict: dictionary of zone od distance matrix with updated volume
+    """
+
     # if trip purpose is specified in trip_purpose_dict, use the default value
     # otherwise, use the user-specified value
     trip_purpose_dict = pkg_settings.get("trip_purpose_dict")
@@ -81,7 +139,7 @@ def run_gravity_model(zone_dict: dict,
                                                                   zone_dict[zone_name_pair[1]].attraction *
                                                                   zone_od_friction_matrix_dict[zone_name_pair] /
                                                                   zone_od_friction_attraction_dict[zone_name_pair[0]])
-        except ZeroDivisionError:
+        except Exception:
             zone_od_dist_matrix[zone_name_pair]["volume"] = 0
 
     # Generate demand.csv

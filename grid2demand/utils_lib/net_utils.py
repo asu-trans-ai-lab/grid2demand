@@ -6,7 +6,7 @@
 ##############################################################
 
 
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, field, asdict, fields
 
 
 @dataclass
@@ -19,12 +19,11 @@ class Node:
         y_coord: The y coordinate of the node.
         production: The production of the node.
         attraction: The attraction of the node.
-        boundary_flag: The boundary flag of the node. = 1 (current node is boundary node)
+        is_boundary: The boundary flag of the node. = 1 (current node is boundary node)
         zone_id: The zone ID. default == -1, only three conditions to become an activity node
                 1) POI node, 2) is_boundary node(freeway),  3) residential in activity_type
         poi_id: The POI ID of the node. default = -1; to be assigned to a POI ID after reading poi.csv
         activity_type: The activity type of the node. provided from osm2gmns such as motoway, residential, ...
-        activity_location_tab: The activity location tab of the node.
         geometry: The geometry of the node. based on wkt format.
         _zone_id: The zone ID. default == -1,
                 this will be assigned if field zone_id exists in the node.csv and is not empty
@@ -34,18 +33,32 @@ class Node:
     y_coord: float = -1
     production: float = 0
     attraction: float = 0
-    boundary_flag: int = 0
-    ctrl_type: int = -1
-    zone_id: int = -1
-    poi_id: int = -1
-    activity_type: str = ''
-    activity_location_tab: str = ''
+    # is_boundary: int = 0
+    # ctrl_type: int = -1
+    zone_id: int | None = None
+    # poi_id: int = -1
+    # activity_type: str = ''
     geometry: str = ''
     _zone_id: int = -1
 
-    @property
+    def __getitem__(self, key):
+        if hasattr(self, key):
+            return getattr(self, key)
+        else:
+            raise KeyError(f"Key {key} not found in {self.__class__.__name__}")
+
+    def __setitem__(self, key, value):
+        if hasattr(self, key):
+            setattr(self, key, value)
+        else:
+            raise KeyError(f"Key {key} not found in {self.__class__.__name__}")
+
     def as_dict(self):
         return asdict(self)
+
+    # @property
+    # def as_dict(self):
+    #     return asdict(self)
 
 
 @dataclass
@@ -58,7 +71,7 @@ class POI:
         y_coord : The y coordinate of the POI.
         count   : The count of the POI. Total POI values for this POI node or POI zone
         area    : The area of the POI. Total area of polygon for this POI zone. unit is square meter
-        poi_type: The type of the POI. Default is empty string
+        building: The type of the POI. Default is empty string
         geometry: The polygon of the POI. based on wkt format. Default is empty string
         zone_id : The zone ID. mapping from zone
     """
@@ -67,15 +80,33 @@ class POI:
     x_coord: float = 0
     y_coord: float = 0
     count: int = 1
-    area: list = field(default_factory=list)
-    poi_type: str = ''
+    building: str = ""
+    amenity: str = ""
+    centroid: str = ""
+    area: str = ""
     trip_rate: dict = field(default_factory=dict)
     geometry: str = ''
     zone_id: int = -1
 
-    @property
+    def __getitem__(self, key):
+        if hasattr(self, key):
+            return getattr(self, key)
+        else:
+            raise KeyError(f"Key {key} not found in {self.__class__.__name__}")
+
+    def __setitem__(self, key, value):
+        if hasattr(self, key):
+            setattr(self, key, value)
+        else:
+            raise KeyError(f"Key {key} not found in {self.__class__.__name__}")
+
     def as_dict(self):
         return asdict(self)
+
+    def to_networkx(self) -> tuple:
+        # convert to networkx node
+        # networkx.add_nodes_from([(id, attr_dict), ])
+        return (self.id, self.as_dict())
 
 
 @dataclass
@@ -85,8 +116,8 @@ class Zone:
     Attributes:
         id              : The zone ID.
         name            : The name of the zone.
-        centroid_x      : The centroid x coordinate of the zone.
-        centroid_y      : The centroid y coordinate of the zone.
+        x_coord      : The centroid x coordinate of the zone.
+        y_coord      : The centroid y coordinate of the zone.
         centroid        : The centroid of the zone. (x, y) based on wkt format
         x_max           : The max x coordinate of the zone.
         x_min           : The min x coordinate of the zone.
@@ -103,8 +134,8 @@ class Zone:
 
     id: int = 0
     name: str = ''
-    centroid_x: float = 0
-    centroid_y: float = 0
+    x_coord: float = 0
+    y_coord: float = 0
     centroid: str = ""
     x_max: float = 0
     x_min: float = 0
@@ -118,9 +149,24 @@ class Zone:
     attraction_fixed: float = 0
     geometry: str = ''
 
-    @property
+    def __getitem__(self, key):
+        if hasattr(self, key):
+            return getattr(self, key)
+        else:
+            raise KeyError(f"Key {key} not found in {self.__class__.__name__}")
+
+    def __setitem__(self, key, value):
+        if hasattr(self, key):
+            setattr(self, key, value)
+        else:
+            raise KeyError(f"Key {key} not found in {self.__class__.__name__}")
+
     def as_dict(self):
         return asdict(self)
+
+    # @property
+    # def as_dict(self):
+    #     return asdict(self)
 
 
 @dataclass
@@ -167,6 +213,17 @@ class Agent:
     geometry: str = ''
     departure_time: int = 0  # unit is second
 
-    @property
+    def __getitem__(self, key):
+        if hasattr(self, key):
+            return getattr(self, key)
+        else:
+            raise KeyError(f"Key {key} not found in {self.__class__.__name__}")
+
+    def __setitem__(self, key, value):
+        if hasattr(self, key):
+            setattr(self, key, value)
+        else:
+            raise KeyError(f"Key {key} not found in {self.__class__.__name__}")
+
     def as_dict(self):
         return asdict(self)

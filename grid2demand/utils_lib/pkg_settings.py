@@ -7,19 +7,25 @@
 import os
 
 pkg_settings = {
+
+    # specify the mode type: "auto", "bike", "walk"
+    "mode_type": {"auto": 1, "bike": 0.4, "walk": 0.05},
+
     # specify required files for grid2demand, and optional files for grid2demand
     "required_files": ["node.csv", "poi.csv"],
     "optional_files": ["zone.csv"],
 
     # specify required fields for node.csv and poi.csv and zone.csv (optional)
-    "node_fields": ["node_id", "x_coord", "y_coord",
-                    "activity_type", "is_boundary", "ctrl_type", "poi_id"],
-    "poi_fields": ["poi_id", "building", "centroid", "area", "geometry"],
+    "node_fields": ["node_id", "x_coord", "y_coord", "activity_type"],
+    # zone_id, "ctrl_type", "poi_id", "is_boundary", "activity_type",
+
+    "poi_fields": ["poi_id", "building", "amenity", "centroid", "area", "geometry"],
     "zone_geometry_fields": ["zone_id", "geometry"],
     "zone_centroid_fields": ["zone_id", "x_coord", "y_coord"],
 
     # if input data is too large, you can split the input data into chunks and process them separately
-    "data_chunk_size": 10000,
+    "data_chunk_size": 1000,
+    "node_export_activity": True,  # export zone id with node activity type in residential and boundary nodes
 
     # run the program in parallel mode, if cpu_cores > 1
     "set_cpu_cores": os.cpu_count(),
@@ -62,3 +68,5 @@ pkg_settings = {
                               'yes'               : {1: 1.15}
                               }
 }
+
+# save files ids to ingeter
