@@ -2,7 +2,8 @@
 
 GRID2DEMAND: A tool for generating zone-to-zone travel demand based on grid cells or TAZs and gravity model
 
-(You can find the latest grid2demand release (version 1.0.0 or later) and tutorials at https://github.com/xyluo25/grid2demand. We will synchronize updates soon.)
+> [!CAUTION]
+> You can find the latest grid2demand release (version 1.0.0 or later) and tutorials at https://github.com/xyluo25/grid2demand. We will synchronize updates soon.
 
 -   [**Grid2demand**](#grid2demand)
     -   [**Code Examples**](#code-examples)
